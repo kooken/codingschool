@@ -1,9 +1,13 @@
 # main/urls.py
 from django.urls import path
 from . import views
+from main.apps import MainConfig
+
+app_name = MainConfig.name
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('about/', views.about, name='about'),
-    path('contacts/', views.contacts, name='contacts'),
+    path('', views.index, name='index'),
+    path('courses/', views.courses, name='courses'),
+    path('mission/', views.mission, name='mission'),
+    path('team/', views.team, name='team'),
 ]

@@ -20,10 +20,10 @@ from django.conf import settings
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('main.urls')),  # Подключаем основное приложение
+    path('', include('main.urls', namespace='main')),  # Подключаем основное приложение
     path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),
-    path('courses/', include('course.urls')),
+    path('users/', include('users.urls', namespace='user')),
+    path('course/', include('course.urls', namespace='course')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

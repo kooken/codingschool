@@ -8,9 +8,7 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
-<!--                        <button type="submit" class="btn btn-primary">Register</button>-->
-                        <a href="{% url 'course:course_list' %}"
-                           class="u-border-none u-btn u-btn-round u-button-style u-custom-color-1 u-custom-font u-font-raleway u-hover-black u-radius u-text-black u-text-hover-custom-color-1 u-btn-1">Register</a>
+                        <button type="submit" class="btn btn-primary">Reset password</button>
                     </form>
                 </div>
             </div>
