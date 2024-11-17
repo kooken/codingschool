@@ -1,0 +1,206 @@
+/* Уникальный стиль для страницы регистрации */
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap');
+
+/* Сбрасываем отступы и поля для html и body */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+/* Уникальный стиль для страницы регистрации */
+#register-page {
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;  /* Заполняем всю высоту экрана */
+    font-family: 'Raleway', sans-serif;
+}
+
+/* Обертка для формы */
+.register-form {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Заголовок */
+#register-heading {
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Стили для полей ввода */
+.register-form .form-group {
+    margin-bottom: 20px;
+}
+
+.register-form .form-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
+.register-form input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.register-form input:focus {
+    border-color: #b07afe;
+    outline: none;
+}
+
+/* Стили для кнопки регистрации */
+#register-button {
+    background-color: #b07afe;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+#placeholder-button {
+    background-color: #b07afe; /* Используем тот же цвет */
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+#register-heading {
+    font-family: 'Raleway', sans-serif;
+}
+
+#register-button:hover {
+    background-color: black;
+    color: #b07afe;
+}
+
+.form-buttons {
+    display: flex;
+    flex-direction: column; /* Размещаем кнопки вертикально */
+    gap: 15px; /* Расстояние между кнопками */
+    margin-top: 20px;
+}
+
+/* Эффект наведения для кнопки-заглушки */
+#placeholder-button:hover {
+    background-color: black;
+    color: #b07afe;
+}
+
+/* Стили для ошибок */
+#register-page .text-danger {
+    color: red;  /* Красный цвет для текста ошибки */
+    font-size: 14px;  /* Размер шрифта */
+    margin-top: 5px;  /* Отступ сверху */
+}
+
+/* Стили для ошибок в каждом поле */
+.register-form .form-group .text-danger {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Стиль для страницы логина */
+.login-page {
+    background-color: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;  /* Заполняем всю высоту экрана */
+    font-family: 'Raleway', sans-serif;
+}
+
+.login-form {
+    background-color: #ffffff;
+    font-family: 'Raleway', sans-serif;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-form h2 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.login-form .form-group {
+    font-family: 'Raleway', sans-serif;
+    margin-bottom: 20px;
+}
+
+.login-form .form-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
+.login-form input {
+    font-family: 'Raleway', sans-serif;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.login-form input:focus {
+    border-color: #b07afe;
+    outline: none;
+}
+
+.login-form .btn-login {
+    background-color: #b07afe;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.login-form .btn-login:hover {
+    background-color: black;
+    color: #b07afe;
+    font-weight: bold;
+}
+
+.login-form .text-danger {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+

@@ -14,5 +14,13 @@ def mission(request):
     return render(request, 'main/mission.html')
 
 
+def community(request):
+    return render(request, 'main/community.html')
+
+
+def job_search(request):
+    return render(request, 'main/job_search.html')
+
+
 def team(request):
     return render(request, 'main/team.html')
