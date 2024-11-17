@@ -1,20 +1,5 @@
 {% extends 'main/base.html' %}
 {% block content %}
-<!--<table align="center" style="width: 100%; height: 100%;">-->
-<!--    <tr>-->
-<!--        <td align="center" valign="middle">-->
-<!--            <form method="post" enctype="multipart/form-data">-->
-<!--                {% csrf_token %}-->
-<!--                {{ form.as_p }}-->
-<!--                <a href="{% url 'course:course_list' %}"-->
-<!--                   class="u-border-none u-btn u-btn-round u-button-style u-custom-color-1 u-custom-font u-font-raleway u-hover-black u-radius u-text-black u-text-hover-custom-color-1 u-btn-1">Log-->
-<!--                    In</a>-->
-<!--                <a class="btn btn-dark" href="{% url 'users:recovery_form' %}">Forgot password</a>-->
-<!--            </form>-->
-<!--        </td>-->
-<!--    </tr>-->
-<!--</table>-->
-<!-- users/login.html -->
 <div class="login-page">
     <form method="post" action="{% url 'users:login' %}" class="login-form">
         <h2>Login</h2>
@@ -32,7 +17,9 @@
         </div>
         {% endfor %}
         <button type="submit" class="btn-login">Login</button>
+        <div class="forgot-password">
+            <a href="{% url 'users:password_reset' %}" class="btn-forgot-password">Forgot Password?</a>
+        </div>
     </form>
 </div>
-
 {% endblock %}

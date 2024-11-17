@@ -204,3 +204,99 @@ html, body {
     font-weight: bold;
 }
 
+.btn-forgot-password {
+    display: inline-block;
+    margin-top: 10px;
+    color: black;
+    text-align: center;
+    font-size: 14px;
+}
+
+.btn-forgot-password:hover {
+    text-decoration: underline;
+    color: #b07afe;
+}
+
+/* static/css/password_reset.css */
+.password-reset-page {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    font-family: 'Raleway', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.password-reset-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.password-reset-form h2 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: #b07afe;
+    outline: none;
+}
+
+.btn-reset-password {
+    background-color: #b07afe;
+    color: black;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+        font-weight: bold;
+    margin-top: 20px;
+}
+
+.btn-reset-password:hover {
+    background-color: black;
+        font-weight: bold;
+
+    color: #b07afe;
+}
+
+.back-to-login {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.btn-back-to-login {
+    color: #b07afe;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-back-to-login:hover {
+    text-decoration: underline;
+}
+
