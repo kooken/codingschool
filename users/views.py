@@ -1,4 +1,5 @@
-from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView, PasswordResetView
+from django.contrib.auth.views import (LoginView, PasswordResetConfirmView,
+                                       PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView)
 from django.core.mail import EmailMultiAlternatives
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
@@ -8,7 +9,8 @@ from config.settings import EMAIL_HOST_USER
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView
 import secrets
-from users.forms import UserRegisterForm, UserProfileForm, UserLoginForm
+from users.forms import UserRegisterForm, UserProfileForm, UserLoginForm, CustomPasswordResetForm, \
+    CustomPasswordChangeForm
 from users.models import User
 import random, string
 from django.template.loader import render_to_string
@@ -119,21 +121,22 @@ class UserLoginView(LoginView):
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'users/password_reset_form.html'
-    email_template_name = 'emails/password_reset_email.html'  # Текстовое письмо (резервный вариант)
+    email_template_name = 'emails/password_reset_email.html'
+    form_class = CustomPasswordResetForm  # Используем кастомную форму для проверки email
     success_url = reverse_lazy('users:password_reset_done')
 
     def form_valid(self, form):
-        # Получаем email пользователя из формы
+        # Получаем email пользователя
         email = form.cleaned_data["email"]
         user = get_object_or_404(User, email=email)
 
-        # Генерируем токен сброса пароля
+        # Генерируем токен для сброса пароля
         token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(str(user.pk).encode())  # Убираем .decode()
+        uid = urlsafe_base64_encode(str(user.pk).encode())
 
         # Генерация ссылки для сброса пароля
         host = self.request.get_host()
-        reset_url = f'http://{host}{reverse("users:password_reset_confirm", kwargs={"uidb64": uid, "token": token})}'
+        reset_url = f'http://{host}{reverse_lazy("users:password_reset_confirm", kwargs={"uidb64": uid, "token": token})}'
 
         # Рендерим HTML-шаблон для email
         html_message = render_to_string('emails/password_reset_email.html', {
@@ -144,11 +147,11 @@ class CustomPasswordResetView(PasswordResetView):
         # Текстовое письмо (резервный вариант)
         text_message = f'Hello! Click on the link to reset your password: {reset_url}'
 
-        # Отправка письма с HTML и текстом
+        # Отправляем email
         email_message = EmailMultiAlternatives(
             subject="Password Reset Request",
             body=text_message,
-            from_email=EMAIL_HOST_USER,
+            from_email=EMAIL_HOST_USER,  # Замените на вашу почту
             to=[user.email],
         )
         email_message.attach_alternative(html_message, "text/html")
@@ -159,4 +162,24 @@ class CustomPasswordResetView(PasswordResetView):
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
-    success_url = reverse_lazy('users:password_reset_complete')
+    form_class = CustomPasswordChangeForm  # Используем кастомную форму
+    success_url = reverse_lazy('users:password_reset_complete')  # URL для перенаправления после успешной смены пароля
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        # Получаем uidb64 и token из URL параметров
+        uidb64 = self.kwargs.get('uidb64')
+        token = self.kwargs.get('token')
+
+        # Добавляем их в контекст
+        context['uidb64'] = uidb64
+        context['token'] = token
+        return context
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'users/password_reset_done.html'
+
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'users/password_reset_complete.html'

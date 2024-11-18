@@ -3,7 +3,7 @@
 from django.urls import path
 from users.apps import UsersConfig
 from users.views import RegisterView, UserLoginView, email_verification, ProfileView, CustomPasswordResetView, \
-    CustomPasswordResetConfirmView
+    CustomPasswordResetConfirmView, CustomPasswordResetCompleteView, CustomPasswordResetDoneView
 from django.contrib.auth import views as auth_views
 
 # urlpatterns = [
@@ -21,11 +21,13 @@ urlpatterns = [
     path('email_confirm/<str:token>/', email_verification, name='email_confirm'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('password_reset/', CustomPasswordResetView.as_view(), name='password_reset'),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(
-        template_name='users/password_reset_complete.html'
-    ), name='password_reset_done'),
+
+    # Подтверждение, что письмо отправлено
+    path('password_reset/done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
+
+    # Ввод нового пароля (по ссылке из письма)
     path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
-        template_name='users/password_reset_complete.html'
-    ), name='password_reset_complete'),
+
+    # Завершение смены пароля
+    path('reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]

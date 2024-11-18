@@ -1,23 +1,13 @@
 import re
 
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordResetForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordResetForm, AuthenticationForm, \
+    PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
 from users.models import User
 from django import forms
+from django.utils.translation import gettext_lazy as _  # Добавлен импорт
 
-
-# class StyleFormMixin:
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         for field_name, field in self.fields.items():
-#             field.widget.attrs['class'] = 'form-control'
-#
-#
-# class UserRegisterForm(UserCreationForm):
-#     class Meta:
-#         model = User
-#         fields = ('email', 'password1', 'password2')
 
 class StyleFormMixin:
     def __init__(self, *args, **kwargs):
@@ -83,17 +73,22 @@ class UserLoginForm(StyleFormMixin, AuthenticationForm):
         self.fields['username'].label = 'Your email address'
         self.fields['password'].label = 'Your password'
 
-    def clean_email(self):
-        email = self.cleaned_data.get('username')  # в AuthenticationForm по умолчанию используется 'username'
+    def clean_username(self):
+        email = self.cleaned_data.get('username')  # используем 'username' по умолчанию
         password = self.cleaned_data.get('password')
 
-        # Если email и пароль введены, то проверим их
+        # Проверка, существует ли пользователь с таким email
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError("No account found with this email address.")
+
+        # Если email и пароль введены, проверим их
         if email and password:
             user = authenticate(self.request, username=email, password=password)
             if user is None:
+                # Если аутентификация не удалась, выводим свою ошибку
                 raise ValidationError("Invalid email or password. Please try again.")
 
-        return self.cleaned_data['username']  # Возвращаем email (именно это поле используется для логина)
+        return self.cleaned_data['username']  # возвращаем email как username
 
     class Meta:
         model = User
@@ -111,7 +106,64 @@ class UserProfileForm(UserChangeForm):
         self.fields['password'].widget = forms.HiddenInput()
 
 
-# class UserRecoveryForm(StyleFormMixin, PasswordResetForm):
-#     class Meta:
-#         model = User
-#         fields = ('email',)
+class CustomPasswordChangeForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Изменение текста меток для каждого поля
+        self.fields['new_password1'].label = _('Create new password')
+        self.fields['new_password2'].label = _('Confirm new password')
+
+        self.fields['new_password1'].error_messages = {
+            'required': _('Please enter a password.'),
+            'min_length': _('Your password must contain at least 8 characters.'),
+            'too_common': _('This password is too common. Please choose a more secure one.'),
+            'numeric': _('Password cannot be entirely numeric. Please include letters and symbols.')
+        }
+        self.fields.pop('old_password', None)
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+
+        # Проверка на длину пароля
+        if len(password1) < 8:
+            raise ValidationError(_('Your password must contain at least 8 characters.'))
+
+        # Проверка на наличие букв и цифр
+        if not re.search(r'[A-Za-z]', password1) or not re.search(r'[0-9]', password1):
+            raise ValidationError(_('Your password must include both letters and numbers.'))
+
+        # Проверка на наличие хотя бы одного специального символа
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password1):
+            raise ValidationError(_('Your password must include at least one special character (e.g., !@#$%^&*).'))
+
+        # Проверка, совпадают ли пароли
+        if password1 != password2:
+            raise ValidationError(_('Please make sure your passwords match.'))
+
+        return password2
+
+    class Meta:
+        model = User
+        fields = ('new_password1', 'new_password2')
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    email = forms.EmailField(
+        label='Email Address',
+        max_length=254,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your registered email address'
+        }),
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        # Проверка на существование пользователя с таким email
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError('No account found with this email address.')
+
+        return email
