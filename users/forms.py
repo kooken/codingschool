@@ -73,37 +73,45 @@ class UserLoginForm(StyleFormMixin, AuthenticationForm):
         self.fields['username'].label = 'Your email address'
         self.fields['password'].label = 'Your password'
 
-    def clean_username(self):
-        email = self.cleaned_data.get('username')  # используем 'username' по умолчанию
+    def clean(self):
+        email = self.cleaned_data.get('username')  # username используется как email
         password = self.cleaned_data.get('password')
 
-        # Проверка, существует ли пользователь с таким email
+        # Проверяем, что оба поля заполнены
+        if not email or not password:
+            raise ValidationError("Both email and password are required.")
+
+        # Проверяем существование пользователя
         if not User.objects.filter(email=email).exists():
             raise ValidationError("No account found with this email address.")
 
-        # Если email и пароль введены, проверим их
-        if email and password:
-            user = authenticate(self.request, username=email, password=password)
-            if user is None:
-                # Если аутентификация не удалась, выводим свою ошибку
-                raise ValidationError("Invalid email or password. Please try again.")
+        # Пытаемся аутентифицировать пользователя
+        user = authenticate(self.request, username=email, password=password)
+        if user is None:
+            raise ValidationError("Invalid email or password. Please try again.")
 
-        return self.cleaned_data['username']  # возвращаем email как username
+        # Проверяем, активен ли пользователь
+        if not user.is_active:
+            raise ValidationError("This account is inactive. Please contact support.")
+
+        # Успешная валидация
+        return self.cleaned_data
 
     class Meta:
         model = User
         fields = ('email', 'password',)
 
 
-class UserProfileForm(UserChangeForm):
+class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone', 'avatar')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['password'].widget = forms.HiddenInput()
+        fields = ['avatar', 'phone', 'city', 'email']  # Поля для редактирования
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control'}),
+            'avatar': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):

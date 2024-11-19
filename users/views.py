@@ -4,21 +4,17 @@ from django.core.mail import EmailMultiAlternatives
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth import update_session_auth_hash
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from config.settings import EMAIL_HOST_USER
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, TemplateView
 import secrets
 from users.forms import UserRegisterForm, UserProfileForm, UserLoginForm, CustomPasswordResetForm, \
     CustomPasswordChangeForm
 from users.models import User
-import random, string
 from django.template.loader import render_to_string
-
-
-def generate_random_password(length=8):
-    characters = string.ascii_letters + string.digits + string.punctuation
-    return ''.join(random.choice(characters) for i in range(length))
 
 
 class RegisterView(CreateView):
@@ -27,21 +23,6 @@ class RegisterView(CreateView):
     template_name = 'users/register.html'
     success_url = reverse_lazy('course:course_list')
 
-    # def form_valid(self, form):
-    #     user = form.save()
-    #     user.is_active = False
-    #     token = secrets.token_hex(16)
-    #     user.token = token
-    #     user.save()
-    #     host = self.request.get_host()
-    #     url = f'http://{host}/users/email_confirm/{token}/'
-    #     send_mail(
-    #         subject='Email confirmation',
-    #         message=f'Hello! Click on the link to confirm your email: {url}',
-    #         from_email=EMAIL_HOST_USER,
-    #         recipient_list=[user.email]
-    #     )
-    #     return super().form_valid(form)
     def form_valid(self, form):
         user = form.save()
         user.is_active = False
@@ -95,28 +76,6 @@ class UserLoginView(LoginView):
     template_name = 'users/login.html'
     # redirect_authenticated_user = True
     success_url = reverse_lazy('course:course_list')
-
-
-# class UserPasswordResetView(PasswordResetView):
-#     form_class = UserRecoveryForm
-#     template_name = 'users/recovery_form.html'
-#
-#     def form_valid(self, form):
-#         user_email = self.request.POST.get('email')
-#         user = get_object_or_404(User, email=user_email)
-#         new_password = generate_random_password()
-#         user.set_password(new_password)
-#         user.save()
-#         send_mail(
-#             subject="Password recovery",
-#             message=f"Hey! Your password has been changed:\n"
-#                     f"Your new credentials:\n"
-#                     f"Email: {user_email}\n"
-#                     f"Password: {new_password}",
-#             from_email=EMAIL_HOST_USER,
-#             recipient_list=[user.email]
-#         )
-#         return redirect('users:login')
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -183,3 +142,41 @@ class CustomPasswordResetDoneView(PasswordResetDoneView):
 
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'users/password_reset_complete.html'
+
+
+class UserProfileView(TemplateView):
+    template_name = 'users/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile_form'] = UserProfileForm(instance=self.request.user)
+        context['password_form'] = CustomPasswordChangeForm(user=self.request.user)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if 'profile_update' in request.POST:
+            profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('users:profile')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
+        elif 'password_change' in request.POST:
+            password_form = CustomPasswordChangeForm(user=request.user, data=request.POST)
+            if password_form.is_valid():
+                password_form.save()
+                update_session_auth_hash(request,
+                                         password_form.user)  # Обновляем сессию, чтобы пользователь не был разлогинен
+                messages.success(request, 'Password changed successfully!')
+                return redirect('users:profile')
+            else:
+                messages.error(request, 'Please correct the errors below.')
+
+        elif 'delete_account' in request.POST:
+            request.user.delete()
+            messages.success(request, 'Your account has been deleted.')
+            return redirect('home')  # Перенаправление на главную страницу или страницу входа
+
+        return self.get(request, *args, **kwargs)

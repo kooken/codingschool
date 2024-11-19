@@ -4,14 +4,27 @@
     <form method="post" action="{% url 'users:login' %}" class="login-form">
         <h2>Login</h2>
         {% csrf_token %}
-        {{ form.non_field_errors }}
+        <!-- Выводим ошибки, которые не привязаны к конкретным полям -->
+        {% if form.non_field_errors %}
+        <div id="non-field-errors" class="text-danger">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Отображаем поля формы -->
         {% for field in form %}
-        <div class="form-group">
+        <div id="form-group-{{ field.name }}" class="form-group">
             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
             {{ field }}
+
+            <!-- Вывод ошибок для каждого поля -->
             {% if field.errors %}
-            <div class="text-danger">
-                {{ field.errors }}
+            <div id="error-{{ field.name }}" class="text-danger">
+                {% for error in field.errors %}
+                <p>{{ error }}</p>
+                {% endfor %}
             </div>
             {% endif %}
         </div>
