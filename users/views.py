@@ -8,7 +8,7 @@ from django.views.generic.edit import FormView
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import update_session_auth_hash, logout
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from config.settings import EMAIL_HOST_USER
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, TemplateView
@@ -89,7 +89,7 @@ class CustomPasswordResetView(PasswordResetView):
     template_name = 'users/password_reset_form.html'
     email_template_name = 'emails/password_reset_email.html'
     form_class = CustomPasswordResetForm  # Используем кастомную форму для проверки email
-    success_url = reverse_lazy('users:password_reset_done')
+    # success_url = reverse_lazy('users:password_reset_done')
 
     def form_valid(self, form):
         # Получаем email пользователя
@@ -124,9 +124,15 @@ class CustomPasswordResetView(PasswordResetView):
         email_message.send()
 
         messages.success(self.request,
-                         'A password reset link has been sent to your email address. Please check your inbox.')
+                         'A password reset link has been sent to your email address. Please check your inbox :)')
 
-        return super().form_valid(form)
+        return render(self.request, self.template_name, {'form': form})
+
+    def form_invalid(self, form):
+        # Очищаем сообщения, чтобы не показывались сообщения от предыдущих запросов
+        storage = messages.get_messages(self.request)
+        storage.used = True
+        return super().form_invalid(form)
 
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
