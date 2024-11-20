@@ -17,12 +17,35 @@ html, body {
     font-family: 'Raleway', sans-serif;
 }
 
-.profile-page {
+#profile-page {
     background-color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: 'Raleway', sans-serif;
+}
+
+#profile-page .text-danger {
+    font-family: 'Raleway', sans-serif;
+    color: red;  /* Красный цвет для текста ошибки */
+    font-size: 14px;  /* Размер шрифта */
+    margin-top: 5px;  /* Отступ сверху */
+}
+
+/* Стили для ошибок в каждом поле */
+.profile-form .form-group .text-danger {
+    color: red;
+        font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.profile-page h2 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
 }
 
 .profile-page .btn-change {
@@ -34,8 +57,9 @@ html, body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    width: 10%;
+    width: 100%;
     text-align: center;
+        margin-bottom: 20px;
 }
 
 .profile-page .btn-change:hover {
@@ -44,8 +68,32 @@ html, body {
     font-weight: bold;
 }
 
+.profile-form {
+    background-color: #ffffff;
+    padding: 40px;
+            font-family: 'Raleway', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+        margin: 30px auto;  /* Отступы сверху и снизу 30px */
+
+}
+
+.profile-form .form-group {
+    margin-bottom: 20px;
+            font-family: 'Raleway', sans-serif;
+}
+
+.profile-form .form-label {
+        font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
 .profile-page .btn-delete {
-    background-color: #red;
+    background-color: #f44336;
     color: black;
     font-size: 16px;
     font-weight: bold;
@@ -53,8 +101,31 @@ html, body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    width: 10%;
+    width: 100%;
     text-align: center;
+    margin-bottom: 15px
+}
+
+.custom-button {
+    background-color: #b07afe;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px
+}
+
+.custom-button:hover {
+    background-color: black;
+    color: #b07afe;
+        text-align: center;
+    font-weight: bold;
+        width: 100%;
 }
 
 .profile-page .btn-delete:hover {
@@ -114,12 +185,38 @@ html, body {
 .register-form {
     background-color: #ffffff;
     padding: 40px;
+            font-family: 'Raleway', sans-serif;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
         margin: 30px auto;  /* Отступы сверху и снизу 30px */
 
+}
+
+.custom-help-text {
+    color: #888888; /* Измените на нужный цвет */
+    margin-top: 10px; /* Отступ сверху */
+    font-size: 14px; /* Размер шрифта */
+        font-family: 'Raleway', sans-serif;
+
+}
+
+.register-form-control {
+    width: 100%; /* Делает поле на всю ширину формы */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+        font-family: 'Raleway', sans-serif;
+
+    box-sizing: border-box; /* Учитывает padding в ширине */
+}
+
+.register-form-control:focus {
+    border-color: #b07afe;
+    outline: none;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
 /* Заголовок */
@@ -518,5 +615,37 @@ html, body {
         font-weight: bold;
 
     color: #b07afe;
-}}
+}
 
+.btn-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Отступы между кнопками */
+    margin-top: 20px; /* Отступ сверху после формы */
+}
+
+.alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    display: none;
+}
+
+.alert.show {
+    display: block;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

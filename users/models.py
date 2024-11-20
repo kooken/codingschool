@@ -16,7 +16,7 @@ class User(AbstractUser):
     phone = models.CharField(max_length=35, verbose_name='Phone', null=True, blank=True)
     avatar = models.ImageField(upload_to='users/', verbose_name='Avatar', null=True, blank=True)
     email = models.EmailField(unique=True, verbose_name='Email')
-    city = models.CharField(max_length=100, verbose_name='City', null=True, blank=True)
+    country = models.CharField(max_length=100, verbose_name='Country', null=True, blank=True)
     token = models.CharField(max_length=100, verbose_name='Token', null=True, blank=True)
 
     # Убираем стандартное поле username
@@ -31,7 +31,14 @@ class User(AbstractUser):
     subscription_plan = models.ForeignKey(
         'SubscriptionPlan', null=True, blank=True, on_delete=models.SET_NULL
     )
-    subscribed_at = models.DateTimeField(null=True, blank=True)
+    subscription_start_date = models.DateTimeField(verbose_name='Subscription Start Date', null=True, blank=True)
+    subscription_end_date = models.DateTimeField(verbose_name='Subscription End Date', null=True, blank=True)
+    account_type = models.CharField(max_length=50, verbose_name='Account Type', null=True, blank=True)
+    referral_code = models.CharField(max_length=100, verbose_name='Referral Code', null=True, blank=True)
+    receive_newsletter = models.BooleanField(default=True, verbose_name='Receive Newsletter')
+    receive_notifications = models.BooleanField(default=True, verbose_name='Receive Notifications')
+    github_profile = models.CharField(max_length=255, verbose_name='Github', null=True, blank=True)
+    linkedin_profile = models.CharField(max_length=255, verbose_name='LinkedIn', null=True, blank=True)
 
     class Meta:
         verbose_name = 'User'

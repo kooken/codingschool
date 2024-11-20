@@ -1,32 +1,15 @@
-{% extends 'main/base.html' %}
-
+{% extends 'course/base.html' %}
 {% block content %}
 <div class="profile-page">
-    <h2>Profile</h2>
-
-    <form method="post" enctype="multipart/form-data" class="form-section">
+    <form method="post" enctype="multipart/form-data" class="profile-form">
+        <h2 id="register-heading">Profile</h2>
         {% csrf_token %}
-        <h3>Update Profile</h3>
-        {{ profile_form.as_p }}
-        <button type="submit" name="profile_update" class="btn-change">Save Changes</button>
-    </form>
-
-    <hr>
-
-    <form method="post" class="form-section">
-        {% csrf_token %}
-        <h3>Change Password</h3>
-        {{ password_form.as_p }}
-        <button type="submit" name="password_change" class="btn-change">Change Password</button>
-    </form>
-
-    <hr>
-
-    <form method="post" class="form-section">
-        {% csrf_token %}
-        <h3>Delete Account</h3>
-        <p class="text-danger">This action cannot be undone.</p>
-        <button type="submit" name="delete_account" class="btn-delete">Delete Account</button>
+        {{ form.as_p }}
+        <button type="submit" class="btn-change">Save Changes</button>
+        <div class="btn-actions">
+            <a href="{% url 'users:change_password' %}" class="btn-change">Change Password</a>
+            <a href="{% url 'users:delete_account' %}" class="btn-delete">Delete Account</a>
+        </div>
     </form>
 </div>
 {% endblock %}

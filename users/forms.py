@@ -105,12 +105,12 @@ class UserLoginForm(StyleFormMixin, AuthenticationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'phone', 'city', 'email']  # Поля для редактирования
+        fields = ['avatar', 'phone', 'country', 'email']  # Поля для редактирования
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
-            'city': forms.TextInput(attrs={'class': 'form-control'}),
-            'avatar': forms.FileInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'register-form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'register-form-control'}),
+            'country': forms.TextInput(attrs={'class': 'register-form-control'}),
+            'avatar': forms.FileInput(attrs={'class': 'register-form-control'}),
         }
 
 
@@ -175,3 +175,69 @@ class CustomPasswordResetForm(PasswordResetForm):
             raise ValidationError('No account found with this email address.')
 
         return email
+
+
+class DeleteAccountForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'register-form-control'}))
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if email != self.user.email:
+            raise forms.ValidationError('The entered email does not match your account email.')
+        return email
+
+
+class CustomPasswordUpdateForm(PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Настройка полей
+        self.fields['old_password'].widget = forms.PasswordInput(attrs={
+            'class': 'register-form-control',
+        })
+        self.fields['old_password'].label = _('Current Password')
+
+        self.fields['new_password1'].widget = forms.PasswordInput(attrs={
+            'class': 'register-form-control',
+        })
+        self.fields['new_password1'].label = _('New Password')
+        self.fields['new_password1'].help_text = _(
+            '<span class="custom-help-text">Must be at least 8 characters, and include numbers, letters, and special symbols.</span>'
+        )
+
+        self.fields['new_password2'].widget = forms.PasswordInput(attrs={
+            'class': 'register-form-control',
+        })
+        self.fields['new_password2'].label = _('Confirm New Password')
+        self.fields['new_password2'].help_text = ''
+
+        # Настройка сообщений об ошибках
+        self.fields['new_password1'].error_messages = {
+            'required': _('Please enter a password.'),
+            'min_length': _('Your password must contain at least 8 characters.'),
+            'too_common': _('This password is too common. Please choose a more secure one.'),
+            'numeric': _('Password cannot be entirely numeric. Please include letters and symbols.')
+        }
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+
+        if len(password1) < 8:
+            raise forms.ValidationError(_('Your password must contain at least 8 characters.'))
+
+        if not re.search(r'[A-Za-z]', password1) or not re.search(r'[0-9]', password1):
+            raise forms.ValidationError(_('Your password must include both letters and numbers.'))
+
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password1):
+            raise forms.ValidationError(
+                _('Your password must include at least one special character (e.g., !@#$%^&*).'))
+
+        if password1 != password2:
+            raise forms.ValidationError(_('Please make sure your passwords match.'))
+
+        return password2
