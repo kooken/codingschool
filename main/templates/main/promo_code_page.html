@@ -1,0 +1,72 @@
+{% extends 'course/base.html' %}
+{% block content %}
+<div class="profile-page">
+    <h1>Promo Code Management</h1>
+
+    <div class="promo-code-section">
+        <h2>Generate Promo Code</h2>
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="plan">Select Plan</label>
+                {{ form.plan }}
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration (Months)</label>
+                {{ form.duration }}
+            </div>
+
+            <div class="form-group">
+                <label for="programming_languages">Programming Languages</label>
+                {{ form.programming_languages }}
+            </div>
+
+            <div class="form-group">
+                <label for="bonus_modules">Bonus Modules</label>
+                {{ form.bonus_modules }}
+            </div>
+
+            <button type="submit" name="generate">Generate Promo Code</button>
+        </form>
+    </div>
+
+    <div class="promo-code-section">
+        <h2>Activate Promo Code</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="promo_code">Enter Promo Code</label>
+                <input type="text" name="promo_code" id="promo_code" placeholder="Enter promo code" required>
+            </div>
+            <button type="submit" name="activate">Activate</button>
+        </form>
+    </div>
+
+    {% for message in messages %}
+    <div class="alert {{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const messages = document.querySelectorAll('.messages > li');
+
+      messages.forEach((message) => {
+        setTimeout(() => {
+          message.classList.add('message-deleting');
+          setTimeout(() => message.remove(), 250);
+        }, 5000);
+        message.addEventListener('click', () => {
+          message.classList.add('message-deleting');
+          setTimeout(() => message.remove(), 250);
+        });
+      });
+    });
+</script>
+{% endblock %}

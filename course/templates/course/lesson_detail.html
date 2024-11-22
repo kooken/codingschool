@@ -1,0 +1,12 @@
+{% extends 'course/base.html' %}
+{% block content %}
+<h1>{{ lesson.title }}</h1>
+<p>{{ lesson.content }}</p>
+
+<h2>Comments</h2>
+<ul>
+    {% for comment in lesson.comments.all %}
+    <li>{{ comment.user.email }}: {{ comment.text }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

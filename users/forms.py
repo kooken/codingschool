@@ -3,7 +3,7 @@ import re
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordResetForm, AuthenticationForm, \
     PasswordChangeForm
 from django.core.exceptions import ValidationError
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from users.models import User
 from django import forms
 from django.utils.translation import gettext_lazy as _  # Добавлен импорт
@@ -69,37 +69,35 @@ class UserRegisterForm(StyleFormMixin, UserCreationForm):
 class UserLoginForm(StyleFormMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Обновление меток для полей
+        # Изменяем метки для полей
         self.fields['username'].label = 'Your email address'
         self.fields['password'].label = 'Your password'
 
     def clean(self):
-        email = self.cleaned_data.get('username')  # username используется как email
+        email = self.cleaned_data.get('username')  # здесь 'username' это email
         password = self.cleaned_data.get('password')
 
-        # Проверяем, что оба поля заполнены
+        # Проверка, что оба поля заполнены
         if not email or not password:
             raise ValidationError("Both email and password are required.")
 
-        # Проверяем существование пользователя
-        if not User.objects.filter(email=email).exists():
+        # Получаем пользователя по email
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise ValidationError("No account found with this email address.")
 
-        # Пытаемся аутентифицировать пользователя
-        user = authenticate(self.request, username=email, password=password)
-        if user is None:
+        # Проверка пароля
+        if not user.check_password(password):
             raise ValidationError("Invalid email or password. Please try again.")
 
-        # Проверяем, активен ли пользователь
+        # Проверка активности пользователя
         if not user.is_active:
             raise ValidationError("This account is inactive. Please contact support.")
 
-        # Успешная валидация
+        # Возвращаем очищенные данные
+        self.cleaned_data['user'] = user
         return self.cleaned_data
-
-    class Meta:
-        model = User
-        fields = ('email', 'password',)
 
 
 class UserProfileForm(forms.ModelForm):

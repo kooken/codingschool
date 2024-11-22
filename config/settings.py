@@ -107,6 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -145,4 +147,4 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = 'course:course_list'
 LOGOUT_REDIRECT_URL = 'main:index'
-LOGIN_URL = '/users/login/'
+LOGIN_URL = 'users:login'

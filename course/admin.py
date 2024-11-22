@@ -1,6 +1,6 @@
 from django.contrib import admin
 from course.models import Course, Lesson
-from users.models import SubscriptionPlan, Subscription
+from users.models import SubscriptionPlan, UserSubscription
 
 
 @admin.register(Course)
@@ -21,7 +21,7 @@ class SubscriptionPlanAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-@admin.register(Subscription)
+@admin.register(UserSubscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'plan', 'start_date', 'end_date')
     search_fields = ('user__email',)

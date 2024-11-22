@@ -1,11 +1,13 @@
 # main/urls.py
 from django.urls import path
-from . import views
+from main import views
 from main.apps import MainConfig
+from main.views import promo_code_page
 
 app_name = MainConfig.name
 
 urlpatterns = [
+    path('promo-code/', promo_code_page, name='promo_code_page'),
     path('', views.index, name='index'),
     path('courses/', views.courses, name='courses'),
     path('mission/', views.mission, name='mission'),

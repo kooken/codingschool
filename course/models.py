@@ -5,6 +5,7 @@ from django.db import models
 from django.db import models
 from django.conf import settings
 
+
 # Модель курса
 class Course(models.Model):
     title = models.CharField(max_length=255, unique=True)

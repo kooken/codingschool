@@ -6,7 +6,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
 from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth import update_session_auth_hash, logout
+from django.contrib.auth import update_session_auth_hash, logout, login
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from config.settings import EMAIL_HOST_USER
@@ -28,7 +28,7 @@ class RegisterView(CreateView):
     model = User
     form_class = UserRegisterForm
     template_name = 'users/register.html'
-    success_url = reverse_lazy('course:course_list')
+    success_url = reverse_lazy('users:login')
 
     def form_valid(self, form):
         user = form.save()
@@ -57,6 +57,8 @@ class RegisterView(CreateView):
         )
         email.attach_alternative(html_message, "text/html")
         email.send()
+        messages.success(self.request,
+                         'A register link has been sent to your email address. Please check your inbox :)')
 
         return super().form_valid(form)
 
@@ -78,17 +80,27 @@ def email_verification(request, token):
 
 
 class UserLoginView(LoginView):
-    model = User
     form_class = UserLoginForm
     template_name = 'users/login.html'
-    # redirect_authenticated_user = True
     success_url = reverse_lazy('course:course_list')
+
+    def form_valid(self, form):
+        # Получаем пользователя из формы
+        user = form.cleaned_data.get('user')
+
+        if user is not None and user.is_authenticated:
+            login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
+            return super().form_valid(form)
+        else:
+            form.add_error(None, "Authentication failed. Please check your credentials.")
+            return self.form_invalid(form)
 
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'users/password_reset_form.html'
     email_template_name = 'emails/password_reset_email.html'
     form_class = CustomPasswordResetForm  # Используем кастомную форму для проверки email
+
     # success_url = reverse_lazy('users:password_reset_done')
 
     def form_valid(self, form):
@@ -138,7 +150,6 @@ class CustomPasswordResetView(PasswordResetView):
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
     form_class = CustomPasswordChangeForm  # Используем кастомную форму
-    success_url = reverse_lazy('users:password_reset_complete')  # URL для перенаправления после успешной смены пароля
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -149,15 +160,17 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
         # Добавляем их в контекст
         context['uidb64'] = uidb64
         context['token'] = token
+        messages.success(self.request,
+                         "Your password has been successfully reset. You can now log in with your new password")
         return context
 
 
-class CustomPasswordResetDoneView(PasswordResetDoneView):
-    template_name = 'users/password_reset_done.html'
-
-
-class CustomPasswordResetCompleteView(PasswordResetCompleteView):
-    template_name = 'users/password_reset_complete.html'
+# class CustomPasswordResetDoneView(PasswordResetDoneView):
+#     template_name = 'users/password_reset_done.html'
+#
+#
+# class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+#     template_name = 'users/password_reset_complete.html'
 
 
 class UserProfileView(LoginRequiredMixin, FormView):

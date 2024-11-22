@@ -2,6 +2,15 @@
 {% load static %}
 {% block content %}
 <div id="register-page" class="register-page">
+    <ul class="messages" id="messages" hx-swap-oob="true">
+        {% if messages %}
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+            {{ message }}
+        </li>
+        {% endfor %}
+        {% endif %}
+    </ul>
     <form method="post" action="{% url 'users:register' %}" class="register-form">
         <h2 id="register-heading">Registration</h2>
         {% csrf_token %}
@@ -39,6 +48,23 @@
         </div>
     </form>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const messages = document.querySelectorAll('.messages > li');
 
+      messages.forEach((message) => {
+        setTimeout(() => {
+          message.classList.add('message-deleting');
+          setTimeout(() => message.remove(), 250);
+        }, 5000);
+        message.addEventListener('click', () => {
+          message.classList.add('message-deleting');
+          setTimeout(() => message.remove(), 250);
+        });
+      });
+    });
+</script>
 {% endblock %}

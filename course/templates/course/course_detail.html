@@ -1,11 +1,13 @@
 {% extends 'course/base.html' %}
-{% load static %}
 {% block content %}
-<table style="width: 100%; height: 50vh; text-align: center; vertical-align: middle;">
-    <tr>
-        <td>
-            <img alt="Construction" src="{% static 'main/css/images/construction.png' %}" width="400">
-        </td>
-    </tr>
-</table>
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<h2>Lessons</h2>
+<ul>
+    {% for lesson in course.lessons.all %}
+    <li>
+        <a href="{% url 'courses:lesson_detail' course.id lesson.id %}">{{ lesson.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

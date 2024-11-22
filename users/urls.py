@@ -3,7 +3,7 @@
 from django.urls import path
 from users.apps import UsersConfig
 from users.views import RegisterView, UserLoginView, email_verification, UserProfileView, CustomPasswordResetView, \
-    CustomPasswordResetConfirmView, CustomPasswordResetCompleteView, CustomPasswordResetDoneView, ChangePasswordView, \
+    CustomPasswordResetConfirmView, ChangePasswordView, \
     DeleteAccountView, user_logout
 from django.contrib.auth import views as auth_views
 
@@ -27,9 +27,9 @@ urlpatterns = [
 
     path('password_reset/', CustomPasswordResetView.as_view(), name='password_reset'),
     # Подтверждение, что письмо отправлено
-    path('password_reset/done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
+    # path('password_reset/done/', CustomPasswordResetDoneView.as_view(), name='password_reset_done'),
     # Ввод нового пароля (по ссылке из письма)
     path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     # Завершение смены пароля
-    path('reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    # path('reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]
