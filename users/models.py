@@ -53,11 +53,28 @@ class SubscriptionDurationType(Enum):
     THREE_MONTHS = 3, '3 Months'
     SIX_MONTHS = 6, '6 Months'
     ONE_YEAR = 12, '1 Year'
-    FOREVER = None, 'Forever'
+    FOREVER = 'forever', 'Forever'  # Теперь это строка
 
     @classmethod
     def choices(cls):
         return [(item.value[0], item.value[1]) for item in cls]
+
+
+class SubscriptionDurationTypes(models.Model):
+    value = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.display_name
+
+    @classmethod
+    def create_default_duration(cls):
+        # Создаем записи для всех типов длительности подписки
+        for duration in SubscriptionDurationType:
+            cls.objects.get_or_create(
+                value=str(duration.value[0]),  # значение как строка
+                display_name=duration.value[1]
+            )
 
 
 class SubscriptionPlanType(Enum):
@@ -72,6 +89,23 @@ class SubscriptionPlanType(Enum):
     @classmethod
     def choices(cls):
         return [(item.value[0], item.value[1]) for item in cls]
+
+
+class SubscriptionPlanModes(models.Model):
+    value = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.display_name
+
+    @classmethod
+    def create_default_sub_plans(cls):
+        # Создаем записи для всех языков программирования из enum
+        for subs in SubscriptionPlanType:
+            cls.objects.get_or_create(
+                value=subs.value[0],
+                display_name=subs.value[1]
+            )
 
 
 class ProgrammingLanguageType(Enum):
@@ -133,16 +167,33 @@ class BonusModule(models.Model):
 
 # Модель подписки
 class SubscriptionPlan(models.Model):
-    # Использование Enum для поля выбора
-    name = models.CharField(max_length=50, choices=SubscriptionPlanType.choices(), unique=True)
-    duration = models.CharField(max_length=50, choices=SubscriptionDurationType.choices(), unique=True)
+    name = models.ForeignKey(
+        SubscriptionPlanModes,
+        on_delete=models.CASCADE,
+        related_name="subscription_plans",
+        verbose_name="Subscription Plan Mode"
+    )
+    duration = models.ForeignKey(
+        SubscriptionDurationTypes,
+        on_delete=models.CASCADE,
+        related_name="subscription_plans",
+        verbose_name="Subscription Duration"
+    )
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    programming_languages = models.ManyToManyField(ProgrammingLanguage, related_name='subscription_plans', blank=True)
-    bonus_modules = models.ManyToManyField(BonusModule, related_name='subscription_plans', blank=True)
+    programming_languages = models.ManyToManyField(
+        ProgrammingLanguage,
+        related_name='subscription_plans',
+        blank=True
+    )
+    bonus_modules = models.ManyToManyField(
+        BonusModule,
+        related_name='subscription_plans',
+        blank=True
+    )
 
     def __str__(self):
-        return self.get_name_display()
+        return f"{self.name} - {self.duration}"
 
 
 class UserSubscription(models.Model):
@@ -153,18 +204,15 @@ class UserSubscription(models.Model):
         verbose_name="User"
     )
     plan = models.ForeignKey(
-        SubscriptionPlan,  # Привязка к одному плану подписки
+        SubscriptionPlan,
         on_delete=models.CASCADE,
         related_name="user_subscriptions",
         verbose_name="Subscription Plan"
     )
-    duration = models.IntegerField(
-        choices=SubscriptionDurationType.choices(),
-        default=SubscriptionDurationType.ONE_MONTH.value[0],
-        verbose_name="Subscription Duration"
-    )
+    programming_languages = models.ManyToManyField(ProgrammingLanguage, related_name="user_prog_subscriptions")
+    bonus_modules = models.ManyToManyField(BonusModule, related_name="user_bonus_subscriptions")
     start_date = models.DateTimeField(auto_now_add=True, verbose_name="Start Date")
-    end_date = models.DateTimeField(verbose_name="End Date")
+    end_date = models.DateTimeField(null=True, blank=True)  # Добавьте null=True
 
     def save(self, *args, **kwargs):
         # Автоматически рассчитываем дату окончания в зависимости от длительности подписки
@@ -199,45 +247,46 @@ class PromoCode(models.Model):
         related_name="promo_codes",
         verbose_name="Subscription Plan"
     )
-    duration = models.IntegerField(
-        choices=SubscriptionDurationType.choices(),
-        verbose_name="Duration (Months)",
-        null=True,
-        blank=True
+    is_active = models.BooleanField(default=True, verbose_name="Is Active")  # Промокод активен, пока не использован
+    programming_languages = models.ManyToManyField(
+        'ProgrammingLanguage',
+        related_name="promo_codes",
+        blank=True,
+        verbose_name="Programming Languages"
     )
-    is_active = models.BooleanField(default=True, verbose_name="Is Active")
-    is_used = models.BooleanField(default=False, verbose_name="Is Used")  # Флаг для одноразового использования
+    bonus_modules = models.ManyToManyField(
+        'BonusModule',
+        related_name="promo_codes",
+        blank=True,
+        verbose_name="Bonus Modules"
+    )
 
     def __str__(self):
         return self.code
 
     def is_valid(self):
-        """Проверяет, действителен ли промокод"""
-        # Промокод активен и еще не использован
-        return self.is_active and not self.is_used
+        """Проверяет, активен ли промокод"""
+        return self.is_active
 
     def activate(self, user):
-        """Активирует промокод, создавая подписку для пользователя"""
+        """Активация промокода и предоставление подписки/курсов"""
         if not self.is_valid():
-            raise ValidationError("Promo code is not valid or already used.")
+            raise ValidationError("Promo code is not valid or has already been used.")
 
-        # Создаем подписку для пользователя
-        subscription = UserSubscription(
+        # Создаем подписку
+        subscription = UserSubscription.objects.create(
             user=user,
             plan=self.plan,
-            duration=self.duration,
-            start_date=timezone.now(),  # начальная дата подписки
+            start_date=timezone.now(),
+            end_date=timezone.now() + timedelta(days=30 * self.plan.duration.duration_in_months)
         )
 
-        # Применяем языки программирования и бонусные модули из плана подписки
-        subscription.programming_languages.set(self.plan.programming_languages.all())
-        subscription.bonus_modules.set(self.plan.bonus_modules.all())
+        # Предоставляем доступ к языкам программирования и бонусным модулям
+        user.programming_languages.add(*self.programming_languages.all())
+        user.bonus_modules.add(*self.bonus_modules.all())
 
-        # Сохраняем подписку
-        subscription.save()
-
-        # Устанавливаем промокод как использованный
-        self.is_used = True
+        # Деактивируем промокод
+        self.is_active = False
         self.save()
 
         return subscription

@@ -32,6 +32,13 @@
         </form>
     </div>
 
+    {% if promo_code %}
+    <div class="promo-code-section">
+        <h2>Generated Promo Code</h2>
+        <p>Your generated promo code is: <strong>{{ promo_code }}</strong></p>
+    </div>
+    {% endif %}
+
     <div class="promo-code-section">
         <h2>Activate Promo Code</h2>
         <form method="POST">
@@ -42,6 +49,10 @@
             </div>
             <button type="submit" name="activate">Activate</button>
         </form>
+    </div>
+
+    <div class="dashboard-section">
+        <a href="{% url 'main:user_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
     </div>
 
     {% for message in messages %}

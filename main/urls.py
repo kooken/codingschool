@@ -8,6 +8,8 @@ app_name = MainConfig.name
 
 urlpatterns = [
     path('promo-code/', promo_code_page, name='promo_code_page'),
+    path('dashboard/', views.user_dashboard, name='user_dashboard'),
+
     path('', views.index, name='index'),
     path('courses/', views.courses, name='courses'),
     path('mission/', views.mission, name='mission'),

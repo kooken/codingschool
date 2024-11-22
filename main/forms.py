@@ -1,19 +1,19 @@
 from django import forms
-from users.models import SubscriptionPlan, ProgrammingLanguage, BonusModule
+from users.models import SubscriptionPlanModes, ProgrammingLanguage, BonusModule, SubscriptionDurationTypes
 
 
 class PromoCodeForm(forms.Form):
     # Поле для выбора плана подписки
     plan = forms.ModelChoiceField(
-        queryset=SubscriptionPlan.objects.all(),  # Отображаем все планы подписки
-        label="Select Plan",
+        queryset=SubscriptionPlanModes.objects.all(),  # Отображаем все планы подписки
+        label="Select Subscription Plan",  # Уникальная метка
         required=True
     )
 
     # Поле для выбора длительности подписки
-    duration = forms.ChoiceField(
-        choices=[(1, '1 Month'), (3, '3 Months'), (6, '6 Months'), (12, '1 Year'), ('forever', 'Forever')],
-        label="Duration",
+    duration = forms.ModelChoiceField(
+        queryset=SubscriptionDurationTypes.objects.all(),  # Отображаем все длительности подписки
+        label="Select Subscription Duration",  # Уникальная метка
         required=True
     )
 
@@ -21,7 +21,7 @@ class PromoCodeForm(forms.Form):
     programming_languages = forms.ModelMultipleChoiceField(
         queryset=ProgrammingLanguage.objects.all(),  # Показываем все языки
         widget=forms.CheckboxSelectMultiple,
-        label="Programming Languages",
+        label="Select Programming Languages",
         required=True
     )
 
@@ -29,6 +29,6 @@ class PromoCodeForm(forms.Form):
     bonus_modules = forms.ModelMultipleChoiceField(
         queryset=BonusModule.objects.all(),  # Показываем все бонусные модули
         widget=forms.CheckboxSelectMultiple,
-        label="Bonus Modules",
+        label="Select Bonus Modules",
         required=True
     )
