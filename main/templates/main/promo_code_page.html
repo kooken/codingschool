@@ -1,11 +1,18 @@
 {% extends 'course/base.html' %}
 {% block content %}
 <div class="profile-page">
-    <h1>Promo Code Management</h1>
-
+    <ul class="messages" id="messages" hx-swap-oob="true">
+        {% if messages %}
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>
+            {{ message }}
+        </li>
+        {% endfor %}
+        {% endif %}
+    </ul>
     <div class="promo-code-section">
         <h2>Generate Promo Code</h2>
-        <form method="POST">
+        <form method="POST" class="profile-form">
             {% csrf_token %}
 
             <div class="form-group">
@@ -27,39 +34,33 @@
                 <label for="bonus_modules">Bonus Modules</label>
                 {{ form.bonus_modules }}
             </div>
-
-            <button type="submit" name="generate">Generate Promo Code</button>
-        </form>
-    </div>
-
-    {% if promo_code %}
-    <div class="promo-code-section">
-        <h2>Generated Promo Code</h2>
-        <p>Your generated promo code is: <strong>{{ promo_code }}</strong></p>
-    </div>
-    {% endif %}
-
-    <div class="promo-code-section">
-        <h2>Activate Promo Code</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="promo_code">Enter Promo Code</label>
-                <input type="text" name="promo_code" id="promo_code" placeholder="Enter promo code" required>
+            <button type="submit" name="generate" class="btn-change">Generate Promo Code</button>
+            {% if promo_code_str %}
+            <div class="promo-code-display">
+                <h3>Your Promo Code:</h3>
+                <p><strong>{{ promo_code_str }}</strong></p>
             </div>
-            <button type="submit" name="activate">Activate</button>
+            {% endif %}
         </form>
     </div>
 
-    <div class="dashboard-section">
-        <a href="{% url 'main:user_dashboard' %}" class="btn btn-primary">Go to Dashboard</a>
-    </div>
 
-    {% for message in messages %}
-    <div class="alert {{ message.tags }}">
-        {{ message }}
+    <div class="promo-code-activation">
+        <h2>Activate Promo Code</h2>
+        <form method="POST" class="profile-form">
+            {% csrf_token %}
+            <input type="text" name="promo_code" placeholder="Enter promo code" required>
+            <button type="submit" name="activate" class="btn-change">Activate</button>
+
+            {% if activation_result is not None %}
+            {% if activation_result %}
+            <p class="success">Promo code activated successfully!</p>
+            {% else %}
+            <p class="error">Failed to activate promo code.</p>
+            {% endif %}
+            {% endif %}
+        </form>
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
 

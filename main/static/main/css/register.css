@@ -48,6 +48,40 @@ html, body {
     margin-bottom: 20px;
 }
 
+.profile-page .promo-code-display h3 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 20px;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.profile-form input[type="text"] {
+    width: 100%; /* Заполняет всю ширину формы */
+    padding: 10px; /* Добавляем отступы внутри поля */
+    border: 1px solid #ccc; /* Устанавливаем границу */
+    border-radius: 5px; /* Добавляем округление углов */
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem; /* Размер шрифта */
+    margin-bottom: 10px; /* Отступ снизу для лучшего восприятия */
+}
+
+.profile-page h3 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 20px;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.profile-page h1 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 30px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
 .profile-page .btn-change {
     background-color: #b07afe;
     color: black;
@@ -248,6 +282,11 @@ html, body {
 }
 
 .register-form input:focus {
+    border-color: #b07afe;
+    outline: none;
+}
+
+.profile-form input:focus {
     border-color: #b07afe;
     outline: none;
 }
@@ -606,7 +645,7 @@ html, body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-        font-weight: bold;
+    font-weight: bold;
     margin-top: 20px;
 }
 
@@ -663,11 +702,58 @@ html, body {
 .messages > li {
   animation: slideInFromTop 250ms ease-in;
   list-style: none;
-  background-color: #d9f0fc;
-  border: 2px solid #50b6f5;
+  background-color: rgba(176, 122, 254, 0.9); /* Фон с прозрачностью 90% */
+  border: 2px solid #b07afe; /* Рамка оставлена того же цвета */
   padding: 1em;
   margin-bottom: 0.5em;
   border-radius: 8px;
   pointer-events: all;
   cursor: pointer;
-}}
+}
+
+.messages > li.success,
+.messages > li.error {
+    color: black; /* Зеленый текст */
+            font-weight: bold;
+
+}
+
+.form-group select {
+    width: 100%; /* Ширина выпадающего списка */
+    padding: 10px; /* Отступы внутри */
+    border: 1px solid #ccc; /* Цвет рамки */
+    border-radius: 5px; /* Округление углов */
+    font-family: 'Raleway', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+    background-color: #fff; /* Фон */
+    cursor: pointer; /* Курсор при наведении */
+}
+
+/* Стиль для опций выпадающего списка */
+.form-group select option {
+    padding: 10px; /* Отступы для каждой опции */
+    font-family: 'Raleway', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+}
+
+/* Стиль для успешных сообщений */
+.success {
+    color: green; /* Зеленый текст */
+    font-size: 1rem; /* Размер шрифта */
+    margin-bottom: 15px; /* Отступ снизу */
+        font-weight: bold;
+            text-align: center;
+
+
+}
+
+/* Стиль для ошибок */
+.error {
+    color: red; /* Красный текст */
+    font-size: 1rem; /* Размер шрифта */
+    margin-bottom: 15px; /* Отступ снизу */
+        font-weight: bold;
+            text-align: center;
+
+
+}

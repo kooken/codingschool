@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from main.forms import PromoCodeForm
 import random
 import string
+from django.db.models import Q
 
 
 # class PromoCodeActivationView(View):
@@ -58,7 +59,9 @@ def activate_promo_code(request, promo_code_str):
 
         # Проверяем, что промокод активен и не использован
         if not promo_code_instance.is_valid():
-            raise ValidationError("Promo code is not valid or has already been used.")
+            messages.error(request, "Promo code is not valid or has already been used.")
+            return False
+            # raise ValidationError("Promo code is not valid or has already been used.")
 
         print(f"Promo code details: {promo_code_instance}")
         print(f"Subscription Plan: {promo_code_instance.plan}")
@@ -118,23 +121,27 @@ def activate_promo_code(request, promo_code_str):
         # Деактивируем промокод
         promo_code_instance.is_active = False
         promo_code_instance.save()
+        print(f"Is promocode activated? If true - not activated, if false - activated: {promo_code_instance.is_active}")
 
         # Отправляем сообщение об успешной активации
         messages.success(request, f"Promo code activated! Subscription starts on {subscription.start_date}")
-        return subscription
+        return True
 
     except PromoCode.DoesNotExist:
         messages.error(request, "Promo code not found.")
+        return False
     except ValidationError as e:
         messages.error(request, str(e))
+        return False
     except Exception as e:
         messages.error(request, f"Error: {str(e)}")
-
-    return redirect('main:promo_code_page')
+        return False
 
 
 def promo_code_page(request):
     form = PromoCodeForm()  # Создаем пустую форму
+    promo_code_str = None
+    activation_result = None
 
     if request.method == 'POST':
         if 'generate' in request.POST:
@@ -147,12 +154,29 @@ def promo_code_page(request):
                 bonus_modules = form.cleaned_data['bonus_modules']
 
                 try:
+                    # Рассчитываем цену на основе выбранных языков и бонусов
+                    base_price = 10.0  # Базовая цена подписки, например, $10
+                    price_per_language = 5.0  # Цена за один язык программирования
+                    price_per_module = 0.0  # Цена за один бонусный модуль
+
+                    total_price = (
+                            base_price +
+                            len(programming_languages) * price_per_language +
+                            len(bonus_modules) * price_per_module
+                    )
+
+                    # Формируем описание на основе выбранных языков и бонусов
+                    description = f"Includes {len(programming_languages)} programming language(s): " + \
+                                  ", ".join(lang.display_name for lang in programming_languages) + \
+                                  f" and {len(bonus_modules)} bonus module(s): " + \
+                                  ", ".join(module.display_name for module in bonus_modules)
+
                     # Создаем SubscriptionPlan на основе данных пользователя
                     subscription_plan = SubscriptionPlan.objects.create(
                         name=plan,  # Название плана подписки
                         duration=duration,  # Длительность подписки
-                        description="Generated Subscription Plan",  # Можно сделать описание динамическим
-                        price=0.0,  # Цена на этапе генерации промокода
+                        description=description,  # Сгенерированное описание
+                        price=total_price,  # Сгенерированная цена
                     )
 
                     # Ассоциируем языки программирования и бонусные модули с созданным планом подписки
@@ -174,34 +198,58 @@ def promo_code_page(request):
                     promo_code.bonus_modules.set(bonus_modules)
 
                     # Отображаем успешное сообщение
+                    print(f"Promo code generated: {promo_code_str}")
                     messages.success(request, f"Promo code generated: {promo_code_str}")
 
                 except Exception as e:
+                    print(f"Error occured: {str(e)}")
                     messages.error(request, f"Error: {str(e)}")
 
         elif 'activate' in request.POST:
-            # Активируем промокод
+            # Обработка активации промокода
             promo_code = request.POST.get('promo_code')
-            result = activate_promo_code(request, promo_code)
-            if result:
-                return redirect('main:user_dashboard')  # Перенаправляем на личный кабинет после активации
+            activation_result = activate_promo_code(request, promo_code)
+            if activation_result:
+                messages.success(request, "Promo code activated successfully!")
             else:
                 messages.error(request, "Error activating promo code.")
 
-        return redirect('main:promo_code_page')  # Перенаправляем на страницу после успешной генерации
+    return render(request, 'main/promo_code_page.html', {
+        'form': form,
+        'promo_code_str': promo_code_str,
+        'activation_result': activation_result,
+    })
 
-    return render(request, 'main/promo_code_page.html', {'form': form})
+    #     elif 'activate' in request.POST:
+    #         # Активируем промокод
+    #         promo_code = request.POST.get('promo_code')
+    #         result = activate_promo_code(request, promo_code)
+    #         if result:
+    #             print("Promo code activated!")
+    #             return redirect('main:promo_code_page')
+    #         else:
+    #             print("Error activating promo code.")
+    #             messages.error(request, "Error activating promo code.")
+    #
+    #     return redirect('main:promo_code_page')  # Перенаправляем на страницу после успешной генерации
+    #
+    # return render(request, 'main/promo_code_page.html', {'form': form, 'promo_code_str': promo_code_str})
 
 
 @login_required
 def user_dashboard(request):
     # Получаем активную подписку пользователя
     try:
-        subscription = UserSubscription.objects.get(user=request.user, end_date__gte=timezone.now())
-        print(f"Active subscription found: {subscription}")  # Логирование для проверки
+        subscription = UserSubscription.objects.filter(
+            Q(user=request.user) & (Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True))
+        ).first()
+
+        if subscription:
+            print(f"Active subscription found: {subscription}")  # Логирование для проверки
+        else:
+            print("No active subscription found.")
     except UserSubscription.DoesNotExist:
-        subscription = None  # Если нет активной подписки
-        print("No active subscription found")  # Логирование, если подписка не найдена
+        print("No active subscription found.")
 
     # Передаем данные о подписке в шаблон
     return render(request, 'main/user_dashboard.html', {'subscription': subscription})

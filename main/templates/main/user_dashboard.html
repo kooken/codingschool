@@ -21,7 +21,6 @@
         {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
     </p>
-¬
     <p><strong>Bonus Modules:</strong>
         {% for module in subscription.bonus_modules.all %}
         {{ module.display_name }}{% if not forloop.last %}, {% endif %}
