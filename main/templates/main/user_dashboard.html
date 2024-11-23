@@ -1,35 +1,35 @@
 {% extends 'course/base.html' %}
 {% block content %}
 <div class="profile-page">
-    <h3>Your Subscription Details:</h3>
-    <p><strong>Plan:</strong> {{ user_subscription.plan.name.display_name }}</p>
+    <h2>Subscription Details</h2>
+
+    {% if subscription %}
+    <p><strong>Plan:</strong> {{ subscription.plan.name }}</p>
+
+    {% if subscription.end_date %}
     <p><strong>Duration:</strong>
-        {% if user_subscription.end_date %}
-        {{ user_subscription.start_date }} to {{ user_subscription.end_date }}
+        {% if subscription.end_date %}
+        {{ subscription.start_date }} to {{ subscription.end_date }}
         {% else %}
-        No expiration (lifetime subscription)
+        Lifetime
         {% endif %}
     </p>
+    {% endif %}
 
     <p><strong>Programming Languages:</strong>
-        {% if user_subscription.programming_languages.all %}
-        {% for language in user_subscription.programming_languages.all %}
-        {{ language.name }}{% if not forloop.last %}, {% endif %}
+        {% for lang in subscription.programming_languages.all %}
+        {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
-        {% else %}
-        No languages selected
-        {% endif %}
     </p>
-
+¬
     <p><strong>Bonus Modules:</strong>
-        {% if user_subscription.bonus_modules.all %}
-        {% for module in user_subscription.bonus_modules.all %}
-        {{ module.name }}{% if not forloop.last %}, {% endif %}
+        {% for module in subscription.bonus_modules.all %}
+        {{ module.display_name }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
-        {% else %}
-        No bonus modules selected
-        {% endif %}
     </p>
+    {% else %}
+    <p>You don't have an active subscription.</p>
+    {% endif %}
 </div>
 {% endblock %}
 

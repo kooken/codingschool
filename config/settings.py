@@ -148,3 +148,6 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = 'course:course_list'
 LOGOUT_REDIRECT_URL = 'main:index'
 LOGIN_URL = 'users:login'
+
+USE_TZ = True  # Включить поддержку часовых поясов
+TIME_ZONE = 'Europe/Helsinki'  # Устанавливаем часовой пояс для Хельсинки

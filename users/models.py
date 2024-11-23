@@ -1,13 +1,9 @@
-from datetime import timedelta, timezone
+from django.utils import timezone
 from enum import Enum
-
+from dateutil.relativedelta import relativedelta
 from django.core.exceptions import ValidationError
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-
 from config import settings
 from users.managers import CustomUserManager
 
@@ -53,7 +49,7 @@ class SubscriptionDurationType(Enum):
     THREE_MONTHS = 3, '3 Months'
     SIX_MONTHS = 6, '6 Months'
     ONE_YEAR = 12, '1 Year'
-    FOREVER = 'forever', 'Forever'  # Теперь это строка
+    FOREVER = 0, 'Forever'
 
     @classmethod
     def choices(cls):
@@ -61,18 +57,33 @@ class SubscriptionDurationType(Enum):
 
 
 class SubscriptionDurationTypes(models.Model):
-    value = models.CharField(max_length=100, unique=True)
+    value = models.PositiveIntegerField(unique=True)
     display_name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.display_name
+
+    @property
+    def duration_in_months(self):
+        # Определяем количество месяцев для каждого типа подписки
+        if self.value == 1:
+            return 1
+        elif self.value == 3:
+            return 3
+        elif self.value == 6:
+            return 6
+        elif self.value == 12:
+            return 12
+        elif self.value == 0:  # Для бессрочной подписки
+            return None  # Возвращаем None, чтобы в коде можно было явно проверить это
+        return None  # Если значение неизвестно, возвращаем None
 
     @classmethod
     def create_default_duration(cls):
         # Создаем записи для всех типов длительности подписки
         for duration in SubscriptionDurationType:
             cls.objects.get_or_create(
-                value=str(duration.value[0]),  # значение как строка
+                value=duration.value[0],  # значение как строка
                 display_name=duration.value[1]
             )
 
@@ -215,20 +226,33 @@ class UserSubscription(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)  # Добавьте null=True
 
     def save(self, *args, **kwargs):
-        # Автоматически рассчитываем дату окончания в зависимости от длительности подписки
-        if not self.end_date:
-            if self.duration == SubscriptionDurationType.ONE_MONTH.value[0]:
-                self.end_date = self.start_date + timedelta(days=30)
-            elif self.duration == SubscriptionDurationType.THREE_MONTHS.value[0]:
-                self.end_date = self.start_date + timedelta(days=90)
-            elif self.duration == SubscriptionDurationType.SIX_MONTHS.value[0]:
-                self.end_date = self.start_date + timedelta(days=180)
-            elif self.duration == SubscriptionDurationType.ONE_YEAR.value[0]:
-                self.end_date = self.start_date + timedelta(days=365)
-            elif self.duration == SubscriptionDurationType.FOREVER.value[0]:
-                self.end_date = None  # Навсегда
+        # Получаем текущее время с временной зоной
+        now = timezone.now()
+
+        # Если подписка бессрочная, устанавливаем end_date в None
+        if self.plan.duration.duration_in_months == 0:
+            self.end_date = None
+        elif not self.end_date:  # Если end_date не задано, рассчитываем его
+            if self.plan.duration.duration_in_months == 1:
+                self.end_date = now + relativedelta(months=1)
+            elif self.plan.duration.duration_in_months == 3:
+                self.end_date = now + relativedelta(months=3)
+            elif self.plan.duration.duration_in_months == 6:
+                self.end_date = now + relativedelta(months=6)
+            elif self.plan.duration.duration_in_months == 12:
+                self.end_date = now + relativedelta(years=1)
+
+        # Если end_date не равен None, проверяем, осведомлен ли он
+        if self.end_date is not None and timezone.is_naive(self.end_date):
+            self.end_date = timezone.make_aware(self.end_date)  # Преобразуем наивную дату в осведомленную
 
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
+
+    def __str__(self):
+        return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
 
     def __str__(self):
         return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
@@ -267,29 +291,6 @@ class PromoCode(models.Model):
     def is_valid(self):
         """Проверяет, активен ли промокод"""
         return self.is_active
-
-    def activate(self, user):
-        """Активация промокода и предоставление подписки/курсов"""
-        if not self.is_valid():
-            raise ValidationError("Promo code is not valid or has already been used.")
-
-        # Создаем подписку
-        subscription = UserSubscription.objects.create(
-            user=user,
-            plan=self.plan,
-            start_date=timezone.now(),
-            end_date=timezone.now() + timedelta(days=30 * self.plan.duration.duration_in_months)
-        )
-
-        # Предоставляем доступ к языкам программирования и бонусным модулям
-        user.programming_languages.add(*self.programming_languages.all())
-        user.bonus_modules.add(*self.bonus_modules.all())
-
-        # Деактивируем промокод
-        self.is_active = False
-        self.save()
-
-        return subscription
 
 # class BonusModule(models.Model):
 #     name = models.CharField(max_length=100, choices=BonusModuleType.choices(), unique=True)

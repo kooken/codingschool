@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from users.models import PromoCode, UserSubscription, SubscriptionPlan, SubscriptionPlanModes
-from datetime import timedelta
+from users.models import PromoCode, UserSubscription, SubscriptionPlan
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from main.forms import PromoCodeForm
 import random
 import string
@@ -48,54 +50,87 @@ def generate_promo_code(length=8):
             return code
 
 
-from dateutil.relativedelta import relativedelta
-
-
 def activate_promo_code(request, promo_code_str):
     """Функция для активации промокода."""
     try:
         # Находим промокод по строке
         promo_code_instance = PromoCode.objects.get(code=promo_code_str)
 
-        # Проверяем, что промокод активен
-        if not promo_code_instance.is_active:
-            raise Exception("Promo code is not valid or has already been used.")
+        # Проверяем, что промокод активен и не использован
+        if not promo_code_instance.is_valid():
+            raise ValidationError("Promo code is not valid or has already been used.")
 
-        # Проверяем, если подписка бессрочная
-        if promo_code_instance.plan.duration is None:
-            end_date = None  # Подписка бессрочная
+        print(f"Promo code details: {promo_code_instance}")
+        print(f"Subscription Plan: {promo_code_instance.plan}")
+        print(f"Duration: {promo_code_instance.plan.duration.display_name}")
+        print(f"User: {request.user}")
+        print(f"Plan: {promo_code_instance.plan}")
+        print(f"Programming Languages: {promo_code_instance.programming_languages.all()}")
+        print(f"Bonus Modules: {promo_code_instance.bonus_modules.all()}")
+
+        # Определяем дату окончания подписки
+        now = timezone.now()  # Текущее осведомленное время
+
+        # Получаем длительность подписки из модели SubscriptionDurationTypes
+        duration_months = promo_code_instance.plan.duration.duration_in_months
+
+        if duration_months is None:  # Если бессрочная подписка
+            end_date = None  # Для бессрочной подписки оставляем end_date = None
         else:
-            # Получаем длительность подписки как число месяцев
-            duration_months = int(promo_code_instance.plan.duration.value)  # Преобразуем в целое число
-            end_date = request.user.date_joined + relativedelta(months=duration_months)
+            # Для подписки с ограниченным сроком
+            end_date = now + relativedelta(months=duration_months)
 
-        # Создаем подписку для пользователя
-        user_subscription = UserSubscription.objects.create(
-            user=request.user,
-            plan=promo_code_instance.plan,
-            start_date=request.user.date_joined,
-            end_date=end_date,  # Если бессрочная, то None
-        )
+            # Если end_date не равен None и наивный, делаем его осведомленным
+        if end_date is not None:
+            if timezone.is_naive(end_date):
+                # Преобразуем время в осведомленное с учетом часового пояса
+                end_date = timezone.make_aware(end_date)
+            else:
+                # Если end_date уже осведомленное, то локализуем его в текущий часовой пояс
+                end_date = timezone.localtime(end_date)
 
-        # Ассоциируем языки программирования и бонусные модули с подпиской
-        user_subscription.programming_languages.set(promo_code_instance.programming_languages.all())
-        user_subscription.bonus_modules.set(promo_code_instance.bonus_modules.all())
+        print(f"End date calculated: {end_date}")
 
-        # Делаем промокод неактивным (он одноразовый)
+        # Создаем подписку
+        try:
+            subscription = UserSubscription.objects.create(
+                user=request.user,
+                plan=promo_code_instance.plan,
+                start_date=now,
+                end_date=end_date,
+            )
+            print(f"Subscription created: {subscription}")
+        except Exception as e:
+            print(f"Error creating subscription: {str(e)}")
+
+        # Даем доступ к языкам программирования и бонусным модулям
+        languages = promo_code_instance.programming_languages.all()
+        modules = promo_code_instance.bonus_modules.all()
+
+        # Добавляем связи ManyToMany
+        subscription.programming_languages.add(*languages)
+        subscription.bonus_modules.add(*modules)
+
+        # # Даем доступ пользователю к языкам программирования и бонусным модулям
+        # request.user.programming_languages.add(*languages)
+        # request.user.bonus_modules.add(*modules)
+
+        # Деактивируем промокод
         promo_code_instance.is_active = False
         promo_code_instance.save()
 
-        # Сообщение об успешной активации
-        messages.success(request, "Promo code activated and subscription applied!")
-
-        return True  # Успешная активация
+        # Отправляем сообщение об успешной активации
+        messages.success(request, f"Promo code activated! Subscription starts on {subscription.start_date}")
+        return subscription
 
     except PromoCode.DoesNotExist:
         messages.error(request, "Promo code not found.")
-    except Exception as e:
+    except ValidationError as e:
         messages.error(request, str(e))
+    except Exception as e:
+        messages.error(request, f"Error: {str(e)}")
 
-    return False  # В случае ошибки
+    return redirect('main:promo_code_page')
 
 
 def promo_code_page(request):
@@ -142,13 +177,16 @@ def promo_code_page(request):
                     messages.success(request, f"Promo code generated: {promo_code_str}")
 
                 except Exception as e:
-                    messages.error(request, str(e))
+                    messages.error(request, f"Error: {str(e)}")
 
         elif 'activate' in request.POST:
             # Активируем промокод
             promo_code = request.POST.get('promo_code')
-            if activate_promo_code(request, promo_code):
+            result = activate_promo_code(request, promo_code)
+            if result:
                 return redirect('main:user_dashboard')  # Перенаправляем на личный кабинет после активации
+            else:
+                messages.error(request, "Error activating promo code.")
 
         return redirect('main:promo_code_page')  # Перенаправляем на страницу после успешной генерации
 
@@ -157,10 +195,16 @@ def promo_code_page(request):
 
 @login_required
 def user_dashboard(request):
-    # Получаем все подписки пользователя
-    subscriptions = UserSubscription.objects.filter(user=request.user)
+    # Получаем активную подписку пользователя
+    try:
+        subscription = UserSubscription.objects.get(user=request.user, end_date__gte=timezone.now())
+        print(f"Active subscription found: {subscription}")  # Логирование для проверки
+    except UserSubscription.DoesNotExist:
+        subscription = None  # Если нет активной подписки
+        print("No active subscription found")  # Логирование, если подписка не найдена
 
-    return render(request, 'main/user_dashboard.html', {'subscriptions': subscriptions})
+    # Передаем данные о подписке в шаблон
+    return render(request, 'main/user_dashboard.html', {'subscription': subscription})
 
 
 def index(request):
