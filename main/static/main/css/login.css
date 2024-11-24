@@ -1,0 +1,275 @@
+/* Стиль для страницы логина */
+.login-page {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Raleway', sans-serif;
+}
+
+.login-form {
+    margin: 30px auto;  /* Отступы сверху и снизу 30px */
+    background-color: #ffffff;
+    font-family: 'Raleway', sans-serif;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-form h2 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.login-form .form-group {
+    font-family: 'Raleway', sans-serif;
+    margin-bottom: 20px;
+}
+
+.login-form .form-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
+.login-form input {
+    font-family: 'Raleway', sans-serif;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.login-form input:focus {
+    border-color: #b07afe;
+    outline: none;
+}
+
+.login-form .btn-login {
+    background-color: #b07afe;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.login-form .btn-login:hover {
+    background-color: black;
+    color: #b07afe;
+    font-weight: bold;
+}
+
+.login-form .text-danger {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.btn-forgot-password {
+    display: inline-block;
+    margin-top: 10px;
+    color: black;
+    text-align: center;
+    font-size: 14px;
+}
+
+.btn-forgot-password:hover {
+    text-decoration: underline;
+    color: #b07afe;
+}
+
+/* static/css/password_reset.css */
+.password-reset-page {
+    width: 100%;
+    max-width: 400px;
+    margin: 30px auto;  /* Отступы сверху и снизу 30px */
+    padding: 20px;
+    background-color: #ffffff;
+    font-family: 'Raleway', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#password-reset-page .text-danger {
+    color: red;  /* Красный цвет для текста ошибки */
+    font-size: 14px;  /* Размер шрифта */
+    margin-top: 5px;  /* Отступ сверху */
+}
+
+.password-reset-form input {
+    font-family: 'Raleway', sans-serif;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.password-reset-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.password-reset-form h2 {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.password-reset-form .form-group {
+    font-family: 'Raleway', sans-serif;
+    margin-bottom: 20px;
+}
+
+.password-reset-form  .form-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #555;
+}
+
+.btn-reset-password {
+    background-color: #b07afe;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.btn-reset-password:hover {
+    background-color: black;
+    font-weight: bold;
+    color: #b07afe;
+}
+
+.back-to-login {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.btn-back-to-login {
+    color: #b07afe;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-back-to-login:hover {
+    text-decoration: underline;
+}
+
+/* Общий стиль для страницы */
+.password-reset-done {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Центрирование по вертикали */
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+/* Заголовок */
+.password-reset-done h2 {
+    font-size: 2rem;
+    color: #333; /* Темно-серый */
+    margin-bottom: 1rem;
+}
+
+/* Описание */
+.password-reset-done p {
+    font-size: 1.2rem;
+    color: #555; /* Серый */
+    margin-bottom: 1.5rem;
+}
+
+/* Ссылка для входа */
+.password-reset-done .btn-link {
+    font-size: 1.2rem;
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.password-reset-done .btn-link:hover {
+    color: #b07afe;
+    text-decoration: underline;
+}
+
+/* Группы полей формы */
+.password-reset-form .form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+    width: 100%;
+    max-width: 400px;
+}
+
+.password-reset-form .form-group .text-danger {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Метки */
+.password-reset-form .form-label {
+    font-size: 1rem;
+    color: #555;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Поля ввода */
+.password-reset-form .form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.password-reset-form .form-input:focus {
+    border-color: #007bff; /* Синий цвет при фокусе */
+}
+
+/* Кнопка отправки */
+.password-reset-form .form-submit-btn {
+    background-color: #b07afe;
+    color: black;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.password-reset-form .form-submit-btn:hover {
+    background-color: black;
+    font-weight: bold;
+    color: #b07afe;
+}

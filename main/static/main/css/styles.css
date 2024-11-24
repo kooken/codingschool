@@ -1,0 +1,160 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.custom-help-text {
+    color: #888888; /* Измените на нужный цвет */
+    margin-top: 10px; /* Отступ сверху */
+    font-size: 14px; /* Размер шрифта */
+    font-family: 'Raleway', sans-serif;
+}
+
+#placeholder-button {
+    background-color: #b07afe; /* Используем тот же цвет */
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.form-buttons {
+    display: flex;
+    flex-direction: column; /* Размещаем кнопки вертикально */
+    gap: 15px; /* Расстояние между кнопками */
+    margin-top: 20px;
+}
+
+/* Эффект наведения для кнопки-заглушки */
+#placeholder-button:hover {
+    background-color: black;
+    color: #b07afe;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: #b07afe;
+    outline: none;
+}
+
+.btn-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Отступы между кнопками */
+    margin-top: 20px; /* Отступ сверху после формы */
+}
+
+.messages {
+  position: fixed;
+  top: 20%;
+  right: 50%;
+  transform: translateX(50%);
+  z-index: 9999;
+  padding: 0.5em;
+  pointer-events: none;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToTop {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.messages > li.message-deleting {
+  animation: slideOutToTop 250ms ease-out;
+  animation-fill-mode: forwards;
+}
+
+.messages > li {
+    animation: slideInFromTop 250ms ease-in;
+    list-style: none;
+    background-color: rgba(176, 122, 254, 0.9); /* Фон с прозрачностью 90% */
+    border: 2px solid #b07afe; /* Рамка оставлена того же цвета */
+    padding: 1em;
+    margin-bottom: 0.5em;
+    border-radius: 8px;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.messages > li.success,
+.messages > li.error {
+    color: black; /* Зеленый текст */
+    font-weight: bold;
+}
+
+.form-group select {
+    width: 100%; /* Ширина выпадающего списка */
+    padding: 10px; /* Отступы внутри */
+    border: 1px solid #ccc; /* Цвет рамки */
+    border-radius: 5px; /* Округление углов */
+    font-family: 'Raleway', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+    background-color: #fff; /* Фон */
+    cursor: pointer; /* Курсор при наведении */
+}
+
+/* Стиль для опций выпадающего списка */
+.form-group select option {
+    padding: 10px; /* Отступы для каждой опции */
+    font-family: 'Raleway', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+}
+
+/* Стиль для успешных сообщений */
+.success {
+    color: green; /* Зеленый текст */
+    font-size: 1rem; /* Размер шрифта */
+    margin-bottom: 15px; /* Отступ снизу */
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Стиль для ошибок */
+.error {
+    color: red; /* Красный текст */
+    font-size: 1rem; /* Размер шрифта */
+    margin-bottom: 15px; /* Отступ снизу */
+    font-weight: bold;
+    text-align: center;
+}

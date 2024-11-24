@@ -1,12 +1,14 @@
 /* Уникальный стиль для страницы регистрации */
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&display=swap');
 
+/* есть в styles.css */
 /* Сбрасываем отступы и поля для html и body */
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
 }
+/* есть в styles.css */
 
 /* Уникальный стиль для страницы регистрации */
 #register-page {
@@ -17,6 +19,7 @@ html, body {
     font-family: 'Raleway', sans-serif;
 }
 
+/* есть в profile.css */
 #profile-page {
     background-color: #ffffff;
     display: flex;
@@ -153,6 +156,7 @@ html, body {
     text-align: center;
     margin-bottom: 15px
 }
+/* есть в profile.css */
 
 .custom-button:hover {
     background-color: black;
@@ -161,13 +165,15 @@ html, body {
     font-weight: bold;
         width: 100%;
 }
-
+/* есть в profile.css */
 .profile-page .btn-delete:hover {
     background-color: black;
     color: red;
     font-weight: bold;
 }
+/* есть в profile.css */
 
+/* есть в info.css */
 .info-page {
     display: flex;
     flex-direction: column;
@@ -214,6 +220,7 @@ html, body {
     color: #b07afe;
     font-weight: bold;
 }
+/* есть в info.css */
 
 /* Обертка для формы */
 .register-form {
@@ -228,6 +235,7 @@ html, body {
 
 }
 
+/* есть в styles.css */
 .custom-help-text {
     color: #888888; /* Измените на нужный цвет */
     margin-top: 10px; /* Отступ сверху */
@@ -235,6 +243,7 @@ html, body {
         font-family: 'Raleway', sans-serif;
 
 }
+/* есть в styles.css */
 
 .register-form-control {
     width: 100%; /* Делает поле на всю ширину формы */
@@ -286,10 +295,12 @@ html, body {
     outline: none;
 }
 
+/* есть в profile.css */
 .profile-form input:focus {
     border-color: #b07afe;
     outline: none;
 }
+/* есть в profile.css */
 
 /* Стили для кнопки регистрации */
 #register-button {
@@ -305,6 +316,7 @@ html, body {
     text-align: center;
 }
 
+/* есть в styles.css */
 #placeholder-button {
     background-color: #b07afe; /* Используем тот же цвет */
     color: black;
@@ -317,6 +329,7 @@ html, body {
     width: 100%;
     text-align: center;
 }
+/* есть в styles.css */
 
 #register-heading {
     font-family: 'Raleway', sans-serif;
@@ -327,6 +340,7 @@ html, body {
     color: #b07afe;
 }
 
+/* есть в styles.css */
 .form-buttons {
     display: flex;
     flex-direction: column; /* Размещаем кнопки вертикально */
@@ -339,6 +353,7 @@ html, body {
     background-color: black;
     color: #b07afe;
 }
+/* есть в styles.css */
 
 /* Стили для ошибок */
 #register-page .text-danger {
@@ -354,6 +369,7 @@ html, body {
     margin-top: 5px;
 }
 
+/* есть в login.css */
 /* Стиль для страницы логина */
 .login-page {
     background-color: #ffffff;
@@ -499,7 +515,9 @@ html, body {
     font-weight: 600;
     color: #555;
 }
+/* есть в login.css */
 
+/* есть в styles.css */
 .form-group {
     margin-bottom: 20px;
 }
@@ -523,7 +541,9 @@ html, body {
     border-color: #b07afe;
     outline: none;
 }
+/* есть в styles.css */
 
+/* есть в login.css */
 .btn-reset-password {
     background-color: #b07afe;
     color: black;
@@ -655,7 +675,9 @@ html, body {
 
     color: #b07afe;
 }
+/* есть в login.css */
 
+/* есть в styles.css */
 .btn-actions {
     display: flex;
     flex-direction: column;
@@ -757,3 +779,4 @@ html, body {
 
 
 }
+/* есть в styles.css */
