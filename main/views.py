@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from users.models import PromoCode, UserSubscription, SubscriptionPlan
+from users.models import PromoCode, SubscriptionPlan
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from main.forms import PromoCodeForm
@@ -67,7 +67,6 @@ def activate_promo_code(request, promo_code_str):
         print(f"Subscription Plan: {promo_code_instance.plan}")
         print(f"Duration: {promo_code_instance.plan.duration.display_name}")
         print(f"User: {request.user}")
-        print(f"Plan: {promo_code_instance.plan}")
         print(f"Programming Languages: {promo_code_instance.programming_languages.all()}")
         print(f"Bonus Modules: {promo_code_instance.bonus_modules.all()}")
 
@@ -94,25 +93,29 @@ def activate_promo_code(request, promo_code_str):
 
         print(f"End date calculated: {end_date}")
 
+
         # Создаем подписку
         try:
-            subscription = UserSubscription.objects.create(
-                user=request.user,
-                plan=promo_code_instance.plan,
-                start_date=now,
-                end_date=end_date,
-            )
-            print(f"Subscription created: {subscription}")
+            # Пытаемся найти существующую подписку
+            subscription = promo_code_instance.plan
+            # Обновляем поля
+            subscription.is_active = True
+            subscription.start_date = now
+            subscription.end_date = end_date
+            subscription.save()
+
+            print(f"Subscription updated: {subscription}")
+
+        except SubscriptionPlan.DoesNotExist:
+            print("Error: Subscription plan not found.")
         except Exception as e:
-            print(f"Error creating subscription: {str(e)}")
+            print(f"Error activating subscription: {str(e)}")
 
         # Даем доступ к языкам программирования и бонусным модулям
-        languages = promo_code_instance.programming_languages.all()
-        modules = promo_code_instance.bonus_modules.all()
+
 
         # Добавляем связи ManyToMany
-        subscription.programming_languages.add(*languages)
-        subscription.bonus_modules.add(*modules)
+
 
         # # Даем доступ пользователю к языкам программирования и бонусным модулям
         # request.user.programming_languages.add(*languages)
@@ -153,17 +156,32 @@ def promo_code_page(request):
                 programming_languages = form.cleaned_data['programming_languages']
                 bonus_modules = form.cleaned_data['bonus_modules']
 
-                try:
-                    # Рассчитываем цену на основе выбранных языков и бонусов
-                    base_price = 10.0  # Базовая цена подписки, например, $10
-                    price_per_language = 5.0  # Цена за один язык программирования
-                    price_per_module = 0.0  # Цена за один бонусный модуль
+                print("Programming Languages from form:", programming_languages)
+                print("Bonus Modules from form:", bonus_modules)
 
-                    total_price = (
-                            base_price +
-                            len(programming_languages) * price_per_language +
-                            len(bonus_modules) * price_per_module
-                    )
+                try:
+                    price_plan = {
+                        'newbie': {
+                            1: 10.0,  # 10 евро в месяц после первой недели
+                        },
+                        'middle': {
+                            1: 15.0,  # 15 евро в месяц
+                            3: 40.0,  # 40 евро за 3 месяца
+                            6: 75.0,  # 75 евро за 6 месяцев
+                        },
+                        'pro': {
+                            1: 30.0,  # 30 евро в месяц
+                            6: 160.0,  # 160 евро за 6 месяцев
+                            12: 300.0,  # 300 евро за 1 год
+                            0: 400.0,  # 400 евро навсегда
+                        },
+                    }
+
+                    # Получаем цену для выбранного плана и длительности подписки
+                    total_price = price_plan.get(plan.value, {}).get(duration.value)
+
+                    if total_price is None:
+                        raise ValueError(f"Price not found for plan: {plan.value}, duration: {duration.value}")
 
                     # Формируем описание на основе выбранных языков и бонусов
                     description = f"Includes {len(programming_languages)} programming language(s): " + \
@@ -173,15 +191,24 @@ def promo_code_page(request):
 
                     # Создаем SubscriptionPlan на основе данных пользователя
                     subscription_plan = SubscriptionPlan.objects.create(
+                        user=request.user,
                         name=plan,  # Название плана подписки
                         duration=duration,  # Длительность подписки
                         description=description,  # Сгенерированное описание
                         price=total_price,  # Сгенерированная цена
+                        is_active=False,
                     )
+
+                    print("Created Subscription Plan:", subscription_plan)
 
                     # Ассоциируем языки программирования и бонусные модули с созданным планом подписки
                     subscription_plan.programming_languages.set(programming_languages)
                     subscription_plan.bonus_modules.set(bonus_modules)
+
+                    print("Associated Programming Languages:", subscription_plan.programming_languages.all())
+                    print("Associated Bonus Modules:", subscription_plan.bonus_modules.all())
+
+                    print(f"Subscription updated: {subscription_plan}")
 
                     # Генерация одного промокода
                     promo_code_str = generate_promo_code(length=8)  # Длина промокода всегда 8
@@ -191,6 +218,8 @@ def promo_code_page(request):
                         code=promo_code_str,
                         plan=subscription_plan,  # Привязываем только что созданный план подписки
                         is_active=True,  # По умолчанию промокод активен
+                        # programming_languages=programming_languages,
+                        # bonus_modules=bonus_modules,
                     )
 
                     # Ассоциируем языки программирования и бонусные модули с промокодом
@@ -240,7 +269,7 @@ def promo_code_page(request):
 def user_dashboard(request):
     # Получаем активную подписку пользователя
     try:
-        subscription = UserSubscription.objects.filter(
+        subscription = SubscriptionPlan.objects.filter(
             Q(user=request.user) & (Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True))
         ).first()
 
@@ -248,7 +277,7 @@ def user_dashboard(request):
             print(f"Active subscription found: {subscription}")  # Логирование для проверки
         else:
             print("No active subscription found.")
-    except UserSubscription.DoesNotExist:
+    except SubscriptionPlan.DoesNotExist:
         print("No active subscription found.")
 
     # Передаем данные о подписке в шаблон

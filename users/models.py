@@ -27,7 +27,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     subscription_plan = models.ForeignKey(
-        'SubscriptionPlan', null=True, blank=True, on_delete=models.SET_NULL
+        'SubscriptionPlan', null=True, blank=True, on_delete=models.SET_NULL, related_name='user_subscription_plan'
     )
     account_type = models.CharField(max_length=50, verbose_name='Account Type', null=True, blank=True)
     referral_code = models.CharField(max_length=100, verbose_name='Referral Code', null=True, blank=True)
@@ -89,13 +89,9 @@ class SubscriptionDurationTypes(models.Model):
 
 
 class SubscriptionPlanType(Enum):
-    EARLY_BIRD = 'early_bird', 'Early Bird'
-    FREE = 'free', 'Free'
-    SINGLE_COURSE = 'single_course', '1 Course'
-    TWO_COURSES = 'two_courses', '2 Courses'
-    THREE_COURSES = 'three_courses', '3 Courses'
-    FOUR_COURSES = 'four_courses', '4 Courses'
-    ALL_COURSES = 'all_courses', 'All Courses'
+    NEWBIE = 'newbie', 'Newbie'
+    MIDDLE = 'middle', 'Middle'
+    PRO = 'pro', 'Pro'
 
     @classmethod
     def choices(cls):
@@ -134,6 +130,11 @@ class ProgrammingLanguageType(Enum):
 class BonusModuleType(Enum):
     LINKED_IN = 'linkedin', 'LinkedIn'
     GITHUB = 'github', 'GitHub'
+    DOCKER = 'docker', 'Docker'
+    DJANGO = 'django', 'Django'
+    HACKATHON = 'hackathon', 'Hackathon'
+    CAREER = 'career', 'Career'
+    CHALLENGE = 'challenge', 'Challenge'
 
     @classmethod
     def choices(cls):
@@ -178,68 +179,55 @@ class BonusModule(models.Model):
 
 # Модель подписки
 class SubscriptionPlan(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="subscription_user",
+        verbose_name="User"
+    )
+    is_active = models.BooleanField(default=False, verbose_name="Is Active")
     name = models.ForeignKey(
         SubscriptionPlanModes,
         on_delete=models.CASCADE,
-        related_name="subscription_plans",
-        verbose_name="Subscription Plan Mode"
+        related_name="subscription_plan_name",
+        verbose_name="Subscription Plan Name"
     )
     duration = models.ForeignKey(
         SubscriptionDurationTypes,
         on_delete=models.CASCADE,
-        related_name="subscription_plans",
+        related_name="subscription_duration",
         verbose_name="Subscription Duration"
     )
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     programming_languages = models.ManyToManyField(
         ProgrammingLanguage,
-        related_name='subscription_plans',
-        blank=True
+        related_name='subscription_prog_langs',
+        blank=True,
     )
     bonus_modules = models.ManyToManyField(
         BonusModule,
-        related_name='subscription_plans',
+        related_name='subscription_bonus_modules',
         blank=True
     )
-
-    def __str__(self):
-        return f"{self.name} - {self.duration}"
-
-
-class UserSubscription(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="subscriptions",
-        verbose_name="User"
-    )
-    plan = models.ForeignKey(
-        SubscriptionPlan,
-        on_delete=models.CASCADE,
-        related_name="user_subscriptions",
-        verbose_name="Subscription Plan"
-    )
-    programming_languages = models.ManyToManyField(ProgrammingLanguage, related_name="user_prog_subscriptions")
-    bonus_modules = models.ManyToManyField(BonusModule, related_name="user_bonus_subscriptions")
     start_date = models.DateTimeField(auto_now_add=True, verbose_name="Start Date")
-    end_date = models.DateTimeField(null=True, blank=True)  # Добавьте null=True
+    end_date = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         # Получаем текущее время с временной зоной
         now = timezone.now()
 
         # Если подписка бессрочная, устанавливаем end_date в None
-        if self.plan.duration.duration_in_months == 0:
+        if self.duration.duration_in_months == 0:
             self.end_date = None
         elif not self.end_date:  # Если end_date не задано, рассчитываем его
-            if self.plan.duration.duration_in_months == 1:
+            if self.duration.duration_in_months == 1:
                 self.end_date = now + relativedelta(months=1)
-            elif self.plan.duration.duration_in_months == 3:
+            elif self.duration.duration_in_months == 3:
                 self.end_date = now + relativedelta(months=3)
-            elif self.plan.duration.duration_in_months == 6:
+            elif self.duration.duration_in_months == 6:
                 self.end_date = now + relativedelta(months=6)
-            elif self.plan.duration.duration_in_months == 12:
+            elif self.duration.duration_in_months == 12:
                 self.end_date = now + relativedelta(years=1)
 
         # Если end_date не равен None, проверяем, осведомлен ли он
@@ -249,18 +237,63 @@ class UserSubscription(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
+        programming_languages = ", ".join(
+            [lang.display_name for lang in self.programming_languages.all()]
+        )
+        bonus_modules = ", ".join(
+            [module.display_name for module in self.bonus_modules.all()]
+        )
+        return f"{self.name.display_name} - {self.duration.display_name}: {programming_languages}, {bonus_modules}"
 
-    def __str__(self):
-        return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
 
-    def __str__(self):
-        return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
-
-    class Meta:
-        verbose_name = "User Subscription"
-        verbose_name_plural = "User Subscriptions"
-        ordering = ['-start_date']
+# class UserSubscription(models.Model):
+#     user = models.ForeignKey(
+#         settings.AUTH_USER_MODEL,
+#         on_delete=models.CASCADE,
+#         related_name="subscriptions",
+#         verbose_name="User"
+#     )
+#     plan = models.ForeignKey(
+#         SubscriptionPlan,
+#         on_delete=models.CASCADE,
+#         related_name="user_subscriptions",
+#         verbose_name="Subscription Plan"
+#     )
+#     programming_languages = models.ManyToManyField(ProgrammingLanguage, related_name="user_prog_subscriptions")
+#     bonus_modules = models.ManyToManyField(BonusModule, related_name="user_bonus_subscriptions")
+#     start_date = models.DateTimeField(auto_now_add=True, verbose_name="Start Date")
+#     end_date = models.DateTimeField(null=True, blank=True)  # Добавьте null=True
+#
+#     def save(self, *args, **kwargs):
+#         # Получаем текущее время с временной зоной
+#         now = timezone.now()
+#
+#         # Если подписка бессрочная, устанавливаем end_date в None
+#         if self.plan.duration.duration_in_months == 0:
+#             self.end_date = None
+#         elif not self.end_date:  # Если end_date не задано, рассчитываем его
+#             if self.plan.duration.duration_in_months == 1:
+#                 self.end_date = now + relativedelta(months=1)
+#             elif self.plan.duration.duration_in_months == 3:
+#                 self.end_date = now + relativedelta(months=3)
+#             elif self.plan.duration.duration_in_months == 6:
+#                 self.end_date = now + relativedelta(months=6)
+#             elif self.plan.duration.duration_in_months == 12:
+#                 self.end_date = now + relativedelta(years=1)
+#
+#         # Если end_date не равен None, проверяем, осведомлен ли он
+#         if self.end_date is not None and timezone.is_naive(self.end_date):
+#             self.end_date = timezone.make_aware(self.end_date)  # Преобразуем наивную дату в осведомленную
+#
+#         super().save(*args, **kwargs)
+#
+#     def __str__(self):
+#         return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
+#
+#     class Meta:
+#         verbose_name = "User Subscription"
+#         verbose_name_plural = "User Subscriptions"
+#         ordering = ['-start_date']
 
 
 class PromoCode(models.Model):
@@ -291,17 +324,3 @@ class PromoCode(models.Model):
     def is_valid(self):
         """Проверяет, активен ли промокод"""
         return self.is_active
-
-# class BonusModule(models.Model):
-#     name = models.CharField(max_length=100, choices=BonusModuleType.choices(), unique=True)
-#     description = models.TextField()
-#
-#     def __str__(self):
-#         return self.name
-
-# class ProgrammingLanguage(models.Model):
-#     name = models.CharField(max_length=100, choices=ProgrammingLanguageType.choices(), unique=True)
-#     description = models.TextField()
-#
-#     def __str__(self):
-#         return self.name
