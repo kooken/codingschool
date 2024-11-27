@@ -1,47 +1,101 @@
 {% extends 'main/base.html' %}
 {% load static %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'main/css/index.css' %}" media="screen">
+<section class="main-section">
+    <div class="content-container">
+        <!-- Image on the left side -->
+        <div class="image-container">
+            <img src="{% static 'main/css/images/main.png' %}" alt="Learning Image">
+        </div>
 
-<section class="u-align-center u-clearfix u-section-1" id="sec-6388">
-    <div class="u-clearfix u-sheet u-sheet-1">
-        <div class="custom-expanded data-layout-selected u-clearfix u-gutter-0 u-layout-wrap u-layout-wrap-1">
-            <div class="u-layout" style="">
-                <div class="u-layout-row" style="">
-                    <div class="u-align-left u-container-align-left u-container-style u-image u-layout-cell u-left-cell u-size-30 u-size-xs-60 u-image-1"
-                         src="" data-image-width="1000" data-image-height="1000">
-<!--                        <div class="u-container-layout u-container-layout-1"-->
-<!--                             src="{% static 'main/css/images/main.png' %}"></div>-->
-                                       <img class="u-container-layout u-container-layout-1"
-                                 src="{% static 'main/css/images/main.png' %}">
-                    </div>
-                    <div class="u-align-left u-container-align-left u-container-style u-layout-cell u-right-cell u-size-30 u-size-xs-60 u-layout-cell-2">
-                        <div class="u-container-layout u-valign-middle u-container-layout-2">
-                            <ul class="u-align-left u-custom-font u-font-raleway u-text u-text-1">
-                                <li>
-                                    <span style="caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"></span>
-                                    <span style="caret-color: rgb(0, 0, 0); color: rgb(0, 0, 0);"></span>Self-paced
-                                    learning
-                                </li>
-                                <li>Real-world tasks from job interviews</li>
-                                <li>Community support and networking</li>
-                                <li>Safe and inclusive environment</li>
-                                <li>Programming language diversity<br>
-                                </li>
-                                <li>.. and many more!</li>
-                            </ul>
-                            <a href=""
-                               class="u-active-white u-align-left u-border-2 u-border-active-white u-border-hover-white u-border-white u-btn u-btn-rectangle u-button-style u-hover-white u-none u-text-active-palette-1-base u-text-hover-palette-1-base u-btn-1">узнать
-                                больше</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Text block with bullets on the right side -->
+        <div class="text-container">
+            <h2>Why Choose Us?</h2>
+            <ul>
+                <li>Self-paced learning</li>
+                <li>Real-world tasks from job interviews</li>
+                <li>Community support and networking</li>
+                <li>Safe and inclusive environment</li>
+                <li>Programming language diversity</li>
+                <li>and many more!</li>
+            </ul>
         </div>
     </div>
 </section>
-<style class="u-overlap-style">.u-overlap:not(.u-sticky-scroll) .u-header {
-background-color: #ffffff !important
-}
+
+<style>
+    /* General Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Body styles */
+    body {
+        font-family: 'Raleway', sans-serif;
+        background-color: #f9f9f9;
+    }
+
+    /* Container for the main section */
+    .main-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh; /* Adjusted for less space at the top and bottom */
+        padding: 10px; /* Reduced padding */
+    }
+
+    .content-container {
+        display: flex;
+        align-items: stretch;
+        max-width: 1200px;
+        width: 100%;
+    }
+
+    /* Image container styling */
+    .image-container {
+        flex: 1;
+        padding-right: 20px;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    /* Text container styling */
+    .text-container {
+        flex: 1;
+        font-family: 'Raleway', sans-serif;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-container h2 {
+    font-family: 'Raleway', sans-serif;
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: black;
+    }
+
+    .text-container ul {
+        list-style-type: disc;
+        padding-left: 20px;
+    }
+
+    .text-container li {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #555;
+    }
+
+    .text-container li:last-child {
+        margin-bottom: 0;
+    }
 </style>
+
 {% endblock %}

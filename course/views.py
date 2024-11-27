@@ -2,15 +2,20 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
+
+from users.models import ProgrammingLanguage
 from .models import Course, Lesson
 
 
 class AvailableCourseView(LoginRequiredMixin, ListView):
-    template_name = 'course/available_courses.html'
+    template_name = 'course/available_course.html'
     context_object_name = 'course'
 
     def get_queryset(self):
-        return self.request.user.course.all()
+        if self.request.user.subscription_plan:
+            return self.request.user.subscription_plan.programming_languages.all()
+        else:
+            return ProgrammingLanguage.objects.none()  # or handle this case differently
 
 
 def course_detail(request):

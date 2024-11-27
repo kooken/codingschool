@@ -1,69 +1,98 @@
-<header class="u-border-3 u-border-custom-color-1 u-border-no-left u-border-no-right u-border-no-top u-clearfix u-header u-sticky u-sticky-5c20 u-white"
-        id="sec-3b85" data-animation-name="" data-animation-duration="0" data-animation-delay="0"
-        data-animation-direction="">
-    <div class="u-clearfix u-sheet u-sheet-1">
-        <a class="u-custom-font u-text u-text-default u-text-1" href="{% url 'main:index' %}">KOOKEN</a>
-        <a href="{% url 'users:login' %}"
-           class="u-border-none u-btn u-btn-round u-button-style u-custom-color-1 u-custom-font u-font-raleway u-hover-black u-radius u-text-black u-text-hover-custom-color-1 u-btn-1">Log
-            In </a>
-        <a href="{% url 'users:register' %}"
-           class="u-border-none u-btn u-btn-round u-button-style u-custom-color-1 u-custom-font u-font-raleway u-hover-black u-radius u-text-black u-text-hover-custom-color-1 u-btn-2">Register!</a>
-        <nav class="u-menu u-menu-one-level u-offcanvas u-menu-1">
-            <div class="menu-collapse u-custom-font u-font-raleway"
-                 style="font-size: 1rem; letter-spacing: 0px; font-weight: 700;">
-                <a class="u-button-style u-custom-active-border-color u-custom-border u-custom-border-color u-custom-borders u-custom-hover-border-color u-custom-left-right-menu-spacing u-custom-padding-bottom u-custom-text-active-color u-custom-text-color u-custom-text-decoration u-custom-text-hover-color u-custom-top-bottom-menu-spacing u-hamburger-link u-nav-link u-text-active-palette-1-base u-text-custom-color-1 u-text-hover-palette-2-base"
-                   href="#">
-                    <svg class="u-svg-link" viewBox="0 0 24 24">
-                        <use xlink:href="#menu-hamburger"></use>
-                    </svg>
-                    <svg class="u-svg-content" version="1.1" id="menu-hamburger" viewBox="0 0 16 16" x="0px" y="0px"
-                         xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg">
-                        <g>
-                            <rect y="1" width="16" height="2"></rect>
-                            <rect y="7" width="16" height="2"></rect>
-                            <rect y="13" width="16" height="2"></rect>
-                        </g>
-                    </svg>
-                </a>
-            </div>
-            <div class="u-custom-menu u-nav-container">
-                <ul class="u-custom-font u-font-raleway u-nav u-spacing-0 u-unstyled u-nav-1">
-                    <li class="u-nav-item"><a
-                            class="u-border-2 u-border-active-grey-30 u-border-grey-30 u-border-hover-grey-30 u-border-no-bottom u-border-no-left u-border-no-top u-button-style u-nav-link u-text-active-custom-color-1 u-text-grey-90 u-text-hover-custom-color-1"
-                            href="{% url 'main:index' %}" style="padding: 0px 20px;">home</a>
-                    </li>
-                    <li class="u-nav-item"><a
-                            class="u-border-2 u-border-active-grey-30 u-border-grey-30 u-border-hover-grey-30 u-border-no-bottom u-border-no-left u-border-no-top u-button-style u-nav-link u-text-active-custom-color-1 u-text-grey-90 u-text-hover-custom-color-1"
-                            href="{% url 'main:mission' %}" style="padding: 0px 20px;">mission</a>
-                    </li>
-                    <li class="u-nav-item"><a
-                            class="u-border-2 u-border-active-grey-30 u-border-grey-30 u-border-hover-grey-30 u-border-no-bottom u-border-no-left u-border-no-top u-button-style u-nav-link u-text-active-custom-color-1 u-text-grey-90 u-text-hover-custom-color-1"
-                            href="{% url 'main:courses' %}" style="padding: 0px 20px;">courses</a>
-                    </li>
-                    <li class="u-nav-item"><a
-                            class="u-border-2 u-border-active-grey-30 u-border-grey-30 u-border-hover-grey-30 u-border-no-bottom u-border-no-left u-border-no-top u-button-style u-nav-link u-text-active-custom-color-1 u-text-grey-90 u-text-hover-custom-color-1"
-                            href="{% url 'main:team' %}" style="padding: 0px 20px;">team</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="u-custom-menu u-nav-container-collapse">
-                <div class="u-black u-container-style u-inner-container-layout u-opacity u-opacity-95 u-sidenav">
-                    <div class="u-inner-container-layout u-sidenav-overflow">
-                        <div class="u-menu-close"></div>
-                        <ul class="u-align-center u-nav u-popupmenu-items u-unstyled u-nav-2">
-                            <li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'main:index' %}">home</a>
-                            </li>
-                            <li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'main:mission' %}">mission</a>
-                            </li>
-                            <li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'main:courses' %}">courses</a>
-                            </li>
-                            <li class="u-nav-item"><a class="u-button-style u-nav-link" href="{% url 'main:team' %}">team</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="u-black u-menu-overlay u-opacity u-opacity-70"></div>
-            </div>
+<header>
+    <div class="header-content">
+        <div class="logo">
+            <span>KOOKEN</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'main:index' %}">home</a></li>
+                <li><a href="{% url 'main:mission' %}">mission</a></li>
+                <li><a href="{% url 'main:courses' %}">courses</a></li>
+                <li><a href="{% url 'main:team' %}">team</a></li>
+            </ul>
         </nav>
+        <div class="auth-buttons">
+            <a href="{% url 'users:login' %}">
+                <button class="auth-btn">Login</button>
+            </a>
+            <a href="{% url 'users:register' %}">
+                <button class="auth-btn">Register!</button>
+            </a>
+        </div>
     </div>
 </header>
+
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Ral, sans-serif;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      padding: 10px 20px;
+      border-bottom: 3px solid #b07afe;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+    }
+
+    nav ul li {
+      margin: 0 15px;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+      font-family: 'Raleway', sans-serif;
+      font-size: 16px;
+    }
+
+    .auth-buttons {
+      display: flex;
+    }
+
+    .auth-btn {
+      background-color: #b07afe;
+      color: black;
+      border: none;
+      font-weight: bold;
+      font-family: 'Raleway', sans-serif;
+      font-size: 16px;
+      border-radius: 4px;
+      padding: 8px 16px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    .auth-btn:hover {
+    background-color: black;
+    color: #b07afe;
+    font-weight: bold;
+    }
+
+    .logo span {
+    font-family: 'Rubik Doodle Shadow';
+      font-size: 36px;
+      color: black;
+    }
+</style>
