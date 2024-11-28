@@ -2,40 +2,45 @@
 {% block content %}
 <div class="profile-page">
     <div class="header">Your Subscription</div>
-    <div class="subscription-card">
+    <div class="subscription-container">
+        <div class="subscription-card">
 
-        {% if subscription %}
-        <div class="subscription-details">
-            <p><strong>Plan:</strong> {{ subscription.name }}</p>
+            {% if subscription %}
+            <div class="subscription-details">
+                <p><strong>Plan:</strong> {{ subscription.name }}</p>
 
-            {% if subscription.end_date %}
-            <p><strong>Valid from:</strong>
-                {{ subscription.start_date }}
-            </p>
-            <p><strong>Valid to:</strong>
-                {{ subscription.end_date }}
-            </p>
+                {% if subscription.end_date %}
+                <p><strong>Valid from:</strong>
+                    {{ subscription.start_date }}
+                </p>
+                <p><strong>Valid to:</strong>
+                    {{ subscription.end_date }}
+                </p>
+                {% else %}
+                <p><strong>Duration:</strong> Lifetime</p>
+                {% endif %}
+
+                <p><strong>Programming Languages:</strong>
+                    {% for lang in subscription.programming_languages.all %}
+                    {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Bonus Modules:</strong>
+                    {% for module in subscription.bonus_modules.all %}
+                    {{ module.display_name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
             {% else %}
-            <p><strong>Duration:</strong> Lifetime</p>
+            <p>You don't have an active subscription!</p>
             {% endif %}
-
-            <p><strong>Programming Languages:</strong>
-                {% for lang in subscription.programming_languages.all %}
-                {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-            <p><strong>Bonus Modules:</strong>
-                {% for module in subscription.bonus_modules.all %}
-                {{ module.display_name }}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </p>
         </div>
-        {% else %}
-        <p>You don't have an active subscription!</p>
-        {% endif %}
     </div>
-    <a href="{% url 'main:promo_code_page' %}" class="custom-button">Promocodes</a>
-
+</div>
+<div class="button-container">
+    <div class="custom-my-button">
+        <a href="{% url 'main:promo_code_page' %}">Go to promocodes!!</a>
+    </div>
 </div>
 
 <style>
@@ -49,6 +54,14 @@
         font-weight: bold;
     }
 
+    .subscription-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 20px;
+    }
+
     .subscription-card {
         background-color: #fff;
         border-radius: 8px;
@@ -57,6 +70,7 @@
         width: 100%;
         max-width: 400px;
         display: flex;
+        align-items: center;
         flex-direction: column;
         justify-content: center;
         text-align: center;
@@ -70,6 +84,43 @@
 
     .subscription-details p {
         margin-bottom: 10px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    .custom-my-button a {
+        background-color: #b07afe;
+        text-decoration: none;
+        color: black;
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .custom-my-button a:hover {
+        background-color: black;
+        text-decoration: none;
+        color: #b07afe;
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 15px;
     }
 </style>
 {% endblock %}
