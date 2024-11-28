@@ -26,6 +26,7 @@ html, body {
     justify-content: center;
     align-items: center;
     font-family: 'Raleway', sans-serif;
+    padding-bottom: 100px; /* Если у вас есть контейнер для контента */
 }
 
 #profile-page .text-danger {
@@ -38,7 +39,7 @@ html, body {
 /* Стили для ошибок в каждом поле */
 .profile-form .form-group .text-danger {
     color: red;
-        font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway', sans-serif;
     font-size: 14px;
     margin-top: 5px;
 }
@@ -96,7 +97,7 @@ html, body {
     cursor: pointer;
     width: 100%;
     text-align: center;
-        margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .profile-page .btn-change:hover {
@@ -108,22 +109,22 @@ html, body {
 .profile-form {
     background-color: #ffffff;
     padding: 40px;
-            font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway', sans-serif;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
-        margin: 30px auto;  /* Отступы сверху и снизу 30px */
-
+    padding-bottom: 100px; /* Если у вас есть контейнер для контента */
+    margin: 30px auto;  /* Отступы сверху и снизу 30px */
 }
 
 .profile-form .form-group {
     margin-bottom: 20px;
-            font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway', sans-serif;
 }
 
 .profile-form .form-label {
-        font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway', sans-serif;
     font-size: 16px;
     font-weight: 600;
     color: #555;
@@ -161,9 +162,9 @@ html, body {
 .custom-button:hover {
     background-color: black;
     color: #b07afe;
-        text-align: center;
+    text-align: center;
     font-weight: bold;
-        width: 100%;
+    width: 100%;
 }
 /* есть в profile.css */
 .profile-page .btn-delete:hover {
@@ -188,8 +189,7 @@ html, body {
 /* Заголовок страницы */
 .info-page-header {
     font-size: 2rem;
-        font-family: 'Raleway', sans-serif;
-
+    font-family: 'Raleway', sans-serif;
     color: #333;
     margin-bottom: 1rem;
 }
@@ -226,13 +226,12 @@ html, body {
 .register-form {
     background-color: #ffffff;
     padding: 40px;
-            font-family: 'Raleway', sans-serif;
+    font-family: 'Raleway', sans-serif;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
-        margin: 30px auto;  /* Отступы сверху и снизу 30px */
-
+    margin: 30px auto;  /* Отступы сверху и снизу 30px */
 }
 
 /* есть в styles.css */
@@ -240,8 +239,7 @@ html, body {
     color: #888888; /* Измените на нужный цвет */
     margin-top: 10px; /* Отступ сверху */
     font-size: 14px; /* Размер шрифта */
-        font-family: 'Raleway', sans-serif;
-
+    font-family: 'Raleway', sans-serif;
 }
 /* есть в styles.css */
 
@@ -251,8 +249,7 @@ html, body {
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
-        font-family: 'Raleway', sans-serif;
-
+    font-family: 'Raleway', sans-serif;
     box-sizing: border-box; /* Учитывает padding в ширине */
 }
 
@@ -273,12 +270,14 @@ html, body {
 /* Стили для полей ввода */
 .register-form .form-group {
     margin-bottom: 20px;
+    font-family: 'Raleway', sans-serif;
 }
 
 .register-form .form-label {
     font-size: 16px;
     font-weight: 600;
     color: #555;
+    font-family: 'Raleway', sans-serif;
 }
 
 .register-form input {
@@ -288,6 +287,7 @@ html, body {
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+    font-family: 'Raleway', sans-serif;
 }
 
 .register-form input:focus {
@@ -381,7 +381,6 @@ html, body {
 
 .login-form {
     margin: 30px auto;  /* Отступы сверху и снизу 30px */
-
     background-color: #ffffff;
     font-family: 'Raleway', sans-serif;
     padding: 40px;
@@ -559,7 +558,7 @@ html, body {
 
 .btn-reset-password:hover {
     background-color: black;
-        font-weight: bold;
+    font-weight: bold;
     color: #b07afe;
 }
 
@@ -589,7 +588,7 @@ html, body {
     text-align: center;
     padding: 20px;
     background-color: #ffffff;
-    }
+}
 
 /* Заголовок */
 .password-reset-done h2 {
@@ -671,8 +670,7 @@ html, body {
 
 .password-reset-form .form-submit-btn:hover {
     background-color: black;
-        font-weight: bold;
-
+    font-weight: bold;
     color: #b07afe;
 }
 /* есть в login.css */
@@ -685,13 +683,13 @@ html, body {
     margin-top: 20px; /* Отступ сверху после формы */
 }
 .messages {
-  position: fixed;
-  top: 20%;
-  right: 50%;
-  transform: translateX(50%);
-  z-index: 9999;
-  padding: 0.5em;
-  pointer-events: none;
+    position: fixed;
+    top: 20%;
+    right: 50%;
+    transform: translateX(50%);
+    z-index: 9999;
+    padding: 0.5em;
+    pointer-events: none;
 }
 
 @keyframes slideInFromTop {
@@ -717,27 +715,26 @@ html, body {
 }
 
 .messages > li.message-deleting {
-  animation: slideOutToTop 250ms ease-out;
-  animation-fill-mode: forwards;
+    animation: slideOutToTop 250ms ease-out;
+    animation-fill-mode: forwards;
 }
 
 .messages > li {
-  animation: slideInFromTop 250ms ease-in;
-  list-style: none;
-  background-color: rgba(176, 122, 254, 0.9); /* Фон с прозрачностью 90% */
-  border: 2px solid #b07afe; /* Рамка оставлена того же цвета */
-  padding: 1em;
-  margin-bottom: 0.5em;
-  border-radius: 8px;
-  pointer-events: all;
-  cursor: pointer;
+    animation: slideInFromTop 250ms ease-in;
+    list-style: none;
+    background-color: rgba(176, 122, 254, 0.9); /* Фон с прозрачностью 90% */
+    border: 2px solid #b07afe; /* Рамка оставлена того же цвета */
+    padding: 1em;
+    margin-bottom: 0.5em;
+    border-radius: 8px;
+    pointer-events: all;
+    cursor: pointer;
 }
 
 .messages > li.success,
 .messages > li.error {
     color: black; /* Зеленый текст */
-            font-weight: bold;
-
+    font-weight: bold;
 }
 
 .form-group select {
@@ -763,10 +760,8 @@ html, body {
     color: green; /* Зеленый текст */
     font-size: 1rem; /* Размер шрифта */
     margin-bottom: 15px; /* Отступ снизу */
-        font-weight: bold;
-            text-align: center;
-
-
+    font-weight: bold;
+    text-align: center;
 }
 
 /* Стиль для ошибок */
@@ -774,9 +769,7 @@ html, body {
     color: red; /* Красный текст */
     font-size: 1rem; /* Размер шрифта */
     margin-bottom: 15px; /* Отступ снизу */
-        font-weight: bold;
-            text-align: center;
-
-
+    font-weight: bold;
+    text-align: center;
 }
 /* есть в styles.css */

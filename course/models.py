@@ -5,6 +5,8 @@ from django.db import models
 from django.db import models
 from django.conf import settings
 
+from users.models import ProgrammingLanguage, BonusModule
+
 
 # Модель курса
 class Course(models.Model):
@@ -12,6 +14,8 @@ class Course(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    programming_languages = models.ManyToManyField(ProgrammingLanguage, related_name='courses')
+    bonus_modules = models.ManyToManyField(BonusModule, related_name='courses')
 
     def __str__(self):
         return self.title

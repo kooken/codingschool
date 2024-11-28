@@ -1,12 +1,10 @@
 import re
-
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordResetForm, AuthenticationForm, \
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, AuthenticationForm, \
     PasswordChangeForm
 from django.core.exceptions import ValidationError
-from django.contrib.auth import authenticate, get_user_model
 from users.models import User
 from django import forms
-from django.utils.translation import gettext_lazy as _  # Добавлен импорт
+from django.utils.translation import gettext_lazy as _
 
 
 class StyleFormMixin:
@@ -103,12 +101,14 @@ class UserLoginForm(StyleFormMixin, AuthenticationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'phone', 'country', 'email']  # Поля для редактирования
+        fields = ['avatar', 'phone', 'country', 'email', 'subscription_plan']  # Поля для редактирования
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'register-form-control'}),
             'phone': forms.TextInput(attrs={'class': 'register-form-control'}),
             'country': forms.TextInput(attrs={'class': 'register-form-control'}),
             'avatar': forms.FileInput(attrs={'class': 'register-form-control'}),
+            'subscription_plan': forms.Select(attrs={'class': 'register-form-control'})
+
         }
 
 

@@ -10,6 +10,14 @@
             <a href="{% url 'users:change_password' %}" class="btn-change">Change Password</a>
             <a href="{% url 'users:delete_account' %}" class="btn-delete">Delete Account</a>
         </div>
+        <h2>Your Subscription Plan</h2>
+        <p>
+            {% if user.subscription_plan %}
+            You are subscribed to: <strong>{{ user.subscription_plan }}</strong>
+            {% else %}
+            You don't have an active subscription plan.
+            {% endif %}
+        </p>
     </form>
 </div>
 {% endblock %}

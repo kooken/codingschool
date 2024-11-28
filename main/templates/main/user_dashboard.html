@@ -1,34 +1,76 @@
 {% extends 'course/base.html' %}
 {% block content %}
 <div class="profile-page">
-    <h2>Subscription Details</h2>
+    <div class="header">Your Subscription</div>
+    <div class="subscription-card">
 
-    {% if subscription %}
-    <p><strong>Plan:</strong> {{ subscription.plan.name }}</p>
+        {% if subscription %}
+        <div class="subscription-details">
+            <p><strong>Plan:</strong> {{ subscription.name }}</p>
 
-    {% if subscription.end_date %}
-    <p><strong>Duration:</strong>
-        {% if subscription.end_date %}
-        {{ subscription.start_date }} to {{ subscription.end_date }}
+            {% if subscription.end_date %}
+            <p><strong>Valid from:</strong>
+                {{ subscription.start_date }}
+            </p>
+            <p><strong>Valid to:</strong>
+                {{ subscription.end_date }}
+            </p>
+            {% else %}
+            <p><strong>Duration:</strong> Lifetime</p>
+            {% endif %}
+
+            <p><strong>Programming Languages:</strong>
+                {% for lang in subscription.programming_languages.all %}
+                {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Bonus Modules:</strong>
+                {% for module in subscription.bonus_modules.all %}
+                {{ module.display_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+        </div>
         {% else %}
-        Lifetime
+        <p>You don't have an active subscription!</p>
         {% endif %}
-    </p>
-    {% endif %}
+    </div>
+    <a href="{% url 'main:promo_code_page' %}" class="custom-button">Promocodes</a>
 
-    <p><strong>Programming Languages:</strong>
-        {% for lang in subscription.programming_languages.all %}
-        {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </p>
-    <p><strong>Bonus Modules:</strong>
-        {% for module in subscription.bonus_modules.all %}
-        {{ module.display_name }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </p>
-    {% else %}
-    <p>You don't have an active subscription.</p>
-    {% endif %}
 </div>
+
+<style>
+    .header {
+        text-align: center;
+        background-color: white;
+        font-family: 'Raleway', sans-serif;
+        color: #b07afe;
+        padding: 20px 0;
+        font-size: 24px;
+        font-weight: bold;
+    }
+.subscription-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;  /* Содержимое будет располагаться вертикально */
+    justify-content: center;  /* Центрируем по вертикали */
+    text-align: center;  /* Текст внутри карточки будет по центру */
+}
+    .subscription-details {
+    font-size: 16px;
+    line-height: 1.6;
+            font-family: 'Raleway', sans-serif;
+
+}
+
+.subscription-details p {
+    margin-bottom: 10px;
+}
+
+</style>
 {% endblock %}
 

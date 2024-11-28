@@ -11,37 +11,6 @@ import string
 from django.db.models import Q
 
 
-# class PromoCodeActivationView(View):
-#     """Вью для активации промокодов"""
-#
-#     def post(self, request, *args, **kwargs):
-#         promo_code = request.POST.get('promo_code')
-#         user = request.user
-#
-#         try:
-#             handler = PromoCodeHandler(user, promo_code)
-#             subscription = handler.process()
-#
-#             messages.success(request, f"Subscription activated successfully! Plan: {subscription.plan.name}")
-#             return redirect('dashboard')
-#
-#         except ValidationError as e:
-#             messages.error(request, str(e))
-#             return redirect('promo_code_activation')
-#
-#     def get(self, request, *args, **kwargs):
-#         return render(request, 'promo_code_activation.html')
-
-
-# class DashboardView(View):
-#     """Личный кабинет пользователя"""
-#
-#     def get(self, request, *args, **kwargs):
-#         course_manager = CourseAccessManager(request.user)
-#         accessible_courses = course_manager.get_accessible_courses()
-#
-#         return render(request, 'dashboard.html', {'courses': accessible_courses})
-
 # Генерация случайного уникального промокода
 def generate_promo_code(length=8):
     """Генерирует случайный уникальный промокод с фиксированной длиной."""
@@ -93,7 +62,6 @@ def activate_promo_code(request, promo_code_str):
 
         print(f"End date calculated: {end_date}")
 
-
         # Создаем подписку
         try:
             # Пытаемся найти существующую подписку
@@ -110,16 +78,6 @@ def activate_promo_code(request, promo_code_str):
             print("Error: Subscription plan not found.")
         except Exception as e:
             print(f"Error activating subscription: {str(e)}")
-
-        # Даем доступ к языкам программирования и бонусным модулям
-
-
-        # Добавляем связи ManyToMany
-
-
-        # # Даем доступ пользователю к языкам программирования и бонусным модулям
-        # request.user.programming_languages.add(*languages)
-        # request.user.bonus_modules.add(*modules)
 
         # Деактивируем промокод
         promo_code_instance.is_active = False
@@ -210,6 +168,14 @@ def promo_code_page(request):
 
                     print(f"Subscription updated: {subscription_plan}")
 
+                    request.user.subscription_plan = subscription_plan
+                    request.user.save()
+
+                    if request.user.subscription_plan:
+                        print(f"Subscription is related to user: {request.user.subscription_plan.name}")
+                    else:
+                        print("User has no subscription plan.")
+
                     # Генерация одного промокода
                     promo_code_str = generate_promo_code(length=8)  # Длина промокода всегда 8
 
@@ -218,8 +184,6 @@ def promo_code_page(request):
                         code=promo_code_str,
                         plan=subscription_plan,  # Привязываем только что созданный план подписки
                         is_active=True,  # По умолчанию промокод активен
-                        # programming_languages=programming_languages,
-                        # bonus_modules=bonus_modules,
                     )
 
                     # Ассоциируем языки программирования и бонусные модули с промокодом
@@ -249,21 +213,6 @@ def promo_code_page(request):
         'activation_result': activation_result,
     })
 
-    #     elif 'activate' in request.POST:
-    #         # Активируем промокод
-    #         promo_code = request.POST.get('promo_code')
-    #         result = activate_promo_code(request, promo_code)
-    #         if result:
-    #             print("Promo code activated!")
-    #             return redirect('main:promo_code_page')
-    #         else:
-    #             print("Error activating promo code.")
-    #             messages.error(request, "Error activating promo code.")
-    #
-    #     return redirect('main:promo_code_page')  # Перенаправляем на страницу после успешной генерации
-    #
-    # return render(request, 'main/promo_code_page.html', {'form': form, 'promo_code_str': promo_code_str})
-
 
 @login_required
 def user_dashboard(request):
@@ -289,7 +238,37 @@ def index(request):
 
 
 def courses(request):
-    return render(request, 'main/courses.html')
+    # Пример передачи данных в шаблон
+    courses_data = [
+        {
+            'name': 'Go',
+            'image': 'main/css/images/golang-course.png',
+            'description': 'Go, also known as Golang, is a statically typed, compiled programming language designed at Google. It\'s known for its simplicity, concurrency support, and performance.'
+        },
+        {
+            'name': 'Python',
+            'image': 'main/css/images/python-course.png',
+            'description': 'Python is an interpreted, high-level, general-purpose programming language. It emphasizes code readability and has a vast ecosystem of libraries.'
+        },
+        {
+            'name': 'C',
+            'image': 'main/css/images/c-course.png',
+            'description': 'C is a powerful general-purpose programming language. It is widely used in systems programming, game development, and embedded systems.'
+        },
+        {
+            'name': 'JavaScript',
+            'image': 'main/css/images/javascript-course.png',
+            'description': 'JavaScript is a versatile, high-level language commonly used in web development to add interactivity to web pages.'
+        },
+        {
+            'name': 'SQL',
+            'image': 'main/css/images/sql-course.png',
+            'description': 'SQL, or Structured Query Language, is a standardized language for managing and querying relational databases.'
+        }
+    ]
+
+    # Передаем данные в шаблон
+    return render(request, 'main/courses.html', {'courses_data': courses_data})
 
 
 def mission(request):

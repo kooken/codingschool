@@ -1,17 +1,16 @@
 from django.contrib.auth.views import (LoginView, PasswordResetConfirmView,
-                                       PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView)
+                                       PasswordResetView)
 from django.core.mail import EmailMultiAlternatives
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import update_session_auth_hash, logout, login
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from config.settings import EMAIL_HOST_USER
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, TemplateView
+from django.views.generic import CreateView
 import secrets
 from users.forms import UserRegisterForm, UserProfileForm, UserLoginForm, CustomPasswordResetForm, \
     CustomPasswordChangeForm, DeleteAccountForm, CustomPasswordUpdateForm
@@ -70,19 +69,10 @@ def email_verification(request, token):
     return redirect(reverse('users:login'))
 
 
-# class ProfileView(UpdateView):
-#     model = User
-#     form_class = UserProfileForm
-#     success_url = reverse_lazy('users:profile')
-#
-#     def get_object(self, queryset=None):
-#         return self.request.user
-
-
 class UserLoginView(LoginView):
     form_class = UserLoginForm
     template_name = 'users/login.html'
-    success_url = reverse_lazy('course:course_list')
+    success_url = reverse_lazy('main:user_dashboard')
 
     def form_valid(self, form):
         # Получаем пользователя из формы
@@ -163,14 +153,6 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
         messages.success(self.request,
                          "Your password has been successfully reset. You can now log in with your new password")
         return context
-
-
-# class CustomPasswordResetDoneView(PasswordResetDoneView):
-#     template_name = 'users/password_reset_done.html'
-#
-#
-# class CustomPasswordResetCompleteView(PasswordResetCompleteView):
-#     template_name = 'users/password_reset_complete.html'
 
 
 class UserProfileView(LoginRequiredMixin, FormView):

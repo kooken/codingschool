@@ -1,7 +1,6 @@
 from django.utils import timezone
 from enum import Enum
 from dateutil.relativedelta import relativedelta
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from config import settings

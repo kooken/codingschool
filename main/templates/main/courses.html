@@ -2,64 +2,31 @@
 {% load static %}
 {% block content %}
 <div class="header">Select one of the courses below to learn more</div>
+
 <div class="tabs-container">
-    <div class="tab" data-tab="go">Go</div>
-    <div class="tab" data-tab="python">Python</div>
-    <div class="tab" data-tab="c">C</div>
-    <div class="tab" data-tab="javascript">JavaScript</div>
-    <div class="tab" data-tab="sql">SQL</div>
+    {% for course in courses_data %}
+    <div class="tab" data-tab="{{ course.name|lower }}">{{ course.name }}</div>
+    {% endfor %}
 </div>
 
-<div class="content" id="go">
-    <img src="{% static 'main/css/images/golang.png' %}" alt="Go">
-    <div class="text">
-        <h2>Go Programming Language</h2>
-        <p>Go, also known as Golang, is a statically typed, compiled programming language designed at Google. It's known
-            for its simplicity, concurrency support, and performance.</p>
+<div class="tabs-content-container">
+    {% for course in courses_data %}
+    <div class="content" id="{{ course.name|lower }}">
+        <img src="{% static course.image %}" alt="{{ course.name }}">
+        <div class="text">
+            <h2>{{ course.name }} Programming Language</h2>
+            <p>{{ course.description }}</p>
+        </div>
     </div>
-</div>
-
-<div class="content" id="python">
-    <img src="{% static 'main/css/images/python.png' %}" alt="Python">
-    <div class="text">
-        <h2>Python Programming Language</h2>
-        <p>Python is an interpreted, high-level, general-purpose programming language. It emphasizes code readability
-            and has a vast ecosystem of libraries.</p>
-    </div>
-</div>
-
-<div class="content" id="c">
-    <img src="{% static 'main/css/images/clang.png' %}" alt="C">
-    <div class="text">
-        <h2>C Programming Language</h2>
-        <p>C is a powerful general-purpose programming language. It is widely used in systems programming, game
-            development, and embedded systems.</p>
-    </div>
-</div>
-
-<div class="content" id="javascript">
-    <img src="{% static 'main/css/images/jslang.png' %}" alt="JavaScript">
-    <div class="text">
-        <h2>JavaScript Programming Language</h2>
-        <p>JavaScript is a versatile, high-level language commonly used in web development to add interactivity to web
-            pages.</p>
-    </div>
-</div>
-
-<div class="content" id="sql">
-    <img src="{% static 'main/css/images/sql.png' %}" alt="SQL">
-    <div class="text">
-        <h2>SQL Programming Language</h2>
-        <p>SQL, or Structured Query Language, is a standardized language for managing and querying relational
-            databases.</p>
-    </div>
+    {% endfor %}
 </div>
 
 <style>
     .header {
         text-align: center;
-        background-color: #6c63ff;
-        color: white;
+        background-color: white;
+        font-family: 'Raleway', sans-serif;
+        color: #b07afe;
         padding: 20px 0;
         font-size: 24px;
         font-weight: bold;
@@ -69,53 +36,61 @@
     display: flex;
     justify-content: center;
     gap: 15px;
-    background-color: #dcdcdc;
+    background-color: white;
     padding: 10px 0;
     position: sticky;
     top: 0; /* Keep the tabs bar on top while scrolling */
     z-index: 10; /* Keep tabs above content */
+
 }
+
+
+    .tabs-content-container {
+        background-color: white;
+    }
 
 /* Tab styles */
 .tab {
     padding: 10px 20px;
     cursor: pointer;
-    background-color: #fff;
-    border: 2px solid #6c63ff;
+    background-color: white;
+    border: 2px solid #b07afe;
     border-radius: 5px;
     font-size: 16px;
+    font-family: 'Raleway', sans-serif;
     font-weight: bold;
-    color: #6c63ff;
+    color: #b07afe;
     transition: all 0.3s ease;
 }
 
 .tab:hover {
-    background-color: #6c63ff;
+    background-color: #b07afe;
     color: white;
 }
 
 .tab.active {
-    background-color: #6c63ff;
+    background-color: #b07afe;
     color: white;
 }
 
 /* Content sections, hidden initially */
+/* Скрыть все вкладки по умолчанию */
 .content {
-    display: none;  /* Hide all content initially */
-    margin: 20px auto;
-    max-width: 800px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;  /* Скрываем все элементы с классом .content */
 }
 
-/* Show active content */
+/* Показывать только активный контент */
 .content.active {
-    display: flex;  /* Show the content that has the 'active' class */
+    display: flex;  /* Показываем только активный контент */
+                margin: 20px auto;
+        max-width: 800px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Content images */
@@ -128,16 +103,19 @@
 /* Content text styles */
 .content .text {
     max-width: 55%;
+    font-family: 'Raleway', sans-serif
 }
 
 .content .text h2 {
     margin: 0 0 10px;
+    font-family: 'Raleway', sans-serif
     font-size: 22px;
-    color: #6c63ff;
+    color: #b07afe;
 }
 
 .content .text p {
-    font-size: 16px;
+    font-size: 20px;
+    font-family: 'Raleway', sans-serif
     line-height: 1.6;
 }
 </style>
@@ -146,23 +124,40 @@
 {% block extra_js %}
 <script>
     console.log('JavaScript loaded');
+
+    // Получаем все вкладки и контент
     const tabs = document.querySelectorAll('.tab');
     const contents = document.querySelectorAll('.content');
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            console.log('Clicked tab:', tab);  // Log the clicked tab element
+            console.log('Clicked tab:', tab);  // Логируем нажатую вкладку
 
-            // Remove active class from all tabs and contents
-            tabs.forEach(t => t.classList.remove('active'));  // Remove active from all tabs
-            contents.forEach(content => content.classList.remove('active'));  // Remove active from all contents
+            // Снимаем класс 'active' со всех вкладок и контента
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
 
-            // Add active class to clicked tab and corresponding content
-            tab.classList.add('active');  // Add active to clicked tab
-            const contentToShow = document.getElementById(tab.dataset.tab);  // Find the content by its ID
-            console.log('Showing content:', contentToShow);  // Log the content being shown
-            contentToShow.classList.add('active');  // Show corresponding content
+            // Добавляем класс 'active' только на выбранную вкладку
+            tab.classList.add('active');
+
+            // Находим контент для соответствующей вкладки по ID
+            const contentToShow = document.getElementById(tab.dataset.tab);  // Получаем content по ID из data-tab
+            console.log('Showing content:', contentToShow);  // Логируем контент, который будем показывать
+
+            // Показываем соответствующий контент
+            if (contentToShow) {
+                contentToShow.classList.add('active');
+            }
         });
     });
+
+    // Сделаем первую вкладку активной по умолчанию
+    if (tabs.length > 0) {
+        tabs[0].classList.add('active');
+        const firstContent = document.getElementById(tabs[0].dataset.tab);
+        if (firstContent) {
+            firstContent.classList.add('active');
+        }
+    }
 </script>
 {% endblock %}

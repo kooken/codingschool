@@ -1,34 +1,38 @@
-# course/views.py
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView
-
-from users.models import ProgrammingLanguage
 from .models import Course, Lesson
 
 
 class AvailableCourseView(LoginRequiredMixin, ListView):
     template_name = 'course/available_course.html'
-    context_object_name = 'course'
+    context_object_name = 'courses'
 
     def get_queryset(self):
-        if self.request.user.subscription_plan:
-            return self.request.user.subscription_plan.programming_languages.all()
+        user = self.request.user
+
+        if user.subscription_plan:
+            # Получаем выбранные языки программирования и бонусные модули
+            programming_languages = user.subscription_plan.programming_languages.all()
+            bonus_modules = user.subscription_plan.bonus_modules.all()
+
+            # Фильтруем курсы по языкам программирования и бонусным модулям
+            courses_by_languages = Course.objects.filter(programming_languages__in=programming_languages)
+            courses_by_modules = Course.objects.filter(bonus_modules__in=bonus_modules)
+
+            # Объединяем курсы и исключаем дубли
+            courses = courses_by_languages | courses_by_modules  # Django ORM объединяет и удаляет дубли
+            courses = courses.distinct()  # Убираем дубли для надежности
+
+            return courses
         else:
-            return ProgrammingLanguage.objects.none()  # or handle this case differently
+            # Если подписки нет, ничего не доступно
+            return Course.objects.none()
 
 
-def course_detail(request):
-    return render(request, 'course/course_detail.html')
-
-
-# class CourseDetailView(LoginRequiredMixin, DetailView):
-#     model = Course
-#     template_name = 'courses/course_detail.html'
-#     context_object_name = 'course'
-#
-#     def get_queryset(self):
-#         return self.request.user.courses.all()
+def course_detail(request, id):
+    course = get_object_or_404(Course, id=id)
+    return render(request, 'course/course_detail.html', {'course': course})
 
 
 class LessonDetailView(LoginRequiredMixin, DetailView):
@@ -38,31 +42,3 @@ class LessonDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return Lesson.objects.filter(course__users=self.request.user)
-
-
-def course_list(request):
-    return render(request, 'course/course_list.html')
-
-
-# courses = Course.objects.all()
-# return render(request, 'course/course_list.html', {'courses': courses})
-
-# def course_detail(request, course_id):
-
-
-# def course_detail(request):
-#     return render(request, 'course/course_detail.html')
-
-
-# course = get_object_or_404(Course, id=course_id)
-# return render(request, 'course/course_detail.html', {'course': course})
-
-
-def course_by_category(request, category):
-    courses = Course.objects.filter(category=category)
-    return render(request, 'course/course_list.html', {'courses': courses, 'category': category})
-
-# def lesson_detail(request, course_id, lesson_id):
-#     course = get_object_or_404(Course, id=course_id)
-#     lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
-#     return render(request, 'course/lesson_detail.html', {'course': course, 'lesson': lesson})

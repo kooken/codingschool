@@ -13,6 +13,19 @@
     <meta property="og:title" content="home">
     <meta property="og:type" content="website">
     <meta data-intl-tel-input-cdn-path="intlTelInput/">
+    <style>
+
+        html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1; /* Контент занимает все доступное пространство */
+}
+    </style>
 </head>
 <body class="u-body u-xl-mode" data-lang="ru">
 {% include 'main/includes/header.html' %}
