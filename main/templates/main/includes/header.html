@@ -1,14 +1,24 @@
 <header>
     <div class="header-content">
         <div class="logo">
-            <span>KOOKEN</span>
+            <a href="{% url 'main:index' %}">
+                <span>KOOKEN</span>
+            </a>
         </div>
         <nav>
             <ul>
-                <li><a href="{% url 'main:index' %}">home</a></li>
-                <li><a href="{% url 'main:mission' %}">mission</a></li>
-                <li><a href="{% url 'main:courses' %}">courses</a></li>
-                <li><a href="{% url 'main:team' %}">team</a></li>
+                <li>
+                    <a href="{% url 'main:index' %}" class="{% if request.path == '/' %}active{% endif %}">home</a>
+                </li>
+                <li>
+                    <a href="{% url 'main:mission' %}" class="{% if request.path == '/mission/' %}active{% endif %}">mission</a>
+                </li>
+                <li>
+                    <a href="{% url 'main:courses' %}" class="{% if request.path == '/courses/' %}active{% endif %}">courses</a>
+                </li>
+                <li>
+                    <a href="{% url 'main:team' %}" class="{% if request.path == '/team/' %}active{% endif %}">team</a>
+                </li>
             </ul>
         </nav>
         <div class="auth-buttons">
@@ -24,78 +34,88 @@
 
 <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
     body {
-      font-family: Ral, sans-serif;
+        font-family: Ral, sans-serif;
     }
 
     header {
-      position: sticky;
-      top: 0;
-      background-color: white;
-      padding: 10px 20px;
-      border-bottom: 3px solid #b07afe;
-      z-index: 1000;
+        position: sticky;
+        top: 0;
+        background-color: white;
+        padding: 10px 20px;
+        border-bottom: 3px solid #b07afe;
+        z-index: 1000;
     }
 
     .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1200px;
-      margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
     nav ul {
-      display: flex;
-      list-style: none;
+        display: flex;
+        list-style: none;
     }
 
     nav ul li {
-      margin: 0 15px;
+        margin: 0 15px;
     }
 
     nav ul li a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-      font-family: 'Raleway', sans-serif;
-      font-size: 16px;
+        text-decoration: none;
+        color: black;
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        font-size: 16px;
     }
 
     nav ul li a:hover {
-      text-decoration: none;
-      color: #b07afe;
-      font-weight: bold;
-      font-family: 'Raleway', sans-serif;
-      font-size: 16px;
+        text-decoration: none;
+        color: #b07afe;
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        font-size: 16px;
+    }
+
+    nav a.active {
+        color: #b07afe;
+        font-weight: bold;
     }
 
     .auth-buttons {
-      display: flex;
+        display: flex;
     }
 
     .auth-btn {
-      background-color: #b07afe;
-      color: black;
-      border: none;
-      font-weight: bold;
-      font-family: 'Raleway', sans-serif;
-      font-size: 16px;
-      border-radius: 4px;
-      padding: 8px 16px;
-      margin-left: 10px;
-      cursor: pointer;
+        background-color: #b07afe;
+        color: black;
+        border: none;
+        font-weight: bold;
+        font-family: 'Raleway', sans-serif;
+        font-size: 16px;
+        border-radius: 4px;
+        padding: 8px 16px;
+        margin-left: 10px;
+        cursor: pointer;
     }
 
     .auth-btn:hover {
         background-color: black;
         color: #b07afe;
         font-weight: bold;
+    }
+
+    .logo a {
+        text-decoration: none;
+        color: inherit;
     }
 
     .logo span {

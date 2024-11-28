@@ -32,7 +32,11 @@
 </footer>
 
 <style>
-    /* Основной стиль футера */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     .footer {
         background-color: #333333;
         color: white;
@@ -46,17 +50,14 @@
         border-top: 3px solid #b07afe;
     }
 
-    /* Контейнер для содержимого футера */
     .footer-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 20px;
     }
 
-    /* Логотип футера */
     .footer-logo span {
         font-family: 'Rubik Doodle Shadow', sans-serif;
         font-size: 24px;
@@ -67,13 +68,11 @@
         color: #b07afe;
     }
 
-    /* Иконки соцсетей */
     .footer-icons {
         display: flex;
         gap: 15px;
     }
 
-    /* Стиль для иконок внутри круга */
     .footer-icon {
         display: inline-block;
         width: 40px;
@@ -87,7 +86,6 @@
         transition: background-color 0.3s, transform 0.3s;
     }
 
-    /* Размер иконки */
     .footer-icon svg {
         width: 32px;
         <!--    height: 32px;-->
@@ -95,13 +93,11 @@
         transition: color 0.3s;
     }
 
-    /* Эффект при наведении */
     .footer-icon:hover {
         background-color: black;
         color: #b07afe;
     }
 
-    /* Ссылки футера */
     .footer-links {
         display: flex;
         justify-content: center;
@@ -120,7 +116,6 @@
         color: #b07afe;
     }
 
-    /* Уведомления или текст в футере */
     .footer-notifications {
         margin-top: 15px;
         font-size: 12px;

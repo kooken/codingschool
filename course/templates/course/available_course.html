@@ -1,8 +1,8 @@
 {% extends 'course/base.html' %}
 {% load static %}
 {% block content %}
-<h1>My courses</h1>
-<p>What a wonderful time to continue your tech journey. Go, little coding star!</p>
+<div class="header">My courses</div>
+<div class="sub-header">What a wonderful time to continue your tech journey. Go, little coding star!</div>
 <div class="courses-container">
     {% for course in courses %}
     <div class="course-card">
@@ -18,20 +18,42 @@
     <p>No courses avalaible :(</p>
     {% endfor %}
 </div>
-<a href="{% url 'main:user_dashboard' %}" class="custom-button">Go to dashboard!!</a>
-
+<div class="button-container">
+    <div class="custom-my-button">
+        <a href="{% url 'main:user_dashboard' %}">Go to dashboard!!</a>
+    </div>
+</div>
 
 <style>
+    .header {
+        text-align: center;
+        background-color: white;
+        font-family: 'Raleway', sans-serif;
+        color: #b07afe;
+        padding: 20px 0;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .sub-header {
+        text-align: center;
+        background-color: white;
+        font-family: 'Raleway', sans-serif;
+        color: black;
+        padding: 10px 0;
+        font-size: 20px;
+    }
+
     .courses-container {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 20px;
         margin: 20px;
         padding: 20px 0;
-        align-items: center; /* Центрирует карточки по вертикали */
+        align-items: center;
         display: flex;
         justify-content: center;
-        text-align: center; /* Чтобы текст внутри карточек был по центру */
- }
+        text-align: center;
+    }
 
     .course-card {
          background-color: #fff;
@@ -39,8 +61,8 @@
          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
          overflow: hidden;
          text-align: center;
-         width: 100%; /* Позволяет карточкам растягиваться */
-         max-width: 300px; /* Максимальная ширина для карточки */
+         width: 100%;
+         max-width: 300px;
     }
 
     .course-image {
@@ -49,38 +71,75 @@
         object-fit: contain;
     }
 
- .course-info {
-     padding: 15px;
- }
+    .course-info {
+        padding: 15px;
+    }
 
- .course-info h3 {
-     font-size: 18px;
-     color: #333;
-     font-family: 'Raleway', sans-serif;
- }
+    .course-info h3 {
+        font-size: 18px;
+        color: #333;
+        font-family: 'Raleway', sans-serif;
+    }
 
- .course-info p {
-     color: #666;
-     font-family: 'Raleway', sans-serif;
-     font-size: 14px;
-     margin: 10px 0;
- }
+    .course-info p {
+        color: #666;
+        font-family: 'Raleway', sans-serif;
+        font-size: 14px;
+        margin: 10px 0;
+    }
 
- .btn {
-     display: inline-block;
-     padding: 10px 20px;
-     background-color: #b07afe;
-     color: black;
-     text-decoration: none;
-     border-radius: 5px;
-     font-weight: bold;
-     transition: background-color 0.3s;
- }
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #b07afe;
+        color: black;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
 
- .btn:hover {
-    background-color: black;
-    color: #b07afe;
-    font-weight: bold;
- }
+    .btn:hover {
+        background-color: black;
+        color: #b07afe;
+        font-weight: bold;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10vh;
+    }
+
+    .custom-my-button a {
+        background-color: #b07afe;
+        text-decoration: none;
+        color: black;
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .custom-my-button a:hover {
+        background-color: black;
+        text-decoration: none;
+        color: #b07afe;
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 15px;
+    }
 </style>
 {% endblock %}

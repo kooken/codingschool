@@ -31,58 +31,52 @@
         font-size: 24px;
         font-weight: bold;
     }
-/* Ensure the tabs bar is always visible */
-.tabs-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    background-color: white;
-    padding: 10px 0;
-    position: sticky;
-    top: 0; /* Keep the tabs bar on top while scrolling */
-    z-index: 10; /* Keep tabs above content */
 
-}
-
+    .tabs-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        background-color: white;
+        padding: 10px 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
 
     .tabs-content-container {
         background-color: white;
     }
 
-/* Tab styles */
-.tab {
-    padding: 10px 20px;
-    cursor: pointer;
-    background-color: white;
-    border: 2px solid #b07afe;
-    border-radius: 5px;
-    font-size: 16px;
-    font-family: 'Raleway', sans-serif;
-    font-weight: bold;
-    color: #b07afe;
-    transition: all 0.3s ease;
-}
+    .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: white;
+        border: 2px solid #b07afe;
+        border-radius: 5px;
+        font-size: 16px;
+        font-family: 'Raleway', sans-serif;
+        font-weight: bold;
+        color: #b07afe;
+        transition: all 0.3s ease;
+    }
 
-.tab:hover {
-    background-color: #b07afe;
-    color: white;
-}
+    .tab:hover {
+        background-color: #b07afe;
+        color: white;
+    }
 
-.tab.active {
-    background-color: #b07afe;
-    color: white;
-}
+    .tab.active {
+        background-color: #b07afe;
+        color: white;
+    }
 
-/* Content sections, hidden initially */
-/* Скрыть все вкладки по умолчанию */
-.content {
-    display: none;  /* Скрываем все элементы с классом .content */
-}
+    .content {
+        display: none;
+    }
 
-/* Показывать только активный контент */
-.content.active {
-    display: flex;  /* Показываем только активный контент */
-                margin: 20px auto;
+    .content.active {
+        display: flex;
+        margin: 20px auto;
         max-width: 800px;
         display: flex;
         align-items: center;
@@ -91,33 +85,31 @@
         padding: 20px;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+    }
 
-/* Content images */
-.content img {
-    max-width: 40%;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
+    .content img {
+        max-width: 40%;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
 
-/* Content text styles */
-.content .text {
-    max-width: 55%;
-    font-family: 'Raleway', sans-serif
-}
+    .content .text {
+        max-width: 55%;
+        font-family: 'Raleway', sans-serif
+    }
 
-.content .text h2 {
-    margin: 0 0 10px;
-    font-family: 'Raleway', sans-serif
-    font-size: 22px;
-    color: #b07afe;
-}
+    .content .text h2 {
+        margin: 0 0 10px;
+        font-family: 'Raleway', sans-serif
+        font-size: 22px;
+        color: #b07afe;
+    }
 
-.content .text p {
-    font-size: 20px;
-    font-family: 'Raleway', sans-serif
-    line-height: 1.6;
-}
+    .content .text p {
+        font-size: 20px;
+        font-family: 'Raleway', sans-serif
+        line-height: 1.6;
+    }
 </style>
 {% endblock %}
 
@@ -125,33 +117,27 @@
 <script>
     console.log('JavaScript loaded');
 
-    // Получаем все вкладки и контент
     const tabs = document.querySelectorAll('.tab');
     const contents = document.querySelectorAll('.content');
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            console.log('Clicked tab:', tab);  // Логируем нажатую вкладку
+            console.log('Clicked tab:', tab);
 
-            // Снимаем класс 'active' со всех вкладок и контента
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(content => content.classList.remove('active'));
 
-            // Добавляем класс 'active' только на выбранную вкладку
             tab.classList.add('active');
 
-            // Находим контент для соответствующей вкладки по ID
-            const contentToShow = document.getElementById(tab.dataset.tab);  // Получаем content по ID из data-tab
-            console.log('Showing content:', contentToShow);  // Логируем контент, который будем показывать
+            const contentToShow = document.getElementById(tab.dataset.tab);
+            console.log('Showing content:', contentToShow);
 
-            // Показываем соответствующий контент
             if (contentToShow) {
                 contentToShow.classList.add('active');
             }
         });
     });
 
-    // Сделаем первую вкладку активной по умолчанию
     if (tabs.length > 0) {
         tabs[0].classList.add('active');
         const firstContent = document.getElementById(tabs[0].dataset.tab);

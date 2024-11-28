@@ -52,31 +52,25 @@
 </section>
 
 <style>
-    /* General Reset */
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
 
-    /* Body styling */
     body {
         font-family: 'Raleway', sans-serif;
-        background-color: #f9f9f9;
-
+        background-color: white;
     }
 
-    /* Mission Section Layout */
     .mission-section {
         padding: 20px;
         background-color: #fff;
         max-width: 1200px;
         margin: 0 auto;
-            padding-bottom: 100px; /* Если у вас есть контейнер для контента */
-
+        padding-bottom: 100px;
     }
 
-    /* Header section */
     .mission-header h1 {
         font-size: 32px;
         font-family: 'Raleway', sans-serif;
@@ -91,7 +85,6 @@
         line-height: 1.6;
     }
 
-    /* Content section with bullets and images */
     .mission-content {
         display: flex;
         justify-content: space-between;
@@ -123,7 +116,6 @@
         color: black;
     }
 
-    /* Image container */
     .mission-images {
         flex: 1;
         display: flex;
@@ -131,15 +123,14 @@
         gap: 20px;
     }
 
-.mission-images img {
-        width: 50%; /* Adjusted width to make the images smaller */
+    .mission-images img {
+        width: 50%;
         height: auto;
         object-fit: cover;
         border-radius: 8px;
-        margin: 0 auto; /* Center the images */
+        margin: 0 auto;
     }
 
-    /* Conclusion Section */
     .mission-conclusion {
         margin-top: 40px;
         padding-top: 20px;
@@ -155,5 +146,4 @@
         margin: 0 auto;
     }
 </style>
-
 {% endblock %}

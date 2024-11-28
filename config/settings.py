@@ -145,7 +145,7 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 AUTH_USER_MODEL = 'users.User'
-LOGIN_REDIRECT_URL = 'course:course_list'
+LOGIN_REDIRECT_URL = 'main:user_dashboard'
 LOGOUT_REDIRECT_URL = 'main:index'
 LOGIN_URL = 'users:login'
 

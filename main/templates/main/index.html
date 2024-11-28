@@ -34,7 +34,7 @@
     /* Body styles */
     body {
         font-family: 'Raleway', sans-serif;
-        background-color: #f9f9f9;
+        background-color: white;
     }
 
     /* Container for the main section */
@@ -42,7 +42,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 60vh; /* Adjusted for less space at the top and bottom */
+        min-height: 80vh; /* Adjusted for less space at the top and bottom */
         padding: 10px; /* Reduced padding */
     }
 
@@ -56,13 +56,13 @@
     /* Image container styling */
     .image-container {
         flex: 1;
-        padding-right: 20px;
+        padding-right: 10px;
     }
 
     .image-container img {
         width: 100%;
-        height: auto;
-        object-fit: cover;
+        height: 100%;
+        object-fit: contain;
     }
 
     /* Text container styling */
@@ -73,29 +73,29 @@
         padding: 20px;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 60px;
     }
 
     .text-container h2 {
-    font-family: 'Raleway', sans-serif;
+        font-family: 'Raleway', sans-serif;
         font-size: 24px;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
         color: black;
     }
 
     .text-container ul {
         list-style-type: disc;
-        padding-left: 20px;
+        padding-left: 30px;
     }
 
     .text-container li {
         font-size: 20px;
-        margin-bottom: 10px;
-        color: #555;
+        margin-bottom: 30px;
+        color: black;
     }
 
     .text-container li:last-child {
         margin-bottom: 0;
     }
 </style>
-
 {% endblock %}
