@@ -1,14 +1,9 @@
 from django.db import models
-
-# Create your models here.
-
-from django.db import models
 from django.conf import settings
 
 from users.models import ProgrammingLanguage, BonusModule
 
 
-# Модель курса
 class Course(models.Model):
     title = models.CharField(max_length=255, unique=True)
     description = models.TextField()
@@ -21,7 +16,6 @@ class Course(models.Model):
         return self.title
 
 
-# Модель урока
 class Lesson(models.Model):
     course = models.ForeignKey(Course, related_name='lessons', on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -33,7 +27,6 @@ class Lesson(models.Model):
         return f"{self.course.title} - {self.title}"
 
 
-# Модель лайков для уроков
 class LessonLike(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, related_name='likes', on_delete=models.CASCADE)
@@ -42,7 +35,6 @@ class LessonLike(models.Model):
         unique_together = ('user', 'lesson')
 
 
-# Модель комментариев
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, related_name='comments', on_delete=models.CASCADE)
@@ -53,7 +45,6 @@ class Comment(models.Model):
         return f"Comment by {self.user} on {self.lesson.title}"
 
 
-# Модель закладок
 class Bookmark(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, related_name='bookmarks', on_delete=models.CASCADE)
@@ -62,7 +53,6 @@ class Bookmark(models.Model):
         unique_together = ('user', 'lesson')
 
 
-# Модель тестов
 class Test(models.Model):
     lesson = models.OneToOneField(Lesson, related_name='test', on_delete=models.CASCADE)
     questions = models.JSONField()  # Сохранение вопросов и ответов в формате JSON

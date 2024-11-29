@@ -19,8 +19,8 @@ from django.template.loader import render_to_string
 
 
 def user_logout(request):
-    logout(request)  # Завершаем сессию пользователя
-    return redirect('main:index')  # Перенаправляем на главную страницу или страницу входа
+    logout(request)
+    return redirect('main:index')
 
 
 class RegisterView(CreateView):
@@ -38,16 +38,13 @@ class RegisterView(CreateView):
         host = self.request.get_host()
         url = f'http://{host}/users/email_confirm/{token}/'
 
-        # Рендерим HTML-шаблон
         html_message = render_to_string('emails/email_confirmation.html', {
             'email': user.email,
             'url': url,
         })
 
-        # Текстовое письмо (резервный вариант)
         text_message = f'Hello! Click on the link to confirm your email: {url}'
 
-        # Отправка письма с HTML и текстом
         email = EmailMultiAlternatives(
             subject='Email Confirmation',
             body=text_message,
@@ -75,7 +72,6 @@ class UserLoginView(LoginView):
     success_url = reverse_lazy('main:user_dashboard')
 
     def form_valid(self, form):
-        # Получаем пользователя из формы
         user = form.cleaned_data.get('user')
 
         if user is not None and user.is_authenticated:
@@ -89,37 +85,29 @@ class UserLoginView(LoginView):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'users/password_reset_form.html'
     email_template_name = 'emails/password_reset_email.html'
-    form_class = CustomPasswordResetForm  # Используем кастомную форму для проверки email
-
-    # success_url = reverse_lazy('users:password_reset_done')
+    form_class = CustomPasswordResetForm
 
     def form_valid(self, form):
-        # Получаем email пользователя
         email = form.cleaned_data["email"]
         user = get_object_or_404(User, email=email)
 
-        # Генерируем токен для сброса пароля
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(str(user.pk).encode())
 
-        # Генерация ссылки для сброса пароля
         host = self.request.get_host()
         reset_url = f'http://{host}{reverse_lazy("users:password_reset_confirm", kwargs={"uidb64": uid, "token": token})}'
 
-        # Рендерим HTML-шаблон для email
         html_message = render_to_string('emails/password_reset_email.html', {
             'email': user.email,
             'reset_url': reset_url,
         })
 
-        # Текстовое письмо (резервный вариант)
         text_message = f'Hello! Click on the link to reset your password: {reset_url}'
 
-        # Отправляем email
         email_message = EmailMultiAlternatives(
             subject="Password Reset Request",
             body=text_message,
-            from_email=EMAIL_HOST_USER,  # Замените на вашу почту
+            from_email=EMAIL_HOST_USER,
             to=[user.email],
         )
         email_message.attach_alternative(html_message, "text/html")
@@ -131,7 +119,6 @@ class CustomPasswordResetView(PasswordResetView):
         return render(self.request, self.template_name, {'form': form})
 
     def form_invalid(self, form):
-        # Очищаем сообщения, чтобы не показывались сообщения от предыдущих запросов
         storage = messages.get_messages(self.request)
         storage.used = True
         return super().form_invalid(form)
@@ -139,15 +126,13 @@ class CustomPasswordResetView(PasswordResetView):
 
 class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
-    form_class = CustomPasswordChangeForm  # Используем кастомную форму
+    form_class = CustomPasswordChangeForm
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        # Получаем uidb64 и token из URL параметров
         uidb64 = self.kwargs.get('uidb64')
         token = self.kwargs.get('token')
 
-        # Добавляем их в контекст
         context['uidb64'] = uidb64
         context['token'] = token
         messages.success(self.request,

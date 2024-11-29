@@ -1,19 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
+
 #profile-page {
     background-color: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-family: 'Raleway', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: 30px;
+    justify-content: space-between;
 }
 
 #profile-page .text-danger {
     font-family: 'Raleway', sans-serif;
-    color: red;  /* Красный цвет для текста ошибки */
-    font-size: 14px;  /* Размер шрифта */
-    margin-top: 5px;  /* Отступ сверху */
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
-/* Стили для ошибок в каждом поле */
 .profile-form .form-group .text-danger {
     color: red;
     font-family: 'Raleway', sans-serif;
@@ -25,7 +28,7 @@
     font-family: 'Raleway', sans-serif;
     text-align: center;
     font-size: 28px;
-    color: #333;
+    color: black;
     margin-bottom: 20px;
 }
 
@@ -38,13 +41,13 @@
 }
 
 .profile-form input[type="text"] {
-    width: 100%; /* Заполняет всю ширину формы */
-    padding: 10px; /* Добавляем отступы внутри поля */
-    border: 1px solid #ccc; /* Устанавливаем границу */
-    border-radius: 5px; /* Добавляем округление углов */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     font-family: 'Raleway', sans-serif;
-    font-size: 1rem; /* Размер шрифта */
-    margin-bottom: 10px; /* Отступ снизу для лучшего восприятия */
+    font-size: 1rem;
+    margin-bottom: 10px;
 }
 
 .profile-page h3 {
@@ -59,12 +62,13 @@
     font-family: 'Raleway', sans-serif;
     text-align: center;
     font-size: 30px;
-    color: #333;
+    color: black;
     margin-bottom: 20px;
 }
 
 .profile-page .btn-change {
     background-color: #b07afe;
+    font-family: 'Raleway', sans-serif;
     color: black;
     font-size: 16px;
     font-weight: bold;
@@ -79,6 +83,7 @@
 
 .profile-page .btn-change:hover {
     background-color: black;
+    font-family: 'Raleway', sans-serif;
     color: #b07afe;
     font-weight: bold;
 }
@@ -91,24 +96,56 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
-    margin: 30px auto;  /* Отступы сверху и снизу 30px */
+    margin: 30px auto;
+    flex-grow: 1;
+    margin-bottom: 15px;
 }
 
 .profile-form .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-family: 'Raleway', sans-serif;
+}
+
+.profile-form label {
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+}
+
+.profile-form .form-group:last-child {
+    margin-bottom: 60px;
 }
 
 .profile-form .form-label {
     font-family: 'Raleway', sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: #555;
+    color: black;
+}
+
+.btn-actions a {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Raleway', sans-serif;
+    gap: 10px;
+    text-decoration: none;
 }
 
 .profile-page .btn-delete {
     background-color: #f44336;
     color: black;
+    font-family: 'Raleway', sans-serif;
     font-size: 16px;
     font-weight: bold;
     padding: 12px 20px;
@@ -117,7 +154,7 @@
     cursor: pointer;
     width: 100%;
     text-align: center;
-    margin-bottom: 15px
+    margin-bottom: 30px;
 }
 
 .profile-page .btn-delete:hover {
@@ -129,4 +166,137 @@
 .profile-form input:focus {
     border-color: #b07afe;
     outline: none;
+}
+
+.profile-form input:focus {
+    border-color: #b07afe;
+    outline: none;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+.profile-form input:hover {
+    border-color: #b07afe;
+    outline: none;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+select.django-select2 {
+    display: none !important;
+}
+
+.select2-container--default {
+    width: 100% !important;
+    z-index: 1000;
+}
+
+.select2-container--default .select2-selection--single {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    margin: 1px auto;
+    border-radius: 4px;
+    height: 40px;
+    padding: 10px;
+    padding-right: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.select2-container--default .select2-selection__rendered {
+    color: black;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.select2-container--default .select2-selection__arrow {
+    display: inline-block;
+    color: #b07afe;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    background: none;
+    border: none;
+}
+
+.select2-container--default .select2-selection__arrow b {
+    border-color: #b07afe transparent transparent transparent !important;
+    border-width: 5px 4px 0 4px;
+    border-style: solid;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    transition: transform 0.5s ease-in-out;
+}
+
+.select2-container--open .select2-selection__arrow b {
+    transform: translate(-50%, -50%) rotate(180deg);
+}
+
+.select2-container--default .select2-search--dropdown {
+    position: absolute;
+    top: 100px;
+    z-index: 999;
+    width: 100%;
+    border-color: #b07afe;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+    display: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.select2-container--default.select2-container--open .select2-search--dropdown {
+    display: block;
+    top: 100%;
+}
+
+.select2-container--default.select2-container--open {
+    margin-bottom: 60px;
+}
+
+.select2-container--default .select2-selection--single:hover {
+    border-color: #b07afe;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+/* Стили для фокуса поля ввода */
+.select2-container--default .select2-selection--single:focus {
+    border-color: #b07afe;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    color: black;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field::placeholder {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: red;
+}
+
+.select2-container--default .select2-results__options {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: black;
+}
+
+.select2-container--default .select2-results__option {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    padding: 5px 10px;
+    color: black;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #b07afe;
+    color: black;
+    font-weight: bold;
 }

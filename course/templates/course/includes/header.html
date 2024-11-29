@@ -1,3 +1,7 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/course_header.css' %}">
+{% endblock %}
 <header>
     <div class="header-content">
         <div class="logo">
@@ -35,102 +39,3 @@
         </div>
     </div>
 </header>
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: Ral, sans-serif;
-    }
-
-    header {
-        position: sticky;
-        top: 0;
-        background-color: white;
-        padding: 10px 20px;
-        border-bottom: 3px solid #b07afe;
-        z-index: 1000;
-    }
-
-    .header-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    nav ul {
-        display: flex;
-        list-style: none;
-    }
-
-    nav ul li {
-        margin: 0 15px;
-    }
-
-    nav ul li a {
-        text-decoration: none;
-        color: black;
-        font-weight: bold;
-        font-family: 'Raleway', sans-serif;
-        font-size: 16px;
-    }
-
-    nav ul li a:hover {
-        text-decoration: none;
-        color: #b07afe;
-        font-weight: bold;
-        font-family: 'Raleway', sans-serif;
-        font-size: 16px;
-    }
-
-    nav a.active {
-        color: #b07afe;
-        font-weight: bold;
-    }
-
-    .auth-buttons {
-        display: flex;
-    }
-
-    .auth-btn {
-        background-color: #b07afe;
-        color: black;
-        border: none;
-        font-weight: bold;
-        font-family: 'Raleway', sans-serif;
-        font-size: 16px;
-        border-radius: 4px;
-        padding: 8px 16px;
-        margin-left: 10px;
-        cursor: pointer;
-    }
-
-    .auth-btn:hover {
-        background-color: black;
-        color: #b07afe;
-        font-weight: bold;
-    }
-
-    .logo a {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .logo span {
-        font-family: 'Rubik Doodle Shadow';
-        font-size: 36px;
-        color: black;
-    }
-
-    .logo span:hover {
-        font-family: 'Rubik Doodle Shadow';
-        font-size: 36px;
-        color: #b07afe;
-    }
-</style>

@@ -1,4 +1,10 @@
 {% extends 'course/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="{% static 'main/css/profile.css' %}" media="screen">
+{% endblock %}
 {% block content %}
 <div class="profile-page">
     <form method="post" enctype="multipart/form-data" class="profile-form">
@@ -19,141 +25,6 @@
         </div>
     </form>
 </div>
-<style>
-    /* Скрыть стандартный <select> элемент */
-    select.django-select2 {
-        display: none !important;
-    }
-
-    /* Стиль для контейнера select2 */
-    .select2-container--default {
-        width: 100% !important;
-    z-index: 1000; /* Убедитесь, что выпадающий список отображается поверх всего */
-    }
-
-    /* Стиль для области отображения выбранного значения */
-    .select2-container--default .select2-selection--single {
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        height: 40px;
-        padding: 10px;
-        padding-right: 40px;
-        display: flex;
-        align-items: center;
-    }
-
-    /* Стиль для текста отображения выбранного значения */
-    .select2-container--default .select2-selection__rendered {
-        color: black;
-        font-family: 'Raleway', sans-serif;
-        font-size: 16px;
-        font-weight: normal;
-    }
-
-    /* Стиль для кнопки dropdown (иконка раскрытия) */
-.select2-container--default .select2-selection__arrow {
-    display: inline-block;
-    color: #b07afe; /* Фиолетовый цвет стрелки */
-    position: absolute; /* Устанавливаем контекст для абсолютного позиционирования */
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    line-height: 20px;
-    background: none; /* Убираем фоновый цвет */
-    border: none; /* Убираем границы, если они есть */
-}
-
-/* Основной стиль стрелки в Select2 */
-.select2-container--default .select2-selection__arrow b {
-    border-color: #b07afe transparent transparent transparent !important; /* Цвет стрелки */
-    border-width: 5px 4px 0 4px; /* Размер стрелки */
-    border-style: solid;
-    display: inline-block;
-    width: 0;
-    height: 0;
-    content: "";
-    position: absolute; /* Позиционирование внутри стрелки */
-    top: 50%; /* Вертикально центрируем */
-    left: 50%; /* Горизонтально центрируем */
-    transform: translate(-50%, -50%) rotate(0deg); /* Позиция по умолчанию */
-    transition: transform 0.5s ease-in-out; /* Плавная анимация вращения */
-}
-
-/* Состояние стрелки при открытии списка */
-.select2-container--open .select2-selection__arrow b {
-    transform: translate(-50%, -50%) rotate(180deg); /* Только поворот вниз */
-}
-
-    /* Стиль для подсказок */
-    .select2-container--default .select2-search--dropdown {
-        position: absolute;
-        top: 100px; /* Расстояние от поля ввода до выпадающего списка */
-        z-index: 999; /* Чтобы список отображался поверх других элементов */
-        width: 100%;
-        border-color: #b07afe; /* Легкая смена цвета рамки при наведении */
-        box-shadow: 0 0 8px rgba(176, 122, 254, 0.5); /* Легкое свечение */
-        display: none; /* Скрываем список по умолчанию */
-        transition: all 0.3s ease-in-out; /* Плавная анимация для сдвига */
-    }
-
-    .select2-container--default.select2-container--open .select2-search--dropdown {
-        display: block; /* Показываем список */
-        top: 100%; /* Устанавливаем для выпадания вниз */
-    }
-
-    .select2-container--default.select2-container--open {
-        margin-bottom: 90px; /* Увеличиваем нижнее расстояние при раскрытом списке */
-    }
-
-    .select2-container--default .select2-selection--single:hover {
-        border-color: #b07afe; /* Легкая смена цвета рамки при наведении */
-        box-shadow: 0 0 8px rgba(176, 122, 254, 0.5); /* Легкое свечение */
-    }
-
-    /* Стили для фокуса поля ввода */
-    .select2-container--default .select2-selection--single:focus {
-        border-color: #b07afe; /* Фиолетовая рамка при фокусе */
-        box-shadow: 0 0 8px rgba(176, 122, 254, 0.5); /* Легкое свечение */
-    }
-
-    /* Стили для текста подсказки (например, "Please enter 2 or more characters") */
-    .select2-container--default .select2-search--dropdown .select2-search__field {
-        font-family: 'Raleway', sans-serif;
-        font-size: 14px;
-        font-weight: normal;
-        color: black;
-    }
-
-    /* Чтобы стиль не применялся только к полю ввода поиска, но и к другим подсказкам */
-    .select2-container--default .select2-search--dropdown .select2-search__field::placeholder {
-        font-family: 'Raleway', sans-serif;
-        font-size: 14px;
-        color: red;
-    }
-
-    /* Стили для выпадающего списка */
-    .select2-container--default .select2-results__options {
-        font-family: 'Raleway', sans-serif;
-        font-size: 14px;
-        color: black;
-    }
-
-    /* Стили для каждого элемента в выпадающем списке */
-    .select2-container--default .select2-results__option {
-        font-family: 'Raleway', sans-serif;
-        font-size: 14px;
-        padding: 5px 10px;
-        color: black;
-    }
-
-    /* При наведении на элемент списка */
-    .select2-container--default .select2-results__option--highlighted {
-        background-color: #b07afe;
-        color: black;
-        font-weight: bold;
-    }
-</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -161,7 +32,6 @@
 {{ form.media.js }}
 <script>
     $(document).ready(function() {
-        // Инициализация django-select2
         $('.django-select2').djangoSelect2();
     });
 </script>

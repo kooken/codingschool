@@ -3,7 +3,6 @@ from django.contrib.auth.models import BaseUserManager
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
-        """Создает обычного пользователя с email и паролем"""
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
@@ -13,7 +12,6 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        """Создает суперпользователя"""
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 

@@ -12,21 +12,17 @@ class AvailableCourseView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         if user.subscription_plan:
-            # Получаем выбранные языки программирования и бонусные модули
             programming_languages = user.subscription_plan.programming_languages.all()
             bonus_modules = user.subscription_plan.bonus_modules.all()
 
-            # Фильтруем курсы по языкам программирования и бонусным модулям
             courses_by_languages = Course.objects.filter(programming_languages__in=programming_languages)
             courses_by_modules = Course.objects.filter(bonus_modules__in=bonus_modules)
 
-            # Объединяем курсы и исключаем дубли
-            courses = courses_by_languages | courses_by_modules  # Django ORM объединяет и удаляет дубли
-            courses = courses.distinct()  # Убираем дубли для надежности
+            courses = courses_by_languages | courses_by_modules
+            courses = courses.distinct()
 
             return courses
         else:
-            # Если подписки нет, ничего не доступно
             return Course.objects.none()
 
 

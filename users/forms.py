@@ -41,20 +41,16 @@ class UserRegisterForm(StyleFormMixin, UserCreationForm):
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
 
-        # Проверяем первый пароль на валидность
         if len(password1) < 8:
             raise ValidationError('Your password must contain at least 8 characters.')
 
-        # Проверяем, что пароль содержит буквы и цифры
         if not re.search(r'[A-Za-z]', password1) or not re.search(r'[0-9]', password1):
             raise ValidationError('Your password must include both letters and numbers.')
 
-        # Проверяем, что пароль содержит специальные символы
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password1):  # \W включает любые неалфавитные символы
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password1):
             raise ValidationError(
                 'Your password must include at least one of the special characters (!@#$%^&*(),.?":{}|<>).')
 
-        # Если первый пароль валидный, проверяем, совпадают ли оба пароля
         if password1 != password2:
             raise ValidationError('Please make sure your passwords match.')
 
@@ -68,51 +64,44 @@ class UserRegisterForm(StyleFormMixin, UserCreationForm):
 class UserLoginForm(StyleFormMixin, AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Изменяем метки для полей
         self.fields['username'].label = 'Your email address'
         self.fields['password'].label = 'Your password'
 
     def clean(self):
-        email = self.cleaned_data.get('username')  # здесь 'username' это email
+        email = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
 
-        # Проверка, что оба поля заполнены
         if not email or not password:
             raise ValidationError("Both email and password are required.")
 
-        # Получаем пользователя по email
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise ValidationError("No account found with this email address.")
 
-        # Проверка пароля
         if not user.check_password(password):
             raise ValidationError("Invalid email or password. Please try again.")
 
-        # Проверка активности пользователя
         if not user.is_active:
             raise ValidationError("This account is inactive. Please contact support.")
 
-        # Возвращаем очищенные данные
         self.cleaned_data['user'] = user
         return self.cleaned_data
 
 
 class CountryWidget(s2forms.ModelSelect2Widget):
     search_fields = [
-        'name__icontains',  # Поиск по имени страны
+        'name__icontains',
     ]
 
     def get_queryset(self):
-        # Вы можете фильтровать или сортировать данные на основе ваших требований
-        return Country.objects.all()  # Например, возвращаем все страны
+        return Country.objects.all()
 
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'phone', 'country', 'email']  # Поля для редактирования
+        fields = ['avatar', 'phone', 'country', 'email']
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'register-form-control'}),
             'phone': forms.TextInput(attrs={'class': 'register-form-control'}),
@@ -125,7 +114,6 @@ class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Изменение текста меток для каждого поля
         self.fields['new_password1'].label = _('Create new password')
         self.fields['new_password2'].label = _('Confirm new password')
 
@@ -141,19 +129,15 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         password1 = self.cleaned_data.get('new_password1')
         password2 = self.cleaned_data.get('new_password2')
 
-        # Проверка на длину пароля
         if len(password1) < 8:
             raise ValidationError(_('Your password must contain at least 8 characters.'))
 
-        # Проверка на наличие букв и цифр
         if not re.search(r'[A-Za-z]', password1) or not re.search(r'[0-9]', password1):
             raise ValidationError(_('Your password must include both letters and numbers.'))
 
-        # Проверка на наличие хотя бы одного специального символа
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password1):
             raise ValidationError(_('Your password must include at least one special character (e.g., !@#$%^&*).'))
 
-        # Проверка, совпадают ли пароли
         if password1 != password2:
             raise ValidationError(_('Please make sure your passwords match.'))
 
@@ -177,7 +161,6 @@ class CustomPasswordResetForm(PasswordResetForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
 
-        # Проверка на существование пользователя с таким email
         if not User.objects.filter(email=email).exists():
             raise ValidationError('No account found with this email address.')
 
@@ -202,7 +185,6 @@ class CustomPasswordUpdateForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Настройка полей
         self.fields['old_password'].widget = forms.PasswordInput(attrs={
             'class': 'register-form-control',
         })
@@ -222,7 +204,6 @@ class CustomPasswordUpdateForm(PasswordChangeForm):
         self.fields['new_password2'].label = _('Confirm New Password')
         self.fields['new_password2'].help_text = ''
 
-        # Настройка сообщений об ошибках
         self.fields['new_password1'].error_messages = {
             'required': _('Please enter a password.'),
             'min_length': _('Your password must contain at least 8 characters.'),
