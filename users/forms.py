@@ -2,9 +2,10 @@ import re
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm, AuthenticationForm, \
     PasswordChangeForm
 from django.core.exceptions import ValidationError
-from users.models import User
+from users.models import User, Country
 from django import forms
 from django.utils.translation import gettext_lazy as _
+from django_select2 import forms as s2forms
 
 
 class StyleFormMixin:
@@ -98,17 +99,25 @@ class UserLoginForm(StyleFormMixin, AuthenticationForm):
         return self.cleaned_data
 
 
+class CountryWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        'name__icontains',  # Поиск по имени страны
+    ]
+
+    def get_queryset(self):
+        # Вы можете фильтровать или сортировать данные на основе ваших требований
+        return Country.objects.all()  # Например, возвращаем все страны
+
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'phone', 'country', 'email', 'subscription_plan']  # Поля для редактирования
+        fields = ['avatar', 'phone', 'country', 'email']  # Поля для редактирования
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'register-form-control'}),
             'phone': forms.TextInput(attrs={'class': 'register-form-control'}),
-            'country': forms.TextInput(attrs={'class': 'register-form-control'}),
+            'country': CountryWidget(attrs={'class': 'django-select2'}),
             'avatar': forms.FileInput(attrs={'class': 'register-form-control'}),
-            'subscription_plan': forms.Select(attrs={'class': 'register-form-control'})
-
         }
 
 

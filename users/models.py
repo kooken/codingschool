@@ -7,19 +7,23 @@ from config import settings
 from users.managers import CustomUserManager
 
 
-# Кастомный пользователь
+class Country(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
-    # Дополнительные поля
     phone = models.CharField(max_length=35, verbose_name='Phone', null=True, blank=True)
     avatar = models.ImageField(upload_to='users/', verbose_name='Avatar', null=True, blank=True)
     email = models.EmailField(unique=True, verbose_name='Email')
-    country = models.CharField(max_length=100, verbose_name='Country', null=True, blank=True)
+    country = models.ForeignKey('Country', related_name="users", null=True, blank=True, on_delete=models.SET_NULL)
     token = models.CharField(max_length=100, verbose_name='Token', null=True, blank=True)
 
-    # Убираем стандартное поле username
     username = None
 
-    # Указываем email как основное поле для аутентификации
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
@@ -64,7 +68,6 @@ class SubscriptionDurationTypes(models.Model):
 
     @property
     def duration_in_months(self):
-        # Определяем количество месяцев для каждого типа подписки
         if self.value == 1:
             return 1
         elif self.value == 3:
@@ -73,16 +76,15 @@ class SubscriptionDurationTypes(models.Model):
             return 6
         elif self.value == 12:
             return 12
-        elif self.value == 0:  # Для бессрочной подписки
-            return None  # Возвращаем None, чтобы в коде можно было явно проверить это
-        return None  # Если значение неизвестно, возвращаем None
+        elif self.value == 0:
+            return None
+        return None
 
     @classmethod
     def create_default_duration(cls):
-        # Создаем записи для всех типов длительности подписки
         for duration in SubscriptionDurationType:
             cls.objects.get_or_create(
-                value=duration.value[0],  # значение как строка
+                value=duration.value[0],
                 display_name=duration.value[1]
             )
 
@@ -106,7 +108,6 @@ class SubscriptionPlanModes(models.Model):
 
     @classmethod
     def create_default_sub_plans(cls):
-        # Создаем записи для всех языков программирования из enum
         for subs in SubscriptionPlanType:
             cls.objects.get_or_create(
                 value=subs.value[0],
@@ -140,7 +141,6 @@ class BonusModuleType(Enum):
         return [(item.value[0], item.value[1]) for item in cls]
 
 
-# Модель для языков программирования
 class ProgrammingLanguage(models.Model):
     value = models.CharField(max_length=100, unique=True)
     display_name = models.CharField(max_length=100)
@@ -150,7 +150,6 @@ class ProgrammingLanguage(models.Model):
 
     @classmethod
     def create_default_languages(cls):
-        # Создаем записи для всех языков программирования из enum
         for language in ProgrammingLanguageType:
             cls.objects.get_or_create(
                 value=language.value[0],
@@ -158,7 +157,6 @@ class ProgrammingLanguage(models.Model):
             )
 
 
-# Модель для бонусных модулей
 class BonusModule(models.Model):
     value = models.CharField(max_length=100, unique=True)
     display_name = models.CharField(max_length=100)
@@ -168,7 +166,6 @@ class BonusModule(models.Model):
 
     @classmethod
     def create_default_modules(cls):
-        # Создаем записи для всех бонусных модулей из enum
         for module in BonusModuleType:
             cls.objects.get_or_create(
                 value=module.value[0],
@@ -176,7 +173,6 @@ class BonusModule(models.Model):
             )
 
 
-# Модель подписки
 class SubscriptionPlan(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -213,13 +209,11 @@ class SubscriptionPlan(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        # Получаем текущее время с временной зоной
         now = timezone.now()
 
-        # Если подписка бессрочная, устанавливаем end_date в None
         if self.duration.duration_in_months == 0:
             self.end_date = None
-        elif not self.end_date:  # Если end_date не задано, рассчитываем его
+        elif not self.end_date:
             if self.duration.duration_in_months == 1:
                 self.end_date = now + relativedelta(months=1)
             elif self.duration.duration_in_months == 3:
@@ -229,9 +223,8 @@ class SubscriptionPlan(models.Model):
             elif self.duration.duration_in_months == 12:
                 self.end_date = now + relativedelta(years=1)
 
-        # Если end_date не равен None, проверяем, осведомлен ли он
         if self.end_date is not None and timezone.is_naive(self.end_date):
-            self.end_date = timezone.make_aware(self.end_date)  # Преобразуем наивную дату в осведомленную
+            self.end_date = timezone.make_aware(self.end_date)
 
         super().save(*args, **kwargs)
 
@@ -243,56 +236,6 @@ class SubscriptionPlan(models.Model):
             [module.display_name for module in self.bonus_modules.all()]
         )
         return f"{self.name.display_name} - {self.duration.display_name}: {programming_languages}, {bonus_modules}"
-
-
-# class UserSubscription(models.Model):
-#     user = models.ForeignKey(
-#         settings.AUTH_USER_MODEL,
-#         on_delete=models.CASCADE,
-#         related_name="subscriptions",
-#         verbose_name="User"
-#     )
-#     plan = models.ForeignKey(
-#         SubscriptionPlan,
-#         on_delete=models.CASCADE,
-#         related_name="user_subscriptions",
-#         verbose_name="Subscription Plan"
-#     )
-#     programming_languages = models.ManyToManyField(ProgrammingLanguage, related_name="user_prog_subscriptions")
-#     bonus_modules = models.ManyToManyField(BonusModule, related_name="user_bonus_subscriptions")
-#     start_date = models.DateTimeField(auto_now_add=True, verbose_name="Start Date")
-#     end_date = models.DateTimeField(null=True, blank=True)  # Добавьте null=True
-#
-#     def save(self, *args, **kwargs):
-#         # Получаем текущее время с временной зоной
-#         now = timezone.now()
-#
-#         # Если подписка бессрочная, устанавливаем end_date в None
-#         if self.plan.duration.duration_in_months == 0:
-#             self.end_date = None
-#         elif not self.end_date:  # Если end_date не задано, рассчитываем его
-#             if self.plan.duration.duration_in_months == 1:
-#                 self.end_date = now + relativedelta(months=1)
-#             elif self.plan.duration.duration_in_months == 3:
-#                 self.end_date = now + relativedelta(months=3)
-#             elif self.plan.duration.duration_in_months == 6:
-#                 self.end_date = now + relativedelta(months=6)
-#             elif self.plan.duration.duration_in_months == 12:
-#                 self.end_date = now + relativedelta(years=1)
-#
-#         # Если end_date не равен None, проверяем, осведомлен ли он
-#         if self.end_date is not None and timezone.is_naive(self.end_date):
-#             self.end_date = timezone.make_aware(self.end_date)  # Преобразуем наивную дату в осведомленную
-#
-#         super().save(*args, **kwargs)
-#
-#     def __str__(self):
-#         return f"{self.user} - {self.plan.name} ({self.start_date} - {self.end_date})"
-#
-#     class Meta:
-#         verbose_name = "User Subscription"
-#         verbose_name_plural = "User Subscriptions"
-#         ordering = ['-start_date']
 
 
 class PromoCode(models.Model):
@@ -321,5 +264,4 @@ class PromoCode(models.Model):
         return self.code
 
     def is_valid(self):
-        """Проверяет, активен ли промокод"""
         return self.is_active

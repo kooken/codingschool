@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from users.apps import UsersConfig
 from users.views import RegisterView, UserLoginView, email_verification, UserProfileView, CustomPasswordResetView, \
     CustomPasswordResetConfirmView, ChangePasswordView, \
@@ -12,6 +12,7 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('email_confirm/<str:token>/', email_verification, name='email_confirm'),
 
+    path("select2/", include("django_select2.urls")),
     path('profile/', UserProfileView.as_view(), name='profile'),
     path('profile/change-password/', ChangePasswordView.as_view(), name='change_password'),
     path('profile/delete-account/', DeleteAccountView.as_view(), name='delete_account'),

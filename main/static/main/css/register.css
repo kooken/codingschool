@@ -97,7 +97,7 @@ html, body {
     cursor: pointer;
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .profile-page .btn-change:hover {
@@ -114,14 +114,36 @@ html, body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
-    padding-bottom: 100px; /* Если у вас есть контейнер для контента */
-    margin: 30px auto;  /* Отступы сверху и снизу 30px */
+    margin: 30px auto; /* Центровка формы с отступами сверху и снизу */
+    padding-bottom: 50px; /* Дополнительное пространство внутри формы */
 }
 
+/* Пространство между элементами формы */
 .profile-form .form-group {
-    margin-bottom: 20px;
-    font-family: 'Raleway', sans-serif;
+    margin-bottom: 15px; /* Увеличиваем отступ между элементами */
 }
+
+.profile-form label {
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Увеличение отступа после последнего элемента формы */
+.profile-form .form-group:last-child {
+    margin-bottom: 50px; /* Увеличиваем отступ после последнего элемента */
+}
+
 
 .profile-form .form-label {
     font-family: 'Raleway', sans-serif;
@@ -157,8 +179,8 @@ html, body {
     text-align: center;
     margin-bottom: 15px
 }
-/* есть в profile.css */
 
+/* есть в profile.css */
 .custom-button:hover {
     background-color: black;
     color: #b07afe;
@@ -166,6 +188,7 @@ html, body {
     font-weight: bold;
     width: 100%;
 }
+
 /* есть в profile.css */
 .profile-page .btn-delete:hover {
     background-color: black;
@@ -299,6 +322,12 @@ html, body {
 .profile-form input:focus {
     border-color: #b07afe;
     outline: none;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5); /* Легкое свечение */
+}
+.profile-form input:hover {
+    border-color: #b07afe;
+    outline: none;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5); /* Легкое свечение */
 }
 /* есть в profile.css */
 
@@ -679,8 +708,8 @@ html, body {
 .btn-actions {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Отступы между кнопками */
-    margin-top: 20px; /* Отступ сверху после формы */
+    gap: 10px; /* Отступы между кнопками */
+    margin-top: 10px; /* Отступ сверху после формы */
 }
 .messages {
     position: fixed;

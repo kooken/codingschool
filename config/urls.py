@@ -20,10 +20,9 @@ from django.conf import settings
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('main.urls', namespace='main')),  # Подключаем основное приложение
-    path('admin/', admin.site.urls),
-    path('users/', include('users.urls', namespace='user')),
-    path('course/', include('course.urls', namespace='course')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
+                  path('', include('main.urls', namespace='main')),
+                  path('admin/', admin.site.urls),
+                  path('users/', include('users.urls', namespace='user')),
+                  path('course/', include('course.urls', namespace='course')),
+                  path("select2/", include("django_select2.urls")),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'users',
     'main',
     'course',
+
+    'django_select2',
 ]
 
 MIDDLEWARE = [
@@ -149,5 +151,22 @@ LOGIN_REDIRECT_URL = 'main:user_dashboard'
 LOGOUT_REDIRECT_URL = 'main:index'
 LOGIN_URL = 'users:login'
 
-USE_TZ = True  # Включить поддержку часовых поясов
-TIME_ZONE = 'Europe/Helsinki'  # Устанавливаем часовой пояс для Хельсинки
+USE_TZ = True
+TIME_ZONE = 'Europe/Helsinki'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+    },
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Tell select2 which cache configuration to use:
+SELECT2_CACHE_BACKEND = "select2"
