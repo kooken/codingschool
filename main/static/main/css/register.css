@@ -542,6 +542,7 @@ html, body {
     gap: 10px; /* Отступы между кнопками */
     margin-top: 10px; /* Отступ сверху после формы */
 }
+
 .messages {
     position: fixed;
     top: 20%;

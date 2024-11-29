@@ -1,4 +1,8 @@
 {% extends 'course/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/profile.css' %}" media="screen">
+{% endblock %}
 {% block content %}
 <div class="profile-page">
     <ul class="messages" id="messages" hx-swap-oob="true">
@@ -11,8 +15,8 @@
         {% endif %}
     </ul>
     <div class="promo-code-section">
-        <h2>Generate Promo Code</h2>
         <form method="POST" class="profile-form">
+            <h2>Generate Promocode</h2>
             {% csrf_token %}
 
             <div class="form-group">
@@ -46,8 +50,8 @@
 
 
     <div class="promo-code-activation">
-        <h2>Activate Promo Code</h2>
         <form method="POST" class="profile-form">
+            <h2 id="profile-heading">Activate Promocode</h2>
             {% csrf_token %}
             <input type="text" name="promo_code" placeholder="Enter promo code" required>
             <button type="submit" name="activate" class="btn-change">Activate</button>

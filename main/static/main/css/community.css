@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
+
+body {
+    font-family: 'Raleway', sans-serif;
+    background-color: white;
+}
+
+.community-section {
+    padding: 20px;
+    background-color: #fff;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 50px;
+}
+
+.community-header h1 {
+    font-size: 32px;
+    font-family: 'Raleway', sans-serif;
+    color: #b07afe;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.community-header p {
+    font-size: 18px;
+    font-family: 'Raleway', sans-serif;
+    color: black;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.community-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.community-text {
+    max-width: 50%;
+    padding-right: 20px;
+}
+
+.community-text h2 {
+    font-size: 24px;
+    font-family: 'Raleway', sans-serif;
+    color: #b07afe;
+    margin-bottom: 20px;
+}
+
+.community-text ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.community-text ul li {
+    font-size: 18px;
+    font-family: 'Raleway', sans-serif;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+.community-images {
+    flex: 1;
+    display: flex;
+}
+
+.community-images img {
+    max-width: 100%;
+    border-radius: 10px;
+    max-width: 70%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.community-conclusion p {
+    font-size: 18px;
+    font-family: 'Raleway', sans-serif;
+    color: black;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.community-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.community-btn {
+    text-decoration: none;
+    background-color: #b07afe;
+    color: black;
+    font-size: 1rem;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.community-btn:hover {
+    background-color: black;
+    color: #b07afe;
+}

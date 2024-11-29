@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
 
+#profile-heading {
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
 #profile-page {
     background-color: #ffffff;
     font-family: 'Raleway', sans-serif;
@@ -7,7 +14,26 @@
     flex-direction: column;
     min-height: 100vh;
     padding-top: 30px;
+    padding-bottom: 70px;
+    padding: 20px 0;
     justify-content: space-between;
+}
+
+#profile-page::after {
+    content: "";
+    display: block;
+    height: 30px;
+}
+
+.profile-form {
+    background-color: #ffffff;
+    padding: 40px;
+    font-family: 'Raleway', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
 }
 
 #profile-page .text-danger {
@@ -29,7 +55,15 @@
     text-align: center;
     font-size: 28px;
     color: black;
-    margin-bottom: 20px;
+}
+
+.profile-page p {
+    font-size: 14px;
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    color: black;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .profile-page .promo-code-display h3 {
@@ -78,7 +112,8 @@
     cursor: pointer;
     width: 100%;
     text-align: center;
-    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .profile-page .btn-change:hover {
@@ -86,19 +121,6 @@
     font-family: 'Raleway', sans-serif;
     color: #b07afe;
     font-weight: bold;
-}
-
-.profile-form {
-    background-color: #ffffff;
-    padding: 40px;
-    font-family: 'Raleway', sans-serif;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    margin: 30px auto;
-    flex-grow: 1;
-    margin-bottom: 15px;
 }
 
 .profile-form .form-group {
@@ -154,7 +176,8 @@
     cursor: pointer;
     width: 100%;
     text-align: center;
-    margin-bottom: 30px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .profile-page .btn-delete:hover {
@@ -263,7 +286,6 @@ select.django-select2 {
     box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
 }
 
-/* Стили для фокуса поля ввода */
 .select2-container--default .select2-selection--single:focus {
     border-color: #b07afe;
     box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
@@ -299,4 +321,83 @@ select.django-select2 {
     background-color: #b07afe;
     color: black;
     font-weight: bold;
+}
+
+.messages {
+    position: fixed;
+    top: 20%;
+    right: 50%;
+    transform: translateX(50%);
+    z-index: 9999;
+    padding: 0.5em;
+    pointer-events: none;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToTop {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.messages > li.message-deleting {
+    animation: slideOutToTop 250ms ease-out;
+    animation-fill-mode: forwards;
+}
+
+.messages > li {
+    animation: slideInFromTop 250ms ease-in;
+    list-style: none;
+    background-color: rgba(176, 122, 254, 0.9);
+    border: 2px solid #b07afe;
+    padding: 1em;
+    margin-bottom: 0.5em;
+    border-radius: 8px;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.messages > li.success,
+.messages > li.error {
+    color: black;
+    font-weight: bold;
+}
+
+.custom-button {
+    background-color: #b07afe;
+    font-family: 'Raleway', sans-serif;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.custom-button:hover {
+    background-color: black;
+    color: #b07afe;
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
 }

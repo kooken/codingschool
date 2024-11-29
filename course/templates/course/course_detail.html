@@ -7,7 +7,7 @@
 <div class="course-page">
     <div class="left-panel">
         <div class="lesson-list">
-            <h3>Lessons</h3>
+            <h3>Module 1</h3>
             <ul>
                 <li><a href="#lesson1">Lesson 1</a></li>
                 <li><a href="#lesson2">Lesson 2</a></li>
@@ -33,7 +33,8 @@
             <div class="additional-resources">
                 <a href="#" class="test-link">Take the test</a>
                 <a href="#" class="pdf-link">Download notes (PDF)</a>
-                <button class="feedback-button">Give Feedback</button>
+                <a href="#" class="comments-link">Open comments</a>
+                <button class="report-button">Report problem</button>
             </div>
         </div>
         <button class="toggle-button" onclick="toggleLeftPanel()">Show Lessons</button>
@@ -51,7 +52,6 @@
         leftPanel.classList.toggle('hidden');
         rightPanel.classList.toggle('full-width');
 
-        // Изменение текста на кнопке в зависимости от состояния
         if (leftPanel.classList.contains('hidden')) {
             toggleButton.textContent = "Show Lessons";
         } else {

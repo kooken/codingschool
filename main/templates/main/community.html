@@ -1,11 +1,43 @@
 {% extends 'course/base.html' %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/community.css' %}" media="screen">
+{% endblock %}
 {% block content %}
-<table style="width: 100%; height: 50vh; text-align: center; vertical-align: middle;">
-    <tr>
-        <td>
-            <img alt="Construction" src="{% static 'main/css/images/construction.png' %}" width="400">
-        </td>
-    </tr>
-</table>
+<div class="community-section">
+    <div class="community-header">
+        <h1>Welcome to Our Community</h1>
+        <p>Join our vibrant online community, where learners connect, share knowledge, and grow together. Whether you're
+            coding, designing, or exploring a new field, you'll find support, challenges, and inspiration here.</p>
+    </div>
+
+    <div class="community-content">
+        <div class="community-text">
+            <h2>Why Join?</h2>
+            <ul>
+                <li><strong>Collaborate on projects:</strong> Work together with peers to build exciting projects.</li>
+                <li><strong>Participate in challenges:</strong> Join weekly coding challenges and hackathons.</li>
+                <li><strong>Access mentorship:</strong> Learn from experienced professionals and get personalized
+                    guidance.
+                </li>
+                <li><strong>Stay motivated:</strong> Track your progress and achieve your learning goals with others.
+                </li>
+            </ul>
+        </div>
+
+        <div class="community-images">
+            <img src="https://via.placeholder.com/600x350" alt="Community illustration">
+        </div>
+    </div>
+
+    <div class="community-conclusion">
+        <p>Join us today and take the first step towards growing your skills in a supportive, dynamic community.</p>
+    </div>
+
+    <div class="community-buttons">
+        <a href="https://discord.com/" target="_blank" class="community-btn">Join Discord</a>
+        <a href="https://twitter.com/" target="_blank" class="community-btn">Follow on Twitter</a>
+        <a href="https://linkedin.com/" target="_blank" class="community-btn">Connect on LinkedIn</a>
+    </div>
+</div>
 {% endblock %}

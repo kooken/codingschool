@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
-/* Основной контейнер для курса */
+
 .course-page {
     display: flex;
     padding: 20px;
@@ -7,20 +7,22 @@
     transition: all 0.3s ease-in-out;
 }
 
-/* Левая панель - список уроков */
+
 .left-panel {
     flex: 1;
     max-width: 300px;
     margin-right: 20px;
-    background-color: #f7f7f7;
+    background-color: #fff;
     padding: 20px;
     border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: max-width 0.3s ease;
 }
 
-.lesson-list h3 {
+.course-page h3 {
     font-size: 20px;
-    color: #6c63ff;
+    font-family: 'Raleway', sans-serif;
+    color: #b07afe;
     margin-bottom: 10px;
 }
 
@@ -34,21 +36,24 @@
 }
 
 .lesson-list ul li a {
-    color: #333;
+    color: black;
+    font-family: 'Raleway', sans-serif;
     text-decoration: none;
     font-size: 16px;
     transition: color 0.3s;
 }
 
 .lesson-list ul li a:hover {
-    color: #6c63ff;
+    font-weight: bold;
+    color: #b07afe;
 }
 
 .toggle-button {
-    background-color: #6c63ff;
-    color: white;
+    background-color: #b07afe;
+    color: black;
     font-size: 16px;
     font-weight: bold;
+    font-family: 'Raleway', sans-serif;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
@@ -58,10 +63,10 @@
 }
 
 .toggle-button:hover {
-    background-color: #5752d2;
+    background-color: black;
+    color: #b07afe;
 }
 
-/* Правая панель - видео и дополнительные материалы */
 .right-panel {
     flex: 3;
     display: flex;
@@ -86,12 +91,14 @@
 }
 
 .test-link,
+.comments-link,
 .pdf-link {
     display: inline-block;
     margin-right: 10px;
-    background-color: #6c63ff;
-    color: white;
+    background-color: #b07afe;
+    color: black;
     padding: 10px 20px;
+    font-family: 'Raleway', sans-serif;
     border-radius: 5px;
     text-decoration: none;
     font-size: 16px;
@@ -99,16 +106,19 @@
 }
 
 .test-link:hover,
+.comments-link:hover,
 .pdf-link:hover {
-    background-color: #5752d2;
+    background-color: black;
+    color: #b07afe;
 }
 
-.feedback-button {
+.report-button {
     display: inline-block;
     margin-top: 15px;
     padding: 10px 20px;
-    background-color: #ff5722;
-    color: white;
+    background-color: red;
+    font-family: 'Raleway', sans-serif;
+    color: black;
     font-size: 16px;
     font-weight: bold;
     border-radius: 5px;
@@ -116,8 +126,9 @@
     border: none;
 }
 
-.feedback-button:hover {
-    background-color: #e64a19;
+.report-button:hover {
+    background-color: black;
+    color: red;
 }
 
 /* Скрытие левой панели */

@@ -8,7 +8,7 @@
 {% block content %}
 <div class="profile-page">
     <form method="post" enctype="multipart/form-data" class="profile-form">
-        <h2 id="register-heading">Profile</h2>
+        <h2 id="profile-heading">Profile</h2>
         {% csrf_token %}
         {% for field in form %}
         <div class="form-group">
@@ -20,7 +20,7 @@
         {% endfor %}
         <button type="submit" class="btn-change">Save Changes</button>
         <div class="btn-actions">
-            <a href="{% url 'users:change_password' %}" class="btn-change">Change Password</a>
+            <a href="{% url 'users:change_password' %}" class="custom-button">Change Password</a>
             <a href="{% url 'users:delete_account' %}" class="btn-delete">Delete Account</a>
         </div>
     </form>
