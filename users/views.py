@@ -128,16 +128,28 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
     form_class = CustomPasswordChangeForm
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        uidb64 = self.kwargs.get('uidb64')
-        token = self.kwargs.get('token')
-
-        context['uidb64'] = uidb64
-        context['token'] = token
-        messages.success(self.request,
-                         "Your password has been successfully reset. You can now log in with your new password")
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['uidb64'] = self.kwargs.get('uidb64', '')
+        context['token'] = self.kwargs.get('token', '')
         return context
+
+    def form_valid(self, form):
+        form.save()
+
+        messages.success(
+            self.request,
+            "Your password has been successfully reset. You can now log in with your new password."
+        )
+
+        return redirect(reverse_lazy('users:login'))
+
+    def form_invalid(self, form):
+        messages.error(
+            self.request,
+            "There was an error resetting your password. Please try again."
+        )
+        return super().form_invalid(form)
 
 
 class UserProfileView(LoginRequiredMixin, FormView):

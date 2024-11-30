@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
+
 html, body {
     margin: 0;
     padding: 0;
@@ -5,14 +7,14 @@ html, body {
 }
 
 .custom-help-text {
-    color: #888888; /* Измените на нужный цвет */
-    margin-top: 10px; /* Отступ сверху */
-    font-size: 14px; /* Размер шрифта */
+    color: #888888;
+    margin-top: 10px;
+    font-size: 14px;
     font-family: 'Raleway', sans-serif;
 }
 
 #placeholder-button {
-    background-color: #b07afe; /* Используем тот же цвет */
+    background-color: #b07afe;
     color: black;
     font-size: 16px;
     font-weight: bold;
@@ -26,12 +28,11 @@ html, body {
 
 .form-buttons {
     display: flex;
-    flex-direction: column; /* Размещаем кнопки вертикально */
-    gap: 15px; /* Расстояние между кнопками */
+    flex-direction: column;
+    gap: 15px;
     margin-top: 20px;
 }
 
-/* Эффект наведения для кнопки-заглушки */
 #placeholder-button:hover {
     background-color: black;
     color: #b07afe;
@@ -64,8 +65,8 @@ html, body {
 .btn-actions {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Отступы между кнопками */
-    margin-top: 20px; /* Отступ сверху после формы */
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .messages {
@@ -108,8 +109,8 @@ html, body {
 .messages > li {
     animation: slideInFromTop 250ms ease-in;
     list-style: none;
-    background-color: rgba(176, 122, 254, 0.9); /* Фон с прозрачностью 90% */
-    border: 2px solid #b07afe; /* Рамка оставлена того же цвета */
+    background-color: rgba(176, 122, 254, 0.9);
+    border: 2px solid #b07afe;
     padding: 1em;
     margin-bottom: 0.5em;
     border-radius: 8px;
@@ -119,42 +120,39 @@ html, body {
 
 .messages > li.success,
 .messages > li.error {
-    color: black; /* Зеленый текст */
+    color: black;
     font-weight: bold;
 }
 
 .form-group select {
-    width: 100%; /* Ширина выпадающего списка */
-    padding: 10px; /* Отступы внутри */
-    border: 1px solid #ccc; /* Цвет рамки */
-    border-radius: 5px; /* Округление углов */
-    font-family: 'Raleway', sans-serif; /* Шрифт */
-    font-size: 1rem; /* Размер шрифта */
-    background-color: #fff; /* Фон */
-    cursor: pointer; /* Курсор при наведении */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    background-color: #fff;
+    cursor: pointer;
 }
 
-/* Стиль для опций выпадающего списка */
 .form-group select option {
-    padding: 10px; /* Отступы для каждой опции */
-    font-family: 'Raleway', sans-serif; /* Шрифт */
-    font-size: 1rem; /* Размер шрифта */
+    padding: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
 }
 
-/* Стиль для успешных сообщений */
 .success {
-    color: green; /* Зеленый текст */
-    font-size: 1rem; /* Размер шрифта */
-    margin-bottom: 15px; /* Отступ снизу */
+    color: green;
+    font-size: 1rem;
+    margin-bottom: 15px;
     font-weight: bold;
     text-align: center;
 }
 
-/* Стиль для ошибок */
 .error {
-    color: red; /* Красный текст */
-    font-size: 1rem; /* Размер шрифта */
-    margin-bottom: 15px; /* Отступ снизу */
+    color: red;
+    font-size: 1rem;
+    margin-bottom: 15px;
     font-weight: bold;
     text-align: center;
 }

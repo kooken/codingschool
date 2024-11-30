@@ -1,5 +1,8 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/register.css' %}" media="screen">
+{% endblock %}
 {% block content %}
 <div id="register-page" class="register-page">
     <ul class="messages" id="messages" hx-swap-oob="true">

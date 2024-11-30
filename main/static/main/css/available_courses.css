@@ -30,6 +30,12 @@
     text-align: center;
 }
 
+.courses-container p {
+    font-size: 18px;
+    color: #333;
+    font-family: 'Raleway', sans-serif;
+}
+
 .course-card {
      background-color: #fff;
      border-radius: 8px;

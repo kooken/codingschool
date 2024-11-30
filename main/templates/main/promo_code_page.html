@@ -1,10 +1,11 @@
 {% extends 'course/base.html' %}
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'main/css/profile.css' %}" media="screen">
+<link rel="stylesheet" href="{% static 'main/css/promocode.css' %}" media="screen">
+<link rel="stylesheet" href="{% static 'main/css/styles.css' %}" media="screen">
 {% endblock %}
 {% block content %}
-<div class="profile-page">
+<div class="promocode-page">
     <ul class="messages" id="messages" hx-swap-oob="true">
         {% if messages %}
         {% for message in messages %}
@@ -15,7 +16,7 @@
         {% endif %}
     </ul>
     <div class="promo-code-section">
-        <form method="POST" class="profile-form">
+        <form method="POST" class="promocode-form">
             <h2>Generate Promocode</h2>
             {% csrf_token %}
 
@@ -50,7 +51,7 @@
 
 
     <div class="promo-code-activation">
-        <form method="POST" class="profile-form">
+        <form method="POST" class="promocode-form">
             <h2 id="profile-heading">Activate Promocode</h2>
             {% csrf_token %}
             <input type="text" name="promo_code" placeholder="Enter promo code" required>

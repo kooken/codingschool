@@ -1,4 +1,8 @@
 {% extends 'main/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/login.css' %}" media="screen">
+{% endblock %}
 {% block content %}
 <div class="login-page">
     <form method="post" action="{% url 'users:login' %}" class="login-form">

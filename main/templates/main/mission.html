@@ -1,5 +1,8 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/mission.css' %}" media="screen">
+{% endblock %}
 {% block content %}
 <div class="mission-section">
     <div class="mission-header">
@@ -18,29 +21,27 @@
                     the skills needed to thrive in the industry.
                 </li>
                 <li><strong>Gender gap in major tech companies:</strong> At top tech companies like Google, Apple, and
-                    Microsoft, women make up only 33-45% of the workforce and even fewer in leadership roles. We aim to
+                    Microsoft, women make up <strong>only 33-45%</strong> of the workforce and even fewer in leadership roles. We aim to
                     support women in breaking through these barriers and achieving leadership positions.
                 </li>
                 <li><strong>Hiring bias:</strong> 65% of tech recruiters acknowledge bias in hiring, and many women face
                     unclear career paths. Our platform provides mentorship and interview preparation to help women
                     navigate these challenges and advance in their careers.
                 </li>
-                <li><strong>Women more affected by layoffs:</strong> Women in tech are 1.6 times more likely to be laid
+                <li><strong>Women more affected by layoffs:</strong> Women in tech are <strong>1.6 times more</strong> likely to be laid
                     off, and many leave due to poor work-life balance. Our school’s flexible, self-paced learning and
                     career support will help women build more stable and fulfilling careers.
                 </li>
-                <li><strong>The pay gap:</strong> Women in tech earn $15,000 less than men on average. By providing
+                <li><strong>The pay gap:</strong> Women in tech <strong>earn $15,000 less</strong> than men on average. By providing
                     access to quality education and professional development, we aim to equip women to bridge this pay
                     gap and earn equal wages for equal work.
                 </li>
             </ul>
         </div>
 
-        <!-- Images on the right side -->
         <div class="mission-images">
             <img src="{% static 'main/css/images/piechart.png' %}" alt="piechart 1">
             <img src="{% static 'main/css/images/graph.png' %}" alt="graph 1">
-            <!--            <img src="{% static 'main/images/image3.jpg' %}" alt="Image 3">-->
         </div>
     </div>
 
@@ -49,96 +50,4 @@
             overcome these statistics and succeed in the tech world.</p>
     </div>
 </div>
-
-<style>
-
-    body {
-        font-family: 'Raleway', sans-serif;
-        background-color: white;
-    }
-
-    .mission-section {
-        padding: 20px;
-        background-color: #fff;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding-bottom: 100px;
-    }
-
-    .mission-header h1 {
-        font-size: 32px;
-        font-family: 'Raleway', sans-serif;
-        color: black;
-        margin-bottom: 10px;
-    }
-
-    .mission-header p {
-        font-size: 18px;
-        font-family: 'Raleway', sans-serif;
-        color: black;
-        line-height: 1.6;
-    }
-
-    .mission-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 40px;
-    }
-
-    .mission-text {
-        flex: 1;
-        padding-right: 20px;
-    }
-
-    .mission-text h2 {
-        font-size: 24px;
-        font-family: 'Raleway', sans-serif;
-        color: black;
-        margin-bottom: 20px;
-    }
-
-    .mission-text ul {
-        list-style-type: disc;
-        padding-left: 20px;
-    }
-
-    .mission-text li {
-        font-size: 16px;
-        font-family: 'Raleway', sans-serif;
-        margin-bottom: 10px;
-        color: black;
-    }
-
-    .mission-images {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        padding-right: 20px;
-    }
-
-    .mission-images img {
-        width: 50%;
-        height: auto;
-        object-fit: cover;
-        border-radius: 8px;
-        margin: 0 auto;
-    }
-
-    .mission-conclusion {
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 2px solid #b07afe;
-        text-align: center;
-    }
-
-    .mission-conclusion p {
-        font-size: 18px;
-        font-family: 'Raleway', sans-serif;
-        color: #black;
-        max-width: 900px;
-        margin: 0 auto;
-    }
-</style>
 {% endblock %}

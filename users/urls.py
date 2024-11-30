@@ -1,3 +1,4 @@
+from django.contrib.auth.views import PasswordResetCompleteView
 from django.urls import path, include
 from users.apps import UsersConfig
 from users.views import RegisterView, UserLoginView, email_verification, UserProfileView, CustomPasswordResetView, \
