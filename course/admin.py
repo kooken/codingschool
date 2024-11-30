@@ -1,5 +1,5 @@
 from django.contrib import admin
-from course.models import Course, Lesson
+from course.models import Course, Lesson, Homework
 from users.models import SubscriptionPlan
 
 
@@ -23,3 +23,8 @@ class LessonAdmin(admin.ModelAdmin):
 class SubscriptionPlanAdmin(admin.ModelAdmin):
     list_display = ('name', 'price')
     search_fields = ('name',)
+
+
+@admin.register(Homework)
+class HomeworkAdmin(admin.ModelAdmin):
+    list_display = ('lesson', 'task_description')

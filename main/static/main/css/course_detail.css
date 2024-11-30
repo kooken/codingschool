@@ -1,5 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
 
+body {
+    font-family: 'Raleway', sans-serif;
+    background-color: white;
+    overflow-y: scroll;
+}
+
+body::-webkit-scrollbar {
+    width: 0px; /* kostyl */
+    background-color: white;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #b07afe;
+    border-radius: 8px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: #4b45c4;
+}
+
 .course-page {
     display: flex;
     padding: 20px;
@@ -86,26 +106,34 @@
     height: 400px;
 }
 
-.additional-resources {
+.additional-resources-container {
     margin-top: 20px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }
 
 .test-link,
 .comments-link,
+.homework-link,
 .pdf-link {
     display: inline-block;
-    margin-right: 10px;
+    padding: 15px 20px;
     background-color: #b07afe;
-    color: black;
-    padding: 10px 20px;
     font-family: 'Raleway', sans-serif;
-    border-radius: 5px;
+    color: black;
     text-decoration: none;
     font-size: 16px;
+    margin-right: 15px;
     font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
 }
 
 .test-link:hover,
+.homework-link:hover,
 .comments-link:hover,
 .pdf-link:hover {
     background-color: black;
@@ -114,12 +142,12 @@
 
 .report-button {
     display: inline-block;
-    margin-top: 15px;
-    padding: 10px 20px;
+    padding: 15px 20px;
     background-color: red;
     font-family: 'Raleway', sans-serif;
     color: black;
     font-size: 16px;
+    margin-right: 15px;
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
@@ -131,7 +159,6 @@
     color: red;
 }
 
-/* Скрытие левой панели */
 .left-panel.hidden {
     max-width: 0;
     padding: 0;
@@ -141,4 +168,74 @@
 
 .right-panel.full-width {
     flex: 1;
+}
+
+/* Стили для теста */
+.test-section {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Заголовок теста */
+.test-section h4 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Стили для вопросов теста */
+.test-section .question {
+    margin-bottom: 20px;
+}
+
+.test-section .question p {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Стили для вариантов ответа */
+.test-section .question label {
+    display: block;
+    font-size: 16px;
+    color: #444;
+    padding: 6px 0;
+}
+
+.test-section .question input[type="radio"] {
+    margin-right: 10px;
+}
+
+/* Стили для кнопки отправки теста */
+.test-section button {
+    background-color: #4CAF50;
+    color: white;
+    font-family: 'Raleway', sans-serif;
+    padding: 12px 20px;
+    border: none;
+    font-weight: bold;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.test-section button:hover {
+    background-color: #45a049;
+}
+
+.test-section button:focus {
+    outline: none;
+}
+
+/* Стили для ошибок или предупреждений (например, если не все вопросы были отвечены) */
+.test-section .error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
 }

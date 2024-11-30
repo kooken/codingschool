@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'course',
 
     'django_select2',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

@@ -7,34 +7,103 @@
 <div class="course-page">
     <div class="left-panel">
         <div class="lesson-list">
-            <h3>Module 1</h3>
+            <h3>{{ course.title }}</h3>
             <ul>
-                <li><a href="#lesson1">Lesson 1</a></li>
-                <li><a href="#lesson2">Lesson 2</a></li>
-                <li><a href="#lesson3">Lesson 3</a></li>
-                <li><a href="#lesson4">Lesson 4</a></li>
-                <li><a href="#lesson5">Lesson 5</a></li>
+                {% for lesson in course.lessons.all %}
+                <li><a href="#lesson{{ lesson.order }}">Lesson {{ lesson.order }}: {{ lesson.title }}</a></li>
+                {% endfor %}
             </ul>
         </div>
         <button class="toggle-button" onclick="toggleLeftPanel()">Hide Lessons</button>
     </div>
 
     <div class="right-panel">
-        <div class="lesson-detail">
+        {% for data in lesson_data %}
+        <div class="lesson-detail" id="lesson{{ lesson.order }}">
             <div class="video-container">
-                <h3>Lesson 1: Introduction to Python</h3>
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/WjpmruGrsv0?list=LL" frameborder="0"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen></iframe>
+                <h3>Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h3>
+                {% if data.embed_url %}
+                <iframe width="560" height="315"
+                        src="{{ data.embed_url }}"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen>
+                </iframe>
+                {% else %}
+                <p>No video available for this lesson.</p>
+                {% endif %}
             </div>
 
-            <div class="additional-resources">
-                <a href="#" class="test-link">Take the test</a>
-                <a href="#" class="pdf-link">Download notes (PDF)</a>
-                <a href="#" class="comments-link">Open comments</a>
+            <div class="additional-resources-container">
+                <button class="test-link" onclick="toggleTestSection('test{{ data.lesson.order }}')">Take the test
+                </button>
+                <button class="homework-link" onclick="toggleHomeworkSection('homework{{ data.lesson.order }}')">View
+                    Homework
+                </button>
+                <a href="{{ data.lesson.pdf_notes.url }}" class="pdf-link">Download notes (PDF)</a>
+                <button class="comments-link" onclick="toggleCommentsSection('comments{{ data.lesson.order }}')">Open
+                    comments
+                </button>
                 <button class="report-button">Report problem</button>
             </div>
+
+            <div class="test-section" id="test{{ data.lesson.order }}" style="display: none;">
+                <h4>Test for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
+                <form method="post" id="test-form{{ data.lesson.order }}"
+                      action="{% url 'course:course_detail' course.id %}">
+                    {% csrf_token %}
+                    <!-- Loop through test questions -->
+                    {% for question in data.lesson.tests.all %}
+                    <div class="question">
+                        <p>{{ question.question_text }}</p>
+                        {% for choice in question.answer_choices.all %}
+                        <label>
+                            <input type="radio" name="answer_{{ question.id }}" value="{{ choice.id }}">
+                            {{ choice.text }}
+                        </label><br>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" name="submit_test">Submit Test</button>
+                </form>
+            </div>
+
+            <!-- Homework section -->
+            <div class="homework-section" id="homework{{ data.lesson.order }}" style="display: none;">
+                <h4>Homework for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
+                <p>{{ data.lesson.homework.task_description }}</p>
+                <form method="post" id="homework-form{{ data.lesson.order }}"
+                      action="{% url 'course:course_detail' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
+                    <label for="github_link">GitHub Link:</label>
+                    <input type="url" id="github_link" name="github_link" required>
+                    <button type="submit" name="submit_homework">Submit Homework</button>
+                </form>
+            </div>
+
+            <!-- Comments section -->
+            <div class="comments-section" id="comments{{ data.lesson.order }}" style="display: none;">
+                <h4>Comments for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
+                <div class="existing-comments">
+                    {% for comment in data.lesson.comments.all %}
+                    <div class="comment">
+                        <p><strong>{{ comment.user.username }}:</strong> {{ comment.text }}</p>
+                        <p><small>{{ comment.created_at }}</small></p>
+                    </div>
+                    {% endfor %}
+                </div>
+                <form method="post" id="comment-form{{ data.lesson.order }}"
+                      action="{% url 'course:course_detail' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
+                    <textarea name="text" rows="4" placeholder="Add a comment" required></textarea><br>
+                    <button type="submit" name="submit_comment">Submit Comment</button>
+                </form>
+            </div>
         </div>
+        {% endfor %}
         <button class="toggle-button" onclick="toggleLeftPanel()">Show Lessons</button>
     </div>
 </div>
@@ -54,6 +123,33 @@
             toggleButton.textContent = "Show Lessons";
         } else {
             toggleButton.textContent = "Hide Lessons";
+        }
+    }
+
+    function toggleTestSection(testId) {
+        const testSection = document.getElementById(testId);
+        if (testSection.style.display === "none") {
+            testSection.style.display = "block";
+        } else {
+            testSection.style.display = "none";
+        }
+    }
+
+    function toggleHomeworkSection(homeworkId) {
+        const homeworkSection = document.getElementById(homeworkId);
+        if (homeworkSection.style.display === "none") {
+            homeworkSection.style.display = "block";
+        } else {
+            homeworkSection.style.display = "none";
+        }
+    }
+
+    function toggleCommentsSection(commentsId) {
+        const commentsSection = document.getElementById(commentsId);
+        if (commentsSection.style.display === "none") {
+            commentsSection.style.display = "block";
+        } else {
+            commentsSection.style.display = "none";
         }
     }
 </script>
