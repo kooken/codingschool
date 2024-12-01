@@ -12,8 +12,18 @@ class LessonTestForm(forms.Form):
                     label=question['question'],
                     choices=[(choice, choice) for choice in question['answer_choices']],
                     widget=forms.RadioSelect,
-                    required=True
+                    required=True  # Обязательно выбрать хотя бы один вариант
                 )
+
+    def clean(self):
+        # Просто очищаем данные, без проверки правильности ответов
+        cleaned_data = super().clean()
+        for field_name, value in cleaned_data.items():
+            # Если ответ не совпадает с выбором в choices, он всё равно остается
+            field_choices = self.fields[field_name].choices
+            if value not in dict(field_choices):
+                cleaned_data[field_name] = None  # Если ответ не в choices, делаем его пустым
+        return cleaned_data
 
 
 class HomeworkSubmissionForm(forms.ModelForm):

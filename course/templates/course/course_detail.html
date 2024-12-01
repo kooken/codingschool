@@ -48,28 +48,61 @@
                 <button class="report-button">Report problem</button>
             </div>
 
-            <div class="test-section" id="test{{ data.lesson.order }}" style="display: none;">
-                <h4>Test for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
-                <form method="post" id="test-form{{ data.lesson.order }}"
+
+            <div class="test-section" id="test{{ lesson.order }}">
+                <h4>Test for Lesson {{ lesson.order }}: {{ lesson.title }}</h4>
+                {% if result %}
+                {% if not reset_test %}
+                <p id="attempts-count">
+                    Attempts:
+                    {% if result %}
+                    {{ result.attempts }}
+                    {% else %}
+                    0
+                    {% endif %}
+                </p>
+                <p id="score-percentage">
+                    Max Score:
+                    {% if percentage %}
+                    {{ percentage }}%
+                    {% else %}
+                    0%
+                    {% endif %}
+                </p> {% if result.is_passed %}
+                <p><strong>Congratulations!</strong> You passed the test.</p>
+                {% else %}
+                <p><strong>Sorry!</strong> You did not pass the test. Try again.</p>
+                {% endif %}
+                <form method="post" action="{% url 'course:course_detail' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="lesson_order" value="{{ lesson.order }}">
+                    <button type="submit" name="retake_test">Retake Test</button>
+                </form>
+                {% endif %}
+                {% endif %}
+
+                {% if reset_test %}
+                <form method="post" id="test-form{{ lesson.order }}"
                       action="{% url 'course:course_detail' course.id %}">
                     {% csrf_token %}
-                    <!-- Loop through test questions -->
-                    {% for question in data.lesson.tests.all %}
+                    {% for question in test_data %}
                     <div class="question">
-                        <p>{{ question.question_text }}</p>
-                        {% for choice in question.answer_choices.all %}
+                        <p>{{ question.question }}</p>
+                        {% for choice in question.answer_choices %}
                         <label>
-                            <input type="radio" name="answer_{{ question.id }}" value="{{ choice.id }}">
-                            {{ choice.text }}
+                            <input type="radio" name="question_{{ forloop.parentloop.counter }}" value="{{ choice }}"
+                                   required>
+                            {{ choice }}
                         </label><br>
                         {% endfor %}
                     </div>
                     {% endfor %}
+                    <input type="hidden" name="lesson_order" value="{{ lesson.order }}">
                     <button type="submit" name="submit_test">Submit Test</button>
                 </form>
+                {% endif %}
             </div>
 
-            <!-- Homework section -->
             <div class="homework-section" id="homework{{ data.lesson.order }}" style="display: none;">
                 <h4>Homework for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
                 <p>{{ data.lesson.homework.task_description }}</p>
@@ -83,7 +116,6 @@
                 </form>
             </div>
 
-            <!-- Comments section -->
             <div class="comments-section" id="comments{{ data.lesson.order }}" style="display: none;">
                 <h4>Comments for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
                 <div class="existing-comments">
@@ -110,47 +142,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    function toggleLeftPanel() {
-        const leftPanel = document.querySelector('.left-panel');
-        const rightPanel = document.querySelector('.right-panel');
-        const toggleButton = document.querySelector('.toggle-button');
-
-        leftPanel.classList.toggle('hidden');
-        rightPanel.classList.toggle('full-width');
-
-        if (leftPanel.classList.contains('hidden')) {
-            toggleButton.textContent = "Show Lessons";
-        } else {
-            toggleButton.textContent = "Hide Lessons";
-        }
-    }
-
-    function toggleTestSection(testId) {
-        const testSection = document.getElementById(testId);
-        if (testSection.style.display === "none") {
-            testSection.style.display = "block";
-        } else {
-            testSection.style.display = "none";
-        }
-    }
-
-    function toggleHomeworkSection(homeworkId) {
-        const homeworkSection = document.getElementById(homeworkId);
-        if (homeworkSection.style.display === "none") {
-            homeworkSection.style.display = "block";
-        } else {
-            homeworkSection.style.display = "none";
-        }
-    }
-
-    function toggleCommentsSection(commentsId) {
-        const commentsSection = document.getElementById(commentsId);
-        if (commentsSection.style.display === "none") {
-            commentsSection.style.display = "block";
-        } else {
-            commentsSection.style.display = "none";
-        }
-    }
-</script>
+<script src="{% static 'main/js/course-scripts.js' %}"></script>
 {% endblock %}

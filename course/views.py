@@ -4,27 +4,17 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView
 from .forms import LessonTestForm, HomeworkSubmissionForm, CommentForm
-from .models import Course, Lesson, Comment, Homework
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from .models import Lesson, LessonTestResult, HomeworkSubmission, LessonTestQuestion
-from django.utils import timezone
-from .serializers import (
-    LessonSerializer,
-    LessonTestResultSerializer,
-    HomeworkSubmissionSerializer,
-    LessonTestQuestionSerializer,
-)
+from .models import Course, Homework, LessonTestAnswer, Lesson, LessonTestResult
 from urllib.parse import urlparse, parse_qs
 
 
 def course_detail(request, id):
     course = get_object_or_404(Course, id=id)
     print("Course fetched:", course)
+    course_name = course.title.lower().replace("course", "").strip()
+    print("Course stripped name:", course_name)
     lessons = course.lessons.all().order_by('order')  # Sorting lessons by order if necessary
     print("Lessons from course:", lessons)
 
@@ -33,6 +23,14 @@ def course_detail(request, id):
     for lesson in lessons:
         video_url = lesson.video_url
         embed_url = ''
+        test_path = os.path.join(settings.MEDIA_ROOT,
+                                 f'course/static/course/lesson_tests/{course_name}/{lesson.order}_lesson.json')
+        print("Searching for test file in:", test_path)
+
+        test_data = []
+        if os.path.exists(test_path):
+            with open(test_path, 'r', encoding='utf-8') as file:
+                test_data = json.load(file)
 
         # If the video URL exists and is a YouTube URL, extract the video ID and create embed URL
         if video_url:
@@ -43,7 +41,18 @@ def course_detail(request, id):
             if video_id:
                 embed_url = f"https://www.youtube.com/embed/{video_id}?si=OntB9hOa5AGwDJFT"
 
-        lesson_data.append({'lesson': lesson, 'embed_url': embed_url})
+        lesson_data.append({'lesson': lesson, 'embed_url': embed_url, 'test_data': test_data})
+
+    lesson_order = request.POST.get("lesson_order")
+    if lesson_order:
+        lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
+    else:
+        lesson = lessons.first()  # Если не передан lesson_order, берём первый урок
+    print("Current lesson:", lesson)
+
+    # Получаем результат теста для текущего урока
+    test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
+    print("Test result:", test_result)
 
     # Обрабатываем POST-запросы для каждой формы
     if request.method == "POST":
@@ -64,44 +73,66 @@ def course_detail(request, id):
         if "submit_test" in request.POST:
             # Get the lesson ID from the POST data
             lesson_order = request.POST.get("lesson_order")
+            print("Lesson order is:", lesson_order)
             lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
-
             print("Lesson is:", lesson)
-
-            # Get the course name and format it to match the folder structure
-            course_name = course.title.lower().replace("course", "").strip()  # Standardize course name
-
-            # Build the file path for the lesson test data (JSON file)
-            file_path = os.path.join(settings.MEDIA_ROOT,
-                                     f'course/static/course/lesson_tests/{course_name}/{lesson.order}_lesson.json')
-            print("Searching for test file in:", file_path)
-
-            # Check if the file exists
-            if not os.path.exists(file_path):
-                return JsonResponse({"error": "Test data file not found"}, status=404)
-
-            # Open and load the test data from the JSON file
-            with open(file_path, 'r') as file:
-                test_data = json.load(file)
-
-            # Initialize the form with the questions from the loaded JSON data
             test_form = LessonTestForm(questions=test_data, data=request.POST)
+            # print("Test form is:", test_form)
 
             if test_form.is_valid():
-                # Collect the user's answers
+                # Получаем ответы пользователя
                 user_answers = [
-                    test_form.cleaned_data[f"question_{i + 1}"] for i in range(len(test_data))
+                    test_form.cleaned_data[f'question_{i + 1}'] for i in range(len(test_data))
                 ]
+                print("User answers are:", user_answers)
 
-                # Extract the correct answers from the test data
+                # Получаем правильные ответы
                 correct_answers = [q['correct_answer'] for q in test_data]
+                print("Correct answers are:", correct_answers)
 
-                # Calculate the score and percentage
+                # Считаем баллы
                 score = sum(1 for user, correct in zip(user_answers, correct_answers) if user == correct)
-                percentage = (score / len(correct_answers)) * 100
+                print("Score is:", score)
 
-                # Return the score and percentage as a JSON response
-                return JsonResponse({"score": score, "percentage": percentage})
+                # Рассчитываем процент правильных ответов
+                percentage = (score / len(correct_answers)) * 100 if correct_answers else 0
+                print("Percentage is:", percentage)
+
+                # Создаем или обновляем результат теста
+                test_result, created = LessonTestResult.objects.get_or_create(
+                    user=request.user, test=lesson.test
+                )
+                test_result.score = percentage
+                test_result.attempts += 1
+                test_result.save()
+                print("Test result object is:", test_result)
+
+                # Сохраняем ответы пользователя
+                for i, user_answer in enumerate(user_answers):
+                    question = test_data[i]  # Извлекаем вопрос из JSON
+                    answer_id = question['answer_choices'].index(user_answer) + 1
+
+                    # Сохраняем ответ в модели LessonTestAnswer
+                    LessonTestAnswer.objects.create(
+                        result=test_result,
+                        question_id=question['id'],
+                        answer_id=answer_id
+                    )
+
+            if not test_form.is_valid():
+                print("Form errors:", test_form.errors)
+
+        if "retake_test" in request.POST:
+            # Получаем старый результат
+            test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
+
+            if test_result:
+                # Удаляем старые ответы
+                test_result.answers.all().delete()
+                # test_result.delete()
+
+            # Устанавливаем переменную для отображения новой формы теста
+            reset_test = True
 
         if "submit_homework" in request.POST:
             # Extract lesson order from POST data
@@ -138,8 +169,14 @@ def course_detail(request, id):
     lessons = course.lessons.all()
     return render(request, "course/course_detail.html", {
         "course": course,
-        'lesson_data': lesson_data,
+        "lesson": lesson,
+        "test_data": test_data,
+        "lesson_data": lesson_data,
         "lessons": lessons,
+        "percentage": percentage if 'percentage' in locals() else None,  # Проверяем, если есть процент
+        "total_questions": len(test_data),
+        "result": test_result if 'test_result' in locals() else None,  # Проверяем, если есть результат
+        "reset_test": reset_test if 'reset_test' in locals() else False,  # Показываем форму заново
         "comment_form": CommentForm(),
         "homework_form": HomeworkSubmissionForm(),
         "test_form": LessonTestForm(),

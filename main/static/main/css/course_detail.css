@@ -177,13 +177,25 @@ body::-webkit-scrollbar-thumb:hover {
     border: 1px solid #ddd;
     background-color: #f9f9f9;
     border-radius: 8px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Заголовок теста */
 .test-section h4 {
     font-size: 24px;
-    color: #333;
+    color: black;
+    font-family: 'Raleway', sans-serif;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.test-section p {
+    font-size: 20px;
+    color: black;
+    font-family: 'Raleway', sans-serif;
     margin-bottom: 20px;
     text-align: center;
 }
@@ -196,6 +208,7 @@ body::-webkit-scrollbar-thumb:hover {
 .test-section .question p {
     font-size: 18px;
     color: #555;
+    font-family: 'Raleway', sans-serif;
     margin-bottom: 10px;
 }
 
@@ -203,6 +216,7 @@ body::-webkit-scrollbar-thumb:hover {
 .test-section .question label {
     display: block;
     font-size: 16px;
+    font-family: 'Raleway', sans-serif;
     color: #444;
     padding: 6px 0;
 }
@@ -213,8 +227,8 @@ body::-webkit-scrollbar-thumb:hover {
 
 /* Стили для кнопки отправки теста */
 .test-section button {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #b07afe;
+    color: black;
     font-family: 'Raleway', sans-serif;
     padding: 12px 20px;
     border: none;
@@ -223,10 +237,14 @@ body::-webkit-scrollbar-thumb:hover {
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .test-section button:hover {
-    background-color: #45a049;
+    background-color: black;
+    color: #b07afe;
 }
 
 .test-section button:focus {
@@ -237,5 +255,6 @@ body::-webkit-scrollbar-thumb:hover {
 .test-section .error {
     color: red;
     font-size: 14px;
+    font-family: 'Raleway', sans-serif;
     margin-top: 10px;
 }

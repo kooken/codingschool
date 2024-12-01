@@ -60,14 +60,14 @@ class LessonTest(models.Model):
         return f"Test for {self.lesson.title}"
 
 
-class LessonTestQuestion(models.Model):
-    test = models.ForeignKey(LessonTest, related_name="questions", on_delete=models.CASCADE)
-    question_text = models.TextField()
-    answer_choices = models.JSONField()  # Варианты ответов
-    correct_answer = models.CharField(max_length=255)  # Правильный ответ
-
-    def __str__(self):
-        return f"Question: {self.question_text}"
+# class LessonTestQuestion(models.Model):
+#     test = models.ForeignKey(LessonTest, related_name="questions", on_delete=models.CASCADE)
+#     question_text = models.TextField()
+#     answer_choices = models.JSONField()  # Варианты ответов
+#     correct_answer = models.CharField(max_length=255)  # Правильный ответ
+#
+#     def __str__(self):
+#         return f"Question: {self.question_text}"
 
 
 class LessonTestResult(models.Model):
@@ -92,6 +92,15 @@ class LessonTestResult(models.Model):
             self.save()
             return True
         return False
+
+
+class LessonTestAnswer(models.Model):
+    result = models.ForeignKey(LessonTestResult, related_name="answers", on_delete=models.CASCADE)
+    question_id = models.IntegerField()  # ID вопроса из JSON
+    answer_id = models.IntegerField()  # ID выбранного ответа
+
+    def __str__(self):
+        return f"Answer ID: {self.answer_id} for question ID: {self.question_id}"
 
 
 class Homework(models.Model):
