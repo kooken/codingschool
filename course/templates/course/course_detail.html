@@ -36,20 +36,24 @@
             </div>
 
             <div class="additional-resources-container">
-                <button class="test-link" onclick="toggleTestSection('test{{ data.lesson.order }}')">Take the test
+                <button class="toggle-button test-link"
+                        onclick="toggleSection('test{{ data.lesson.order }}', this, 'test-section', 'toggle-button')">
+                    Take the test
                 </button>
-                <button class="homework-link" onclick="toggleHomeworkSection('homework{{ data.lesson.order }}')">View
-                    Homework
+                <button class="toggle-button homework-link"
+                        onclick="toggleSection('homework{{ data.lesson.order }}', this, 'homework-section', 'toggle-button')">
+                    View Homework
                 </button>
                 <a href="{{ data.lesson.pdf_notes.url }}" class="pdf-link">Download notes (PDF)</a>
-                <button class="comments-link" onclick="toggleCommentsSection('comments{{ data.lesson.order }}')">Open
-                    comments
+                <button class="toggle-button comments-link"
+                        onclick="toggleSection('comments{{ data.lesson.order }}', this, 'comments-section', 'toggle-button')">
+                    Open Comments
                 </button>
                 <button class="report-button">Report problem</button>
             </div>
 
 
-            <div class="test-section" id="test{{ lesson.order }}">
+            <div class="test-section section" id="test{{ lesson.order }}">
                 <h4>Test for Lesson {{ lesson.order }}: {{ lesson.title }}</h4>
                 {% if result %}
                 {% if not reset_test %}
@@ -103,7 +107,7 @@
                 {% endif %}
             </div>
 
-            <div class="homework-section" id="homework{{ data.lesson.order }}" style="display: none;">
+            <div class="homework-section section" id="homework{{ data.lesson.order }}">
                 <h4>Homework for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
                 <p>{{ data.lesson.homework.task_description }}</p>
                 <form method="post" id="homework-form{{ data.lesson.order }}"
@@ -116,7 +120,7 @@
                 </form>
             </div>
 
-            <div class="comments-section" id="comments{{ data.lesson.order }}" style="display: none;">
+            <div class="comments-section section" id="comments{{ data.lesson.order }}">
                 <h4>Comments for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
                 <div class="existing-comments">
                     {% for comment in data.lesson.comments.all %}

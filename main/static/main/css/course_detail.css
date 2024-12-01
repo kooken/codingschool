@@ -27,7 +27,6 @@ body::-webkit-scrollbar-thumb:hover {
     transition: all 0.3s ease-in-out;
 }
 
-
 .left-panel {
     flex: 1;
     max-width: 300px;
@@ -68,25 +67,6 @@ body::-webkit-scrollbar-thumb:hover {
     color: #b07afe;
 }
 
-.toggle-button {
-    background-color: #b07afe;
-    color: black;
-    font-size: 16px;
-    font-weight: bold;
-    font-family: 'Raleway', sans-serif;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    width: 100%;
-}
-
-.toggle-button:hover {
-    background-color: black;
-    color: #b07afe;
-}
-
 .right-panel {
     flex: 3;
     display: flex;
@@ -114,51 +94,6 @@ body::-webkit-scrollbar-thumb:hover {
     text-align: center;
 }
 
-.test-link,
-.comments-link,
-.homework-link,
-.pdf-link {
-    display: inline-block;
-    padding: 15px 20px;
-    background-color: #b07afe;
-    font-family: 'Raleway', sans-serif;
-    color: black;
-    text-decoration: none;
-    font-size: 16px;
-    margin-right: 15px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-}
-
-.test-link:hover,
-.homework-link:hover,
-.comments-link:hover,
-.pdf-link:hover {
-    background-color: black;
-    color: #b07afe;
-}
-
-.report-button {
-    display: inline-block;
-    padding: 15px 20px;
-    background-color: red;
-    font-family: 'Raleway', sans-serif;
-    color: black;
-    font-size: 16px;
-    margin-right: 15px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    border: none;
-}
-
-.report-button:hover {
-    background-color: black;
-    color: red;
-}
-
 .left-panel.hidden {
     max-width: 0;
     padding: 0;
@@ -171,7 +106,9 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 /* Стили для теста */
-.test-section {
+.test-section,
+.homework-section,
+.comments-section {
     margin-top: 30px;
     padding: 20px;
     border: 1px solid #ddd;
@@ -184,7 +121,9 @@ body::-webkit-scrollbar-thumb:hover {
 }
 
 /* Заголовок теста */
-.test-section h4 {
+.test-section,
+.homework-section,
+.comments-section h4 {
     font-size: 24px;
     color: black;
     font-family: 'Raleway', sans-serif;
@@ -192,12 +131,15 @@ body::-webkit-scrollbar-thumb:hover {
     text-align: center;
 }
 
-.test-section p {
+.test-section,
+.homework-section,
+.comments-section p {
     font-size: 20px;
     color: black;
     font-family: 'Raleway', sans-serif;
     margin-bottom: 20px;
     text-align: center;
+    line-height: 1.5;
 }
 
 /* Стили для вопросов теста */
@@ -235,6 +177,7 @@ body::-webkit-scrollbar-thumb:hover {
     font-weight: bold;
     border-radius: 5px;
     font-size: 16px;
+    margin-top: 15px;
     cursor: pointer;
     transition: background-color 0.3s ease;
     align-items: center;
@@ -257,4 +200,183 @@ body::-webkit-scrollbar-thumb:hover {
     font-size: 14px;
     font-family: 'Raleway', sans-serif;
     margin-top: 10px;
+}
+
+.toggle-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: white;
+    border: 2px solid #b07afe;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-right: 15px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+    color: #b07afe;
+    transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: #b07afe;
+    color: black;
+}
+
+.toggle-button.active {
+    background-color: #b07afe;
+    color: black;
+}
+
+.pdf-link {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: white;
+    text-decoration: none;
+    border: 2px solid #b07afe;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-right: 15px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+    color: #b07afe;
+    transition: all 0.3s ease;
+}
+
+.pdf-link:hover {
+    background-color: #b07afe;
+    color: black;
+}
+
+.report-button {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: white;
+    border: 2px solid #b07afe;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 15px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+    color: #b07afe;
+    transition: all 0.3s ease;
+}
+
+.report-button:hover {
+    background-color: #b07afe;
+    color: black;
+}
+
+.section {
+    display: none;
+}
+
+/* Стили для активной секции */
+.section.active {
+    display: block;
+}
+
+/* Стили для активных кнопок */
+button.active {
+    background-color: #b07afe; /* Измените по вашему усмотрению */
+}
+
+input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+input[type="url"]:focus,
+input[type="url"]:hover {
+    border-color: #b07afe;
+    outline: none;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+button[type="submit"] {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #b07afe;
+    text-decoration: none;
+    border: 2px solid #b07afe;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-top: 15px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+    color: black;
+    transition: all 0.3s ease;
+}
+
+/* Стили для кнопки при наведении */
+button[type="submit"]:hover {
+    background-color: black;
+    color: #b07afe;
+}
+
+/* Стили для секции комментариев */
+.comments-section {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ddd; /* Легкая рамка */
+    border-radius: 5px;
+    background-color: #f9f9f9; /* Светлый фон */
+}
+
+/* Стили для заголовка секции комментариев */
+.comments-section h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Стили для блока существующих комментариев */
+.existing-comments {
+    margin-bottom: 20px;
+}
+
+/* Стили для каждого отдельного комментария */
+.comment {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Выравнивание текста по левому краю */
+.comment p {
+    text-align: left;
+    margin: 5px 0;
+}
+
+.comment strong {
+    font-weight: bold;
+    color: #b07afe; /* Цвет имени пользователя */
+}
+
+.comment small {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Стили для поля ввода комментария (textarea) */
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+textarea:focus,
+textarea:hover {
+    border-color: #b07afe;
+    outline: none;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
 }

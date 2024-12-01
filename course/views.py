@@ -20,6 +20,7 @@ def course_detail(request, id):
 
     # Generate embed URLs for each lesson
     lesson_data = []
+    test_data = []
     for lesson in lessons:
         video_url = lesson.video_url
         embed_url = ''
@@ -27,7 +28,6 @@ def course_detail(request, id):
                                  f'course/static/course/lesson_tests/{course_name}/{lesson.order}_lesson.json')
         print("Searching for test file in:", test_path)
 
-        test_data = []
         if os.path.exists(test_path):
             with open(test_path, 'r', encoding='utf-8') as file:
                 test_data = json.load(file)
@@ -53,6 +53,8 @@ def course_detail(request, id):
     # Получаем результат теста для текущего урока
     test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
     print("Test result:", test_result)
+    total_questions = len(test_data) if test_data else 0  # Заглушка, если нет тестов
+    print("Total questions:", total_questions)
 
     # Обрабатываем POST-запросы для каждой формы
     if request.method == "POST":
@@ -170,7 +172,7 @@ def course_detail(request, id):
     return render(request, "course/course_detail.html", {
         "course": course,
         "lesson": lesson,
-        "test_data": test_data,
+        "test_data": test_data if 'test_data' in locals() else None,
         "lesson_data": lesson_data,
         "lessons": lessons,
         "percentage": percentage if 'percentage' in locals() else None,  # Проверяем, если есть процент
