@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Ral, sans-serif;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    padding: 10px 20px;
+    border-bottom: 3px solid #E0FF00;
+    z-index: 1000;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header.light {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+header.dark {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+
+}
+
+nav ul li {
+    margin: 0 15px;
+    align-items: center;
+}
+
+header.light nav ul li a {
+    text-decoration: none;
+    color: #333333;
+    font-weight: bold;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+}
+
+header.dark nav ul li a {
+    text-decoration: none;
+    color: #E0FF00;
+    font-weight: bold;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+}
+
+header.light nav ul li a:hover {
+    text-decoration: underline;
+    text-decoration-color: #333333;
+    text-underline-offset: 8px;
+    text-decoration-thickness: 2px;
+    color: #333333;
+    font-weight: bold;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+}
+
+header.dark nav ul li a:hover {
+    text-decoration: underline;
+    text-decoration-color: #E0FF00;
+    text-underline-offset: 8px;
+    text-decoration-thickness: 2px;
+    color: #E0FF00;
+    font-weight: bold;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+}
+
+nav a.active {
+    color: #E0FF00;
+    text-decoration: underline;
+    text-decoration-color: #E0FF00;
+    text-underline-offset: 8px;
+    text-decoration-thickness: 2px;
+    font-weight: bold;
+}
+
+.auth-buttons {
+    display: flex;
+}
+
+.auth-btn {
+    background-color: #E0FF00;
+    color: black;
+    border: none;
+    font-weight: bold;
+    font-family: 'Raleway', sans-serif;
+    font-size: 16px;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.auth-btn:hover {
+    background-color: black;
+    color: #E0FF00;
+    border: 1px solid #E0FF00;
+    box-shadow: 0 4px 8px rgba(224, 225, 0, 0.3);
+    font-weight: bold;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo span {
+    font-family: 'Rubik Doodle Shadow';
+    font-size: 36px;
+    color: #E0FF00;
+}
+
+.logo span:hover {
+    font-family: 'Rubik Doodle Shadow';
+    font-size: 36px;
+    color: #b07afe;
+}

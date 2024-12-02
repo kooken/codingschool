@@ -1,0 +1,15 @@
+{% extends 'main/test_base.html' %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/css/test.css' %}" media="screen">
+{% endblock %}
+{% block content %}
+    <h1 class="highlight-title">Bright header</h1>
+    <div class="icon-container">
+        <div class="highlight-icon">⭐</div>
+    </div>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'main/css/test_script.js' %}"></script>
+{% endblock %}
+

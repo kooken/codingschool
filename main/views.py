@@ -255,3 +255,7 @@ def job_search(request):
 
 def team(request):
     return render(request, 'main/team.html')
+
+
+def test(request):
+    return render(request, 'main/test.html')

@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="ru">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>kooken</title>
+    {% block extra_css %}
+    {% endblock %}
+    <meta name="theme-color" content="#e0ff00">
+    <meta property="og:title" content="home">
+    <meta property="og:type" content="website">
+    <meta data-intl-tel-input-cdn-path="intlTelInput/">
+</head>
+<body class="u-body u-xl-mode" data-lang="ru" id="body">
+    {% include 'main/includes/test_header.html' %}
+    {% block content %}
+    {% endblock %}
+    {% block extra_js %}
+    {% endblock %}
+    {% include 'main/includes/test_footer.html' %}
+    <script src="{% static 'main/css/test_script.js' %}"></script>
+</body>
+</html>

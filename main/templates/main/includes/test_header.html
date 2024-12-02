@@ -1,6 +1,7 @@
 {% load static %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'main/css/main_header.css' %}">
+<link rel="stylesheet" href="{% static 'main/css/test_header.css' %}">
+<link rel="stylesheet" href="{% static 'main/css/test.css' %}">
 {% endblock %}
 <header>
     <div class="header-content">
@@ -26,8 +27,13 @@
                 <li>
                     <a href="{% url 'main:test' %}" class="{% if request.path == '/test/' %}active{% endif %}">test</a>
                 </li>
+
             </ul>
         </nav>
+        <div class="theme-switch">
+            <input type="checkbox" id="theme-toggle"/>
+            <label for="theme-toggle" class="toggle-label"></label>
+        </div>
         <div class="auth-buttons">
             <a href="{% url 'users:login' %}">
                 <button class="auth-btn">Login</button>
