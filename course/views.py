@@ -18,7 +18,6 @@ def course_detail(request, id):
     lessons = course.lessons.all().order_by('order')  # Sorting lessons by order if necessary
     print("Lessons from course:", lessons)
 
-    # Generate embed URLs for each lesson
     lesson_data = []
     test_data = []
     for lesson in lessons:
@@ -32,7 +31,6 @@ def course_detail(request, id):
             with open(test_path, 'r', encoding='utf-8') as file:
                 test_data = json.load(file)
 
-        # If the video URL exists and is a YouTube URL, extract the video ID and create embed URL
         if video_url:
             parsed_url = urlparse(video_url)
             query_params = parse_qs(parsed_url.query)
@@ -47,20 +45,17 @@ def course_detail(request, id):
     if lesson_order:
         lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
     else:
-        lesson = lessons.first()  # Если не передан lesson_order, берём первый урок
+        lesson = lessons.first()
     print("Current lesson:", lesson)
 
-    # Получаем результат теста для текущего урока
     test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
     print("Test result:", test_result)
-    total_questions = len(test_data) if test_data else 0  # Заглушка, если нет тестов
+    total_questions = len(test_data) if test_data else 0
     print("Total questions:", total_questions)
 
-    # Обрабатываем POST-запросы для каждой формы
     if request.method == "POST":
         print("Request POST data:", request.POST)
         if "submit_comment" in request.POST:
-            # Обработка комментариев
             lesson_order = request.POST.get("lesson_order")
             print("Lesson order is:", lesson_order)
             lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
@@ -73,34 +68,27 @@ def course_detail(request, id):
                 comment.save()
 
         if "submit_test" in request.POST:
-            # Get the lesson ID from the POST data
             lesson_order = request.POST.get("lesson_order")
             print("Lesson order is:", lesson_order)
             lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
             print("Lesson is:", lesson)
             test_form = LessonTestForm(questions=test_data, data=request.POST)
-            # print("Test form is:", test_form)
 
             if test_form.is_valid():
-                # Получаем ответы пользователя
                 user_answers = [
                     test_form.cleaned_data[f'question_{i + 1}'] for i in range(len(test_data))
                 ]
                 print("User answers are:", user_answers)
 
-                # Получаем правильные ответы
                 correct_answers = [q['correct_answer'] for q in test_data]
                 print("Correct answers are:", correct_answers)
 
-                # Считаем баллы
                 score = sum(1 for user, correct in zip(user_answers, correct_answers) if user == correct)
                 print("Score is:", score)
 
-                # Рассчитываем процент правильных ответов
                 percentage = (score / len(correct_answers)) * 100 if correct_answers else 0
                 print("Percentage is:", percentage)
 
-                # Создаем или обновляем результат теста
                 test_result, created = LessonTestResult.objects.get_or_create(
                     user=request.user, test=lesson.test
                 )
@@ -109,12 +97,10 @@ def course_detail(request, id):
                 test_result.save()
                 print("Test result object is:", test_result)
 
-                # Сохраняем ответы пользователя
                 for i, user_answer in enumerate(user_answers):
-                    question = test_data[i]  # Извлекаем вопрос из JSON
+                    question = test_data[i]
                     answer_id = question['answer_choices'].index(user_answer) + 1
 
-                    # Сохраняем ответ в модели LessonTestAnswer
                     LessonTestAnswer.objects.create(
                         result=test_result,
                         question_id=question['id'],
@@ -125,49 +111,38 @@ def course_detail(request, id):
                 print("Form errors:", test_form.errors)
 
         if "retake_test" in request.POST:
-            # Получаем старый результат
             test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
 
             if test_result:
-                # Удаляем старые ответы
                 test_result.answers.all().delete()
-                # test_result.delete()
 
-            # Устанавливаем переменную для отображения новой формы теста
             reset_test = True
 
         if "submit_homework" in request.POST:
-            # Extract lesson order from POST data
             lesson_order = request.POST.get("lesson_order")
             print("Lesson order is:", lesson_order)
 
             if lesson_order:
-                # Fetch the lesson using the lesson order
                 lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
                 print("Fetched lesson is:", lesson)
 
-                # Ensure that the lesson has an associated Homework
                 try:
                     homework = lesson.homework
                 except Homework.DoesNotExist:
                     return JsonResponse({"message": "No homework is associated with this lesson."}, status=400)
 
-                # Create the form instance with POST data
                 homework_form = HomeworkSubmissionForm(request.POST)
 
                 if homework_form.is_valid():
-                    # Save the homework submission without committing to the database yet
                     homework_submission = homework_form.save(commit=False)
-                    homework_submission.homework = homework  # Link to the correct homework
-                    homework_submission.user = request.user  # Link to the current user
-                    homework_submission.save()  # Save the instance to the database
+                    homework_submission.homework = homework
+                    homework_submission.user = request.user
+                    homework_submission.save()
 
                     return JsonResponse({"message": "Homework submitted successfully!"})
                 else:
-                    # Handle invalid form submission (if needed)
                     return JsonResponse({"message": "There was an error with your submission."}, status=400)
 
-    # Загрузка курса с уроками
     lessons = course.lessons.all()
     return render(request, "course/course_detail.html", {
         "course": course,
@@ -175,10 +150,10 @@ def course_detail(request, id):
         "test_data": test_data if 'test_data' in locals() else None,
         "lesson_data": lesson_data,
         "lessons": lessons,
-        "percentage": percentage if 'percentage' in locals() else None,  # Проверяем, если есть процент
+        "percentage": percentage if 'percentage' in locals() else None,
         "total_questions": len(test_data),
-        "result": test_result if 'test_result' in locals() else None,  # Проверяем, если есть результат
-        "reset_test": reset_test if 'reset_test' in locals() else False,  # Показываем форму заново
+        "result": test_result if 'test_result' in locals() else None,
+        "reset_test": reset_test if 'reset_test' in locals() else False,
         "comment_form": CommentForm(),
         "homework_form": HomeworkSubmissionForm(),
         "test_form": LessonTestForm(),

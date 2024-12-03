@@ -25,7 +25,6 @@ class UserRegisterForm(StyleFormMixin, UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Изменение текста меток для каждого поля
         self.fields['email'].label = 'Your email address'
         self.fields['password1'].label = 'Create password'
         self.fields['password2'].label = 'Confirm password'
@@ -195,7 +194,8 @@ class CustomPasswordUpdateForm(PasswordChangeForm):
         })
         self.fields['new_password1'].label = _('New Password')
         self.fields['new_password1'].help_text = _(
-            '<span class="custom-help-text">Must be at least 8 characters, and include numbers, letters, and special symbols.</span>'
+            '<span class="custom-help-text">Must be at least 8 characters,'
+            'and include numbers, letters, and special symbols.</span>'
         )
 
         self.fields['new_password2'].widget = forms.PasswordInput(attrs={

@@ -65,8 +65,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Путь к общей директории для шаблонов
-        'APP_DIRS': True,  # Убедитесь, что это установлено в True
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -128,7 +128,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'main/static'),  # Укажите путь к папке static
+    os.path.join(BASE_DIR, 'main/static'),
 ]
 
 # Default primary key field type

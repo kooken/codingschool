@@ -156,7 +156,6 @@ def promo_code_page(request):
 
                     promo_code_str = generate_promo_code(length=8)
 
-                    # Создание промокода с выбранными параметрами
                     promo_code = PromoCode.objects.create(
                         code=promo_code_str,
                         plan=subscription_plan,
@@ -170,7 +169,7 @@ def promo_code_page(request):
                     messages.success(request, f"Promo code generated: {promo_code_str}")
 
                 except Exception as e:
-                    print(f"Error occured: {str(e)}")
+                    print(f"Error occurred: {str(e)}")
                     messages.error(request, f"Error: {str(e)}")
 
         elif 'activate' in request.POST:
@@ -214,27 +213,33 @@ def courses(request):
         {
             'name': 'Go',
             'image': 'main/css/images/golang-course.png',
-            'description': 'Go, also known as Golang, is a statically typed, compiled programming language designed at Google. It\'s known for its simplicity, concurrency support, and performance.'
+            'description': 'Go, also known as Golang, is a statically typed, compiled programming'
+                           'language designed at Google. It\'s known for its simplicity, concurrency support,'
+                           'and performance.'
         },
         {
             'name': 'Python',
             'image': 'main/css/images/python-course.png',
-            'description': 'Python is an interpreted, high-level, general-purpose programming language. It emphasizes code readability and has a vast ecosystem of libraries.'
+            'description': 'Python is an interpreted, high-level, general-purpose programming language.'
+                           'It emphasizes code readability and has a vast ecosystem of libraries.'
         },
         {
             'name': 'C',
             'image': 'main/css/images/c-course.png',
-            'description': 'C is a powerful general-purpose programming language. It is widely used in systems programming, game development, and embedded systems.'
+            'description': 'C is a powerful general-purpose programming language.'
+                           'It is widely used in systems programming, game development, and embedded systems.'
         },
         {
             'name': 'JavaScript',
             'image': 'main/css/images/javascript-course.png',
-            'description': 'JavaScript is a versatile, high-level language commonly used in web development to add interactivity to web pages.'
+            'description': 'JavaScript is a versatile, high-level language commonly used in web development'
+                           'to add interactivity to web pages.'
         },
         {
             'name': 'SQL',
             'image': 'main/css/images/sql-course.png',
-            'description': 'SQL, or Structured Query Language, is a standardized language for managing and querying relational databases.'
+            'description': 'SQL, or Structured Query Language, is a standardized language for managing and'
+                           'querying relational databases.'
         }
     ]
 

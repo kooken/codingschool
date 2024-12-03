@@ -1,6 +1,5 @@
 from django.db import models
 from django.conf import settings
-
 from users.models import ProgrammingLanguage, BonusModule, User
 
 
@@ -24,13 +23,12 @@ class Lesson(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     course = models.ForeignKey('Course', related_name='lessons', on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()  # Порядок урока в курсе
+    order = models.PositiveIntegerField()
 
     def __str__(self):
         return f"{self.title} (Course: {self.course.title})"
 
     def is_completed(self, user):
-        """Проверка, выполнен ли урок пользователем."""
         test_result = LessonTestResult.objects.filter(user=user, test=self.test).order_by('-date_taken').first()
         homework_status = HomeworkSubmission.objects.filter(homework=self.homework, user=user).order_by(
             '-submitted_at').first()
@@ -41,7 +39,6 @@ class Lesson(models.Model):
         return test_passed and homework_done
 
     def unlock_next_lesson(user, current_lesson):
-        """Открыть следующий урок после выполнения текущего."""
         if current_lesson.is_completed(user):
             next_lesson = Lesson.objects.filter(course=current_lesson.course, order__gt=current_lesson.order).first()
             if next_lesson:
@@ -54,41 +51,29 @@ class Lesson(models.Model):
 
 class LessonTest(models.Model):
     lesson = models.OneToOneField(Lesson, related_name="test", on_delete=models.CASCADE)
-    min_score_required = models.IntegerField(default=50)  # Минимальный порог прохождения
+    min_score_required = models.IntegerField(default=50)
 
     def __str__(self):
         return f"Test for {self.lesson.title}"
 
 
-# class LessonTestQuestion(models.Model):
-#     test = models.ForeignKey(LessonTest, related_name="questions", on_delete=models.CASCADE)
-#     question_text = models.TextField()
-#     answer_choices = models.JSONField()  # Варианты ответов
-#     correct_answer = models.CharField(max_length=255)  # Правильный ответ
-#
-#     def __str__(self):
-#         return f"Question: {self.question_text}"
-
-
 class LessonTestResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     test = models.ForeignKey(LessonTest, related_name="results", on_delete=models.CASCADE)
-    score = models.IntegerField(default=0)  # Набранные баллы
+    score = models.IntegerField(default=0)
     date_taken = models.DateTimeField(auto_now_add=True)
-    attempts = models.IntegerField(default=0)  # Количество попыток
+    attempts = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Test result for {self.user.username} (Score: {self.score})"
 
     def is_passed(self):
-        """Проверка, сдан ли тест."""
         return self.score >= self.test.min_score_required
 
     def retake(self):
-        """Логика пересдачи теста."""
-        if self.score < 100:  # Пересдача разрешена, если не набрано 100 баллов
+        if self.score < 100:
             self.attempts += 1
-            self.score = 0  # Обнулить баллы для пересдачи
+            self.score = 0
             self.save()
             return True
         return False
@@ -96,8 +81,8 @@ class LessonTestResult(models.Model):
 
 class LessonTestAnswer(models.Model):
     result = models.ForeignKey(LessonTestResult, related_name="answers", on_delete=models.CASCADE)
-    question_id = models.IntegerField()  # ID вопроса из JSON
-    answer_id = models.IntegerField()  # ID выбранного ответа
+    question_id = models.IntegerField()
+    answer_id = models.IntegerField()
 
     def __str__(self):
         return f"Answer ID: {self.answer_id} for question ID: {self.question_id}"

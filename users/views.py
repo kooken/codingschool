@@ -95,7 +95,8 @@ class CustomPasswordResetView(PasswordResetView):
         uid = urlsafe_base64_encode(str(user.pk).encode())
 
         host = self.request.get_host()
-        reset_url = f'http://{host}{reverse_lazy("users:password_reset_confirm", kwargs={"uidb64": uid, "token": token})}'
+        reset_url = f'http://{host}{reverse_lazy("users:password_reset_confirm",
+                                                 kwargs={"uidb64": uid, "token": token})}'
 
         html_message = render_to_string('emails/password_reset_email.html', {
             'email': user.email,
@@ -180,7 +181,7 @@ class ChangePasswordView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         form.save()
-        update_session_auth_hash(self.request, form.user)  # Чтобы пользователь не был разлогинен
+        update_session_auth_hash(self.request, form.user)
         messages.success(self.request, 'Password changed successfully!')
         return super().form_valid(form)
 

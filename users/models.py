@@ -246,7 +246,7 @@ class PromoCode(models.Model):
         related_name="promo_codes",
         verbose_name="Subscription Plan"
     )
-    is_active = models.BooleanField(default=True, verbose_name="Is Active")  # Промокод активен, пока не использован
+    is_active = models.BooleanField(default=True, verbose_name="Is Active")
     programming_languages = models.ManyToManyField(
         'ProgrammingLanguage',
         related_name="promo_codes",
