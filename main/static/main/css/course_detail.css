@@ -33,6 +33,7 @@ body::-webkit-scrollbar-thumb:hover {
     margin-right: 20px;
     background-color: #fff;
     padding: 20px;
+    margin-bottom: 100px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: max-width 0.3s ease;
@@ -73,17 +74,58 @@ body::-webkit-scrollbar-thumb:hover {
     flex-direction: column;
     background-color: #fff;
     padding: 20px;
+    margin-bottom: 100px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .video-container {
     margin-bottom: 20px;
+    width: 100%;
 }
 
-.video-container iframe {
+.header-container {
+    display: flex;
+    align-items: center; /* Выравнивание по вертикали */
+    justify-content: flex-start; /* Кнопка будет справа от заголовка */
+}
+
+.header-container h3 {
+    margin-right: 10px; /* Отступ между заголовком и кнопкой */
+}
+
+.toggle-video-button,
+.toggle-panel-button {
+    padding: 4px 8px;
+    cursor: pointer;
+    background-color: white;
+    border: 2px solid #b07afe;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+    color: #b07afe;
+    transition: all 0.3s ease;
+}
+
+.toggle-video-button:hover,
+.toggle-panel-button:hover {
+    background-color: #b07afe;
+    color: black;
+}
+
+.toggle-video-button.active,
+.toggle-panel-button.active {
+    background-color: #b07afe;
+    color: black;
+}
+
+.video-frame {
+    display: block;
     width: 100%;
-    height: 400px;
 }
 
 .additional-resources-container {
@@ -105,7 +147,10 @@ body::-webkit-scrollbar-thumb:hover {
     flex: 1;
 }
 
-/* Стили для теста */
+.hidden {
+    display: none;
+}
+
 .test-section,
 .homework-section,
 .comments-section {
@@ -120,7 +165,6 @@ body::-webkit-scrollbar-thumb:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Заголовок теста */
 .test-section,
 .homework-section,
 .comments-section h4 {
@@ -142,7 +186,6 @@ body::-webkit-scrollbar-thumb:hover {
     line-height: 1.5;
 }
 
-/* Стили для вопросов теста */
 .test-section .question {
     margin-bottom: 20px;
 }
@@ -154,7 +197,6 @@ body::-webkit-scrollbar-thumb:hover {
     margin-bottom: 10px;
 }
 
-/* Стили для вариантов ответа */
 .test-section .question label {
     display: block;
     font-size: 16px;
@@ -167,7 +209,6 @@ body::-webkit-scrollbar-thumb:hover {
     margin-right: 10px;
 }
 
-/* Стили для кнопки отправки теста */
 .test-section button {
     background-color: #b07afe;
     color: black;
@@ -194,7 +235,6 @@ body::-webkit-scrollbar-thumb:hover {
     outline: none;
 }
 
-/* Стили для ошибок или предупреждений (например, если не все вопросы были отвечены) */
 .test-section .error {
     color: red;
     font-size: 14px;
@@ -271,14 +311,12 @@ body::-webkit-scrollbar-thumb:hover {
     display: none;
 }
 
-/* Стили для активной секции */
 .section.active {
     display: block;
 }
 
-/* Стили для активных кнопок */
 button.active {
-    background-color: #b07afe; /* Измените по вашему усмотрению */
+    background-color: #b07afe;
 }
 
 input[type="url"] {
@@ -313,41 +351,35 @@ button[type="submit"] {
     transition: all 0.3s ease;
 }
 
-/* Стили для кнопки при наведении */
 button[type="submit"]:hover {
     background-color: black;
     color: #b07afe;
 }
 
-/* Стили для секции комментариев */
 .comments-section {
     margin-top: 20px;
     padding: 20px;
-    border: 1px solid #ddd; /* Легкая рамка */
+    border: 1px solid #ddd;
     border-radius: 5px;
-    background-color: #f9f9f9; /* Светлый фон */
+    background-color: #f9f9f9;
 }
 
-/* Стили для заголовка секции комментариев */
 .comments-section h4 {
     font-size: 18px;
     margin-bottom: 15px;
     color: #333;
 }
 
-/* Стили для блока существующих комментариев */
 .existing-comments {
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
-/* Стили для каждого отдельного комментария */
 .comment {
-    margin-bottom: 15px;
-    padding: 10px;
+    margin-bottom: 5px;
+    padding: 5px;
     border-bottom: 1px solid #ddd;
 }
 
-/* Выравнивание текста по левому краю */
 .comment p {
     text-align: left;
     margin: 5px 0;
@@ -355,7 +387,7 @@ button[type="submit"]:hover {
 
 .comment strong {
     font-weight: bold;
-    color: #b07afe; /* Цвет имени пользователя */
+    color: #b07afe;
 }
 
 .comment small {
@@ -363,7 +395,6 @@ button[type="submit"]:hover {
     color: #888;
 }
 
-/* Стили для поля ввода комментария (textarea) */
 textarea {
     width: 100%;
     padding: 10px;

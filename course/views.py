@@ -39,7 +39,11 @@ def course_detail(request, id):
             if video_id:
                 embed_url = f"https://www.youtube.com/embed/{video_id}?si=OntB9hOa5AGwDJFT"
 
-        lesson_data.append({'lesson': lesson, 'embed_url': embed_url, 'test_data': test_data})
+        test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
+        total_questions = len(test_data) if test_data else 0
+
+        lesson_data.append({'lesson': lesson, 'embed_url': embed_url, 'test_data': test_data,
+                            'test_result': test_result, 'total_questions': total_questions})
 
     lesson_order = request.POST.get("lesson_order")
     if lesson_order:
@@ -47,11 +51,6 @@ def course_detail(request, id):
     else:
         lesson = lessons.first()
     print("Current lesson:", lesson)
-
-    test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
-    print("Test result:", test_result)
-    total_questions = len(test_data) if test_data else 0
-    print("Total questions:", total_questions)
 
     if request.method == "POST":
         print("Request POST data:", request.POST)
@@ -72,15 +71,21 @@ def course_detail(request, id):
             print("Lesson order is:", lesson_order)
             lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
             print("Lesson is:", lesson)
-            test_form = LessonTestForm(questions=test_data, data=request.POST)
+            lesson_data_item = next((item for item in lesson_data if item['lesson'] == lesson), None)
+            if lesson_data_item:
+                current_test_data = lesson_data_item['test_data']
+                print("Test data for lesson:", current_test_data)
+            else:
+                print("No lesson data found for this lesson")
+            test_form = LessonTestForm(questions=current_test_data, data=request.POST)
 
             if test_form.is_valid():
                 user_answers = [
-                    test_form.cleaned_data[f'question_{i + 1}'] for i in range(len(test_data))
+                    test_form.cleaned_data[f'question_{i + 1}'] for i in range(len(current_test_data))
                 ]
                 print("User answers are:", user_answers)
 
-                correct_answers = [q['correct_answer'] for q in test_data]
+                correct_answers = [q['correct_answer'] for q in current_test_data]
                 print("Correct answers are:", correct_answers)
 
                 score = sum(1 for user, correct in zip(user_answers, correct_answers) if user == correct)
@@ -98,7 +103,7 @@ def course_detail(request, id):
                 print("Test result object is:", test_result)
 
                 for i, user_answer in enumerate(user_answers):
-                    question = test_data[i]
+                    question = current_test_data[i]
                     answer_id = question['answer_choices'].index(user_answer) + 1
 
                     LessonTestAnswer.objects.create(
@@ -111,6 +116,8 @@ def course_detail(request, id):
                 print("Form errors:", test_form.errors)
 
         if "retake_test" in request.POST:
+            lesson_order = request.POST.get("lesson_order")
+            lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
             test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
 
             if test_result:
@@ -139,7 +146,6 @@ def course_detail(request, id):
                     homework_submission.user = request.user
                     homework_submission.save()
 
-                    return JsonResponse({"message": "Homework submitted successfully!"})
                 else:
                     return JsonResponse({"message": "There was an error with your submission."}, status=400)
 

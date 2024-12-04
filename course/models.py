@@ -65,7 +65,7 @@ class LessonTestResult(models.Model):
     attempts = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Test result for {self.user.username} (Score: {self.score})"
+        return f"Test result for {self.user.email} (Score: {self.score})"
 
     def is_passed(self):
         return self.score >= self.test.min_score_required

@@ -14,21 +14,24 @@
                 {% endfor %}
             </ul>
         </div>
-        <button class="toggle-button" onclick="toggleLeftPanel()">Hide Lessons</button>
     </div>
 
     <div class="right-panel">
         {% for data in lesson_data %}
         <div class="lesson-detail" id="lesson{{ lesson.order }}">
             <div class="video-container">
-                <h3>Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h3>
+                <div class="header-container">
+                    <h3>Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h3>
+                    <button class="toggle-video-button" onclick="toggleVideoVisibility()">Hide Video</button>
+                    <button class="toggle-panel-button" onclick="toggleLeftPanel()">Hide Lessons</button>
+                </div>
                 {% if data.embed_url %}
                 <iframe width="560" height="315"
                         src="{{ data.embed_url }}"
                         title="YouTube video player" frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen>
+                        allowfullscreen class="video-frame">
                 </iframe>
                 {% else %}
                 <p>No video available for this lesson.</p>
@@ -53,43 +56,43 @@
             </div>
 
 
-            <div class="test-section section" id="test{{ lesson.order }}">
-                <h4>Test for Lesson {{ lesson.order }}: {{ lesson.title }}</h4>
-                {% if result %}
+            <div class="test-section section" id="test{{ data.lesson.order }}">
+                <h4>Test for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
+                {% if data.test_result %}
                 {% if not reset_test %}
                 <p id="attempts-count">
                     Attempts:
-                    {% if result %}
-                    {{ result.attempts }}
+                    {% if data.test_result %}
+                    {{ data.test_result.attempts }}
                     {% else %}
                     0
                     {% endif %}
                 </p>
                 <p id="score-percentage">
                     Max Score:
-                    {% if percentage %}
-                    {{ percentage }}%
+                    {% if data.test_result.score %}
+                    {{ data.test_result.score }}%
                     {% else %}
                     0%
                     {% endif %}
-                </p> {% if result.is_passed %}
+                </p> {% if data.test_result.is_passed %}
                 <p><strong>Congratulations!</strong> You passed the test.</p>
                 {% else %}
                 <p><strong>Sorry!</strong> You did not pass the test. Try again.</p>
                 {% endif %}
                 <form method="post" action="{% url 'course:course_detail' course.id %}">
                     {% csrf_token %}
-                    <input type="hidden" name="lesson_order" value="{{ lesson.order }}">
+                    <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
                     <button type="submit" name="retake_test">Retake Test</button>
                 </form>
                 {% endif %}
                 {% endif %}
 
                 {% if reset_test %}
-                <form method="post" id="test-form{{ lesson.order }}"
+                <form method="post" id="test-form{{ data.lesson.order }}"
                       action="{% url 'course:course_detail' course.id %}">
                     {% csrf_token %}
-                    {% for question in test_data %}
+                    {% for question in data.test_data %}
                     <div class="question">
                         <p>{{ question.question }}</p>
                         {% for choice in question.answer_choices %}
@@ -101,7 +104,7 @@
                         {% endfor %}
                     </div>
                     {% endfor %}
-                    <input type="hidden" name="lesson_order" value="{{ lesson.order }}">
+                    <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
                     <button type="submit" name="submit_test">Submit Test</button>
                 </form>
                 {% endif %}
@@ -125,7 +128,7 @@
                 <div class="existing-comments">
                     {% for comment in data.lesson.comments.all %}
                     <div class="comment">
-                        <p><strong>{{ comment.user.username }}:</strong> {{ comment.text }}</p>
+                        <p><strong>{{ comment.user.email }}:</strong> {{ comment.text }}</p>
                         <p><small>{{ comment.created_at }}</small></p>
                     </div>
                     {% endfor %}
@@ -140,7 +143,6 @@
             </div>
         </div>
         {% endfor %}
-        <button class="toggle-button" onclick="toggleLeftPanel()">Show Lessons</button>
     </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 function toggleLeftPanel() {
     const leftPanel = document.querySelector('.left-panel');
     const rightPanel = document.querySelector('.right-panel');
-    const toggleButton = document.querySelector('.toggle-button');
+    const toggleButton = document.querySelector('.toggle-panel-button');
 
     leftPanel.classList.toggle('hidden');
     rightPanel.classList.toggle('full-width');
@@ -13,105 +13,82 @@ function toggleLeftPanel() {
     }
 }
 
-function toggleSection(sectionId, button, sectionClass, buttonClass) {
-    const targetSection = document.getElementById(sectionId);
-    const isVisible = targetSection.classList.contains("active");
+function toggleVideoVisibility() {
+    const videoFrame = document.querySelector('.video-frame');
+    const button = document.querySelector('.toggle-video-button');
 
-    // Скрыть все секции
-    document.querySelectorAll(`.${sectionClass}`).forEach(section => {
+    if (videoFrame.classList.contains('hidden')) {
+        videoFrame.classList.remove('hidden');
+        button.textContent = 'Hide Video';
+    } else {
+        videoFrame.classList.add('hidden');
+        button.textContent = 'Show Video';
+    }
+}
+
+function toggleSection(sectionId, button, sectionClass, buttonClass) {
+    console.log("Looking for sections with class:", sectionClass);
+    console.log("Looking for buttons with class:", buttonClass);
+
+    const targetSection = document.getElementById(sectionId);
+
+    if (!targetSection) {
+        console.error("Target section not found:", sectionId);
+        return;
+    }
+
+    const isCurrentlyVisible = targetSection.classList.contains("active");
+    console.log("Target section is active:", isCurrentlyVisible);
+
+    document.querySelectorAll(".section").forEach((section, index) => {
+        if (section.classList.contains("active")) {
+            console.log(`Hiding section #${index}:`, section.id);
+        }
         section.classList.remove("active");
     });
 
-    // Убрать активный класс у всех кнопок
-    document.querySelectorAll(`.${buttonClass}`).forEach(btn => {
-        btn.classList.remove('active');
+    document.querySelectorAll(`.${buttonClass}`).forEach((btn, index) => {
+        if (btn.classList.contains("active")) {
+            console.log(`Remove button activity #${index}:`, btn.textContent);
+        }
+        btn.classList.remove("active");
     });
 
-    // Если секция была скрыта, показать её и подсветить кнопку
-    if (!isVisible) {
+    if (!isCurrentlyVisible) {
+        console.log("Making section active:", sectionId);
         targetSection.classList.add("active");
-        button.classList.add('active');
+        button.classList.add("active");
+    } else {
+        console.log("Section is already active.");
     }
+
+    const activeSection = document.querySelector(".section.active");
+    const activeButton = document.querySelector(`.${buttonClass}.active`);
+    console.log("Current active session:", activeSection ? activeSection.id : "Нет");
+    console.log("Current active button:", activeButton ? activeButton.textContent : "Нет");
 }
-//function toggleTestSection(testId) {
-//    const testSection = document.getElementById(testId);
-//    const isVisible = testSection.style.display === "block";
-//
-//    // Скрыть/показать секцию
-//    testSection.style.display = isVisible ? "none" : "block";
-//        // Убрать активный класс у всех кнопок той же группы
-//    document.querySelectorAll('.test-link').forEach(btn => btn.classList.remove('active'));
-//
-//    // Подсветить текущую кнопку, если секция открыта
-//    if (!isVisible) {
-//        button.classList.add('active');
-//    }
-//}
-//
-//function toggleHomeworkSection(homeworkId) {
-//    const homeworkSection = document.getElementById(homeworkId);
-////    if (homeworkSection.style.display === "none") {
-////        homeworkSection.style.display = "block";
-////    } else {
-////        homeworkSection.style.display = "none";
-////    }
-//    const isVisible = homeworkSection.style.display === "block";
-//
-//    // Скрыть/показать секцию
-//    homeworkSection.style.display = isVisible ? "none" : "block";
-//        // Убрать активный класс у всех кнопок той же группы
-//    document.querySelectorAll('.homework-link').forEach(btn => btn.classList.remove('active'));
-//
-//    // Подсветить текущую кнопку, если секция открыта
-//    if (!isVisible) {
-//        button.classList.add('active');
-//    }
-//}
-//
-//function toggleCommentsSection(commentsId) {
-//    const commentsSection = document.getElementById(commentsId);
-////    if (commentsSection.style.display === "none") {
-////        commentsSection.style.display = "block";
-////    } else {
-////        commentsSection.style.display = "none";
-////    }
-//    const isVisible = commentsSection.style.display === "block";
-//
-//    // Скрыть/показать секцию
-//    commentsSection.style.display = isVisible ? "none" : "block";
-//        // Убрать активный класс у всех кнопок той же группы
-//    document.querySelectorAll('.comments-link').forEach(btn => btn.classList.remove('active'));
-//
-//    // Подсветить текущую кнопку, если секция открыта
-//    if (!isVisible) {
-//        button.classList.add('active');
-//    }
-//}
+
 
 document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    // При загрузке страницы подсвечиваем уже выбранные ответы
     if (radio.checked) {
         const selectedLabel = radio.closest('label');
-        if (selectedLabel) selectedLabel.style.color = '#b07afe'; // Задаем цвет текста
+        if (selectedLabel) selectedLabel.style.color = '#b07afe';
     }
 
-    // Событие изменения радиокнопки
     radio.addEventListener('change', function () {
-        // Сброс подсветки у всех кнопок в рамках текущего вопроса
         const questionName = this.name;
         document.querySelectorAll(`input[name="${questionName}"]`).forEach(r => {
             const label = r.closest('label');
-            if (label) label.style.color = ''; // Убираем цвет текста
+            if (label) label.style.color = '';
         });
 
-        // Подсвечиваем выбранный вариант
         const selectedLabel = this.closest('label');
-        if (selectedLabel) selectedLabel.style.color = '#b07afe'; // Задаем цвет текста
+        if (selectedLabel) selectedLabel.style.color = '#b07afe';
     });
 });
 
 document.getElementById('test-form').addEventListener('submit', function (e) {
-e.preventDefault(); // Отмена стандартной отправки формы
+e.preventDefault();
 
 const formData = new FormData(this);
 
@@ -125,11 +102,9 @@ fetch(this.action, {
     .then(response => response.json())
     .then(data => {
         if (data.message === "Test submitted successfully.") {
-            // Обновляем данные о попытках и процентах
             document.getElementById('attempts-count').textContent = `Attempts: ${data.attempts}`;
             document.getElementById('score-percentage').textContent = `Max Score: ${data.percentage}%`;
 
-            // Прячем форму
             document.getElementById('test-form').style.display = 'none';
 
             alert('Test submitted successfully!');

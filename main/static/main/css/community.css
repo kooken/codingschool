@@ -3,6 +3,21 @@
 body {
     font-family: 'Raleway', sans-serif;
     background-color: white;
+    overflow-y: scroll;
+}
+
+body::-webkit-scrollbar {
+    width: 0px; /* kostyl */
+    background-color: white;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #b07afe;
+    border-radius: 8px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: #4b45c4;
 }
 
 .community-section {
@@ -10,7 +25,7 @@ body {
     background-color: #fff;
     max-width: 1200px;
     margin: 0 auto;
-    padding-bottom: 50px;
+    margin-bottom: 100px;
 }
 
 .community-header h1 {
