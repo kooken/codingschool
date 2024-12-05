@@ -10,7 +10,11 @@
             <h3>{{ course.title }}</h3>
             <ul>
                 {% for lesson in course.lessons.all %}
-                <li><a href="#lesson{{ lesson.order }}">Lesson {{ lesson.order }}: {{ lesson.title }}</a></li>
+                <li>
+                    <a href="#lesson{{ lesson.order }}" onclick="showLesson('lesson{{ lesson.order }}')">
+                        Lesson {{ lesson.order }}: {{ lesson.title }}
+                    </a>
+                </li>
                 {% endfor %}
             </ul>
         </div>
@@ -18,11 +22,13 @@
 
     <div class="right-panel">
         {% for data in lesson_data %}
-        <div class="lesson-detail" id="lesson{{ lesson.order }}">
+        <div class="lesson-detail hidden" id="lesson{{ data.lesson.order }}">
             <div class="video-container">
                 <div class="header-container">
                     <h3>Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h3>
-                    <button class="toggle-video-button" onclick="toggleVideoVisibility()">Hide Video</button>
+                    <button class="toggle-video-button"
+                            onclick="toggleVideoVisibility('video{{ data.lesson.order }}', this)">Hide Video
+                    </button>
                     <button class="toggle-panel-button" onclick="toggleLeftPanel()">Hide Lessons</button>
                 </div>
                 {% if data.embed_url %}
@@ -31,7 +37,7 @@
                         title="YouTube video player" frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen class="video-frame">
+                        allowfullscreen class="video-frame" id="video{{ data.lesson.order }}">
                 </iframe>
                 {% else %}
                 <p>No video available for this lesson.</p>
@@ -113,6 +119,7 @@
             <div class="homework-section section" id="homework{{ data.lesson.order }}">
                 <h4>Homework for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
                 <p>{{ data.lesson.homework.task_description }}</p>
+                {% if not data.homework_data %}
                 <form method="post" id="homework-form{{ data.lesson.order }}"
                       action="{% url 'course:course_detail' course.id %}">
                     {% csrf_token %}
@@ -121,6 +128,10 @@
                     <input type="url" id="github_link" name="github_link" required>
                     <button type="submit" name="submit_homework">Submit Homework</button>
                 </form>
+                {% else %}
+                <p>You submitted homework on {{ data.homework_data.submitted_at }}</p>
+                <p>Homework status is <strong>{{ data.homework_data.status }}.</strong></p>
+                {% endif %}
             </div>
 
             <div class="comments-section section" id="comments{{ data.lesson.order }}">

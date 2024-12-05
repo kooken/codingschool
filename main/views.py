@@ -190,18 +190,18 @@ def promo_code_page(request):
 @login_required
 def user_dashboard(request):
     try:
-        subscription = SubscriptionPlan.objects.filter(
+        current_subscription = SubscriptionPlan.objects.filter(
             Q(user=request.user) & (Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True))
         ).first()
 
-        if subscription:
-            print(f"Active subscription found: {subscription}")
+        if current_subscription:
+            print(f"Active subscription found: {current_subscription}")
         else:
             print("No active subscription found.")
     except SubscriptionPlan.DoesNotExist:
         print("No active subscription found.")
 
-    return render(request, 'main/user_dashboard.html', {'subscription': subscription})
+    return render(request, 'main/user_dashboard.html', {'current_subscription': current_subscription})
 
 
 def index(request):

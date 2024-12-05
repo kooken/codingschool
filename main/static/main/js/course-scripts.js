@@ -13,9 +13,22 @@ function toggleLeftPanel() {
     }
 }
 
-function toggleVideoVisibility() {
-    const videoFrame = document.querySelector('.video-frame');
-    const button = document.querySelector('.toggle-video-button');
+function showLesson(lessonId) {
+    document.querySelectorAll('.lesson-detail').forEach(lesson => {
+        lesson.classList.add('hidden');
+    });
+
+    const selectedLesson = document.getElementById(lessonId);
+    if (selectedLesson) {
+        selectedLesson.classList.remove('hidden');
+        console.log("Showing lesson:", lessonId);
+    } else {
+        console.error("Lesson not found:", lessonId);
+    }
+}
+
+function toggleVideoVisibility(videoId, button) {
+    const videoFrame = document.getElementById(videoId);
 
     if (videoFrame.classList.contains('hidden')) {
         videoFrame.classList.remove('hidden');
@@ -24,6 +37,8 @@ function toggleVideoVisibility() {
         videoFrame.classList.add('hidden');
         button.textContent = 'Show Video';
     }
+
+    console.log("Toggled video visibility for:", videoId);
 }
 
 function toggleSection(sectionId, button, sectionClass, buttonClass) {

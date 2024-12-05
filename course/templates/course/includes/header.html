@@ -12,7 +12,8 @@
         <nav>
             <ul>
                 <li>
-                    <a href="{% url 'main:user_dashboard' %}" class="{% if request.path == '/dashboard/' %}active{% endif %}">my
+                    <a href="{% url 'main:user_dashboard' %}"
+                       class="{% if request.path == '/dashboard/' %}active{% endif %}">my
                         dashboard</a>
                 </li>
                 <li>
@@ -27,6 +28,12 @@
                     <a href="{% url 'main:job_search' %}"
                        class="{% if request.path == '/job_search/' %}active{% endif %}">job search</a>
                 </li>
+                {% if request.user.is_superuser or is_teacher %}
+                <li>
+                    <a href="{% url 'course:admin_dashboard' %}"
+                       class="{% if request.path == '/admin-dashboard/' %}active{% endif %}">admin</a>
+                </li>
+                {% endif %}
             </ul>
         </nav>
         <div class="auth-buttons">

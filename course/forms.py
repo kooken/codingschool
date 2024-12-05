@@ -27,7 +27,17 @@ class LessonTestForm(forms.Form):
 class HomeworkSubmissionForm(forms.ModelForm):
     class Meta:
         model = HomeworkSubmission
-        fields = ['github_link']
+        fields = ['status', 'reviewed_at']
+
+    status = forms.ChoiceField(
+        choices=HomeworkSubmission._meta.get_field('status').choices,
+        widget=forms.Select(attrs={'class': 'status-select'})
+    )
+
+    reviewed_at = forms.DateTimeField(
+        required=False,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
+    )
 
 
 class CommentForm(forms.ModelForm):

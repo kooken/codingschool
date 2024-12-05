@@ -1,0 +1,158 @@
+{% extends 'course/base.html' %}
+{% load static %}
+{% block content %}
+<div class="header">Admin Dashboard</div>
+
+<div class="submission-cards-container">
+    {% for hw_submission in hw_submissions %}
+    <div class="submission-card">
+        <div class="card-header">
+            <h3>{{ hw_submission.homework.lesson.title }}</h3>
+            <span class="status-{{ hw_submission.status }}">{{ hw_submission.get_status_display }}</span>
+        </div>
+        <div class="card-body">
+            <div class="card-item">
+                <strong>Student:</strong> {{ hw_submission.user.email }}
+            </div>
+            <div class="card-item">
+                <strong>GitHub Link:</strong> <a href="{{ hw_submission.github_link }}" target="_blank">View Code</a>
+            </div>
+            <div class="card-item">
+                <strong>Submitted At:</strong> {{ hw_submission.submitted_at }}
+            </div>
+            <div class="card-item">
+                <strong>Reviewed At:</strong>
+                {% if hw_submission.reviewed_at %}
+                {{ hw_submission.reviewed_at }}
+                {% else %}
+                Not reviewed
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Form to update status and reviewed_at -->
+        <div class="card-footer">
+            <form method="POST" action="{% url 'course:admin_dashboard' %}">
+                {% csrf_token %}
+                <input type="hidden" name="submission_id" value="{{ hw_submission.id }}">
+
+                <div class="form-group">
+                    <label for="status_{{ hw_submission.id }}">Status</label>
+                    <select name="status" id="status_{{ hw_submission.id }}">
+                        {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if value == hw_submission.status %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reviewed_at_{{ hw_submission.id }}">Reviewed At</label>
+                    <input type="datetime-local" name="reviewed_at" id="reviewed_at_{{ hw_submission.id }}"
+                           value="{{ hw_submission.reviewed_at|date:'Y-m-d\TH:i' }}">
+                    <button type="button" onclick="setReviewedAt({{ hw_submission.id }})">Set to Now</button>
+                </div>
+
+                <button type="submit" class="update-btn">Update</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <p>No submissions found.</p>
+    {% endfor %}
+</div>
+<style>
+    .header {
+        text-align: center;
+        background-color: white;
+        font-family: 'Raleway', sans-serif;
+        color: #b07afe;
+        padding: 20px 0;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .submission-cards-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;  /* Пробел между карточками */
+        margin: 20px;
+    }
+
+    .submission-card {
+        display: flex;
+        flex-direction: column;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        font-family: 'Raleway', sans-serif;
+        border-left: 5px solid #b07afe; /* Можно добавить акцентный цвет слева */
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .card-header h3 {
+        font-size: 18px;
+        color: #333;
+    }
+
+    .card-header .status-pending {
+        background-color: #f0ad4e;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .card-header .status-approved {
+        background-color: #5bc0de;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .card-header .status-revise {
+        background-color: #d9534f;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .card-header .status-rejected {
+        background-color: #d9534f;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+
+    .card-body {
+        margin-top: 10px;
+    }
+
+    .card-item {
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .card-item strong {
+        font-weight: bold;
+    }
+
+    .card-item a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .card-item a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'main/js/admin-dashboard.js' %}"></script>
+{% endblock %}

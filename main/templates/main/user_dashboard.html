@@ -5,28 +5,28 @@
     <div class="subscription-container">
         <div class="subscription-card">
 
-            {% if subscription %}
+            {% if current_subscription %}
             <div class="subscription-details">
-                <p><strong>Plan:</strong> {{ subscription.name }}</p>
+                <p><strong>Plan:</strong> {{ current_subscription.name }}</p>
 
-                {% if subscription.end_date %}
+                {% if current_subscription.end_date %}
                 <p><strong>Valid from:</strong>
-                    {{ subscription.start_date }}
+                    {{ current_subscription.start_date }}
                 </p>
                 <p><strong>Valid to:</strong>
-                    {{ subscription.end_date }}
+                    {{ current_subscription.end_date }}
                 </p>
                 {% else %}
                 <p><strong>Duration:</strong> Lifetime</p>
                 {% endif %}
 
                 <p><strong>Programming Languages:</strong>
-                    {% for lang in subscription.programming_languages.all %}
+                    {% for lang in current_subscription.programming_languages.all %}
                     {{ lang.display_name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>
                 <p><strong>Bonus Modules:</strong>
-                    {% for module in subscription.bonus_modules.all %}
+                    {% for module in current_subscription.bonus_modules.all %}
                     {{ module.display_name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>

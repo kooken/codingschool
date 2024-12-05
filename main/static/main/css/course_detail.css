@@ -86,12 +86,12 @@ body::-webkit-scrollbar-thumb:hover {
 
 .header-container {
     display: flex;
-    align-items: center; /* Выравнивание по вертикали */
-    justify-content: flex-start; /* Кнопка будет справа от заголовка */
+    align-items: center;
+    justify-content: flex-start;
 }
 
 .header-container h3 {
-    margin-right: 10px; /* Отступ между заголовком и кнопкой */
+    margin-right: 10px;
 }
 
 .toggle-video-button,

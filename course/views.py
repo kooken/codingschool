@@ -1,12 +1,16 @@
 import json
 import os
 from django.conf import settings
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import JsonResponse, HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView
 from .forms import LessonTestForm, HomeworkSubmissionForm, CommentForm
-from .models import Course, Homework, LessonTestAnswer, Lesson, LessonTestResult
+from .models import Course, Homework, LessonTestAnswer, Lesson, LessonTestResult, HomeworkSubmission
 from urllib.parse import urlparse, parse_qs
 
 
@@ -41,9 +45,11 @@ def course_detail(request, id):
 
         test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
         total_questions = len(test_data) if test_data else 0
+        homework_data = HomeworkSubmission.objects.filter(user=request.user, homework__lesson=lesson).first()
 
         lesson_data.append({'lesson': lesson, 'embed_url': embed_url, 'test_data': test_data,
-                            'test_result': test_result, 'total_questions': total_questions})
+                            'test_result': test_result, 'total_questions': total_questions,
+                            'homework_data': homework_data})
 
     lesson_order = request.POST.get("lesson_order")
     if lesson_order:
@@ -166,137 +172,53 @@ def course_detail(request, id):
     })
 
 
-#
-# def lesson_detail(request, lesson_id):
-#     lesson = get_object_or_404(Lesson, order=lesson_id)
-#
-#     # Загрузить вопросы теста из JSON
-#     test_file_path = '/Users/mariasazhina/code/codingschool/media/course/static/course/lesson_tests/python/1_lesson.json'
-#
-#     # Проверка наличия файла
-#     if not os.path.exists(test_file_path):
-#         return JsonResponse({'error': f"Test file not found: {test_file_path}"}, status=404)
-#
-#     # Загрузка теста
-#     with open(test_file_path, 'r') as file:
-#         test_data = json.load(file)
-#
-#     test_form = LessonTestForm(test_data['questions'])
-#     homework_form = HomeworkSubmissionForm()
-#
-#     # Секция комментариев
-#     comments = Comment.objects.filter(lesson=lesson)
-#
-#     if request.method == "POST":
-#         # Проверка теста
-#         if 'submit_test' in request.POST:
-#             test_form = LessonTestForm(test_data['questions'], request.POST)
-#             if test_form.is_valid():
-#                 user_answers = [test_form.cleaned_data[f'question_{i + 1}'] for i in range(len(test_data['questions']))]
-#                 correct_answers = [q['correct_answer'] for q in test_data['questions']]
-#                 score = sum(1 for user, correct in zip(user_answers, correct_answers) if user == correct)
-#                 percentage = (score / len(correct_answers)) * 100
-#                 return JsonResponse({'score': score, 'percentage': percentage})
-#
-#         # Загрузка ссылки на домашнее задание
-#         if 'submit_homework' in request.POST:
-#             homework_form = HomeworkSubmissionForm(request.POST)
-#             if homework_form.is_valid():
-#                 github_link = homework_form.cleaned_data['github_link']
-#                 # Логика сохранения ссылки (например, в HomeworkSubmission)
-#                 return JsonResponse({'message': 'Homework submitted successfully!'})
-#
-#     return render(request, 'lesson_detail.html', {
-#         'lesson': lesson,
-#         'test_form': test_form,
-#         'homework_form': homework_form,
-#         'comments': comments,
-#     })
-#
-#
-# class LessonListView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request, course_id):
-#         lessons = Lesson.objects.filter(course_id=course_id).order_by('order')
-#         serializer = LessonSerializer(lessons, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#
-# class LessonDetailView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request, lesson_id):
-#         lesson = get_object_or_404(Lesson, id=lesson_id)
-#         serializer = LessonSerializer(lesson)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+@login_required
+@require_POST
+def update_homework_status(request, submission_id):
+    submission = get_object_or_404(HomeworkSubmission, id=submission_id)
+
+    if not (request.user.is_superuser or request.user.groups.filter(name='Moderators').exists()):
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
+    new_status = request.POST.get('status')
+    if new_status not in dict(HomeworkSubmission._meta.get_field('status').choices):
+        return JsonResponse({'error': 'Invalid status'}, status=400)
+
+    submission.status = new_status
+    submission.reviewed_at = timezone.now()  # Записываем дату
+    submission.save()
+
+    return JsonResponse({'message': 'Status updated successfully.'})
 
 
-# class LessonTestSubmitView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request, lesson_id):
-#         lesson = get_object_or_404(Lesson, id=lesson_id)
-#         test = lesson.test
-#         questions = test.questions.all()
-#
-#         # Получение ответов от пользователя
-#         user_answers = request.data.get('answers', {})  # {'question_id': 'user_answer'}
-#
-#         # Проверка ответов
-#         correct_count = 0
-#         total_questions = questions.count()
-#
-#         for question in questions:
-#             user_answer = user_answers.get(str(question.id))
-#             if user_answer == question.correct_answer:
-#                 correct_count += 1
-#
-#         # Подсчет баллов
-#         score = (correct_count / total_questions) * 100
-#
-#         # Сохранение результата теста
-#         test_result, created = LessonTestResult.objects.get_or_create(
-#             user=request.user,
-#             test=test,
-#         )
-#         test_result.score = score
-#         test_result.attempts += 1
-#         test_result.save()
-#
-#         return Response(
-#             {
-#                 "score": score,
-#                 "is_passed": test_result.is_passed(),
-#                 "attempts": test_result.attempts,
-#             },
-#             status=status.HTTP_200_OK,
-#         )
-#
-#
-# class HomeworkSubmitView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request, lesson_id):
-#         lesson = get_object_or_404(Lesson, id=lesson_id)
-#         homework = lesson.homework
-#
-#         # Создание или обновление домашки
-#         submission, created = HomeworkSubmission.objects.get_or_create(
-#             user=request.user,
-#             homework=homework,
-#         )
-#         submission.github_link = request.data.get('github_link')
-#         submission.status = 'pending'
-#         submission.submitted_at = timezone.now()
-#         submission.save()
-#
-#         return Response(
-#             {"message": "Homework submitted successfully.", "status": submission.status},
-#             status=status.HTTP_200_OK,
-#         )
-#
-#
+def is_admin_or_teacher(user):
+    return user.is_superuser or user.groups.filter(name='teachers').exists()
+
+
+@user_passes_test(is_admin_or_teacher)
+def admin_dashboard(request):
+    hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user').order_by('-submitted_at')
+    status_choices = HomeworkSubmission._meta.get_field('status').choices
+
+    if request.method == 'POST':
+        form = HomeworkSubmissionForm(request.POST)
+        if form.is_valid():
+            submission_id = request.POST.get('submission_id')
+            hw_submission = HomeworkSubmission.objects.get(id=submission_id)
+
+            hw_submission.status = form.cleaned_data['status']
+            hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
+            hw_submission.save()
+
+            messages.success(request, f'Successfully updated submission by {hw_submission.user.username}')
+            return redirect('course:admin_dashboard')
+        else:
+            messages.error(request, 'Failed to update submission.')
+
+    return render(request, 'course/admin_dashboard.html',
+                  {'hw_submissions': hw_submissions, 'status_choices': status_choices, })
+
+
 # class NextLessonUnlockView(APIView):
 #     permission_classes = [IsAuthenticated]
 #
@@ -315,45 +237,7 @@ def course_detail(request, id):
 #             return Response(serializer.data, status=status.HTTP_200_OK)
 #
 #         return Response({"message": "No more lessons in this course."}, status=status.HTTP_404_NOT_FOUND)
-#
-#
-# class LessonTestRetakeView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request, lesson_id):
-#         lesson = get_object_or_404(Lesson, id=lesson_id)
-#         test_result = LessonTestResult.objects.filter(user=request.user, test=lesson.test).first()
-#
-#         if not test_result:
-#             return Response({"message": "You haven't taken this test yet."}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         if test_result.score >= 100:
-#             return Response({"message": "You already have the maximum score."}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         test_result.retake()
-#         return Response({"message": "Test reset for retake."}, status=status.HTTP_200_OK)
-#
-#
-# class HomeworkReviewView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def post(self, request, submission_id):
-#         submission = get_object_or_404(HomeworkSubmission, id=submission_id)
-#
-#         if not request.user.is_staff:
-#             return Response({"message": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
-#
-#         status_choice = request.data.get("status")
-#         if status_choice not in ['approved', 'revise', 'rejected']:
-#             return Response({"message": "Invalid status choice."}, status=status.HTTP_400_BAD_REQUEST)
-#
-#         submission.status = status_choice
-#         submission.reviewed_at = timezone.now()
-#         submission.save()
-#
-#         return Response({"message": "Homework reviewed.", "status": submission.status}, status=status.HTTP_200_OK)
-#
-#
+
 class AvailableCourseView(LoginRequiredMixin, ListView):
     template_name = 'course/available_course.html'
     context_object_name = 'courses'
@@ -374,66 +258,3 @@ class AvailableCourseView(LoginRequiredMixin, ListView):
             return courses
         else:
             return Course.objects.none()
-
-# def course_detail(request, id):
-#     course = get_object_or_404(Course, id=id)
-#     return render(request, 'course/course_detail.html', {'course': course})
-
-
-# def take_test(request, lesson_id):
-#     lesson = get_object_or_404(Lesson, order=lesson_id)
-#     test_path = '/Users/mariasazhina/code/codingschool/media/course/static/course/lesson_tests/python/1_lesson.json'
-#
-#     if os.path.exists(test_path):
-#         with open(test_path, 'r') as file:
-#             test_data = json.load(file)
-#     else:
-#         return JsonResponse({'error': 'Test file not found'}, status=404)
-#
-#     if request.method == 'POST':
-#         # Обработка ответов пользователя
-#         user_answers = request.POST.getlist('answers')
-#         # Логика проверки теста и подсчета баллов
-#         pass
-#
-#     return render(request, 'course/test.html', {'test_data': test_data})
-
-
-# def lesson_comments(request, lesson_id):
-#     # Логика отображения комментариев
-#     pass
-
-
-# def submit_homework(request, lesson_id):
-#     lesson = get_object_or_404(Lesson, id=lesson_id)
-#     homework_form = HomeworkSubmissionForm()
-#
-#     if request.method == "POST":
-#         homework_form = HomeworkSubmissionForm(request.POST)
-#         if homework_form.is_valid():
-#             github_link = homework_form.cleaned_data['github_link']
-#             # Логика сохранения ссылки
-#             return JsonResponse({'message': 'Homework submitted successfully!'})
-#
-#     return render(request, 'course/submit_homework.html', {
-#         'lesson': lesson,
-#         'homework_form': homework_form,
-#     })
-
-# def add_comment(request, lesson_id):
-#     lesson = get_object_or_404(Lesson, id=lesson_id)
-#     comment_form = CommentForm()
-#
-#     if request.method == "POST":
-#         comment_form = CommentForm(request.POST)
-#         if comment_form.is_valid():
-#             comment = comment_form.save(commit=False)
-#             comment.lesson = lesson
-#             comment.user = request.user  # Предположим, что пользователь авторизован
-#             comment.save()
-#             return JsonResponse({'message': 'Comment added successfully!'})
-#
-#     return render(request, 'course/add_comment.html', {
-#         'lesson': lesson,
-#         'comment_form': comment_form,
-#     })
