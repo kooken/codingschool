@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from users.models import ProgrammingLanguage, BonusModule, User
+from enum import Enum
 
 
 class Course(models.Model):
@@ -97,30 +98,58 @@ class Homework(models.Model):
         return f"Homework for {self.lesson.title}"
 
 
+class HomeworkSubmissionTypes(Enum):
+    PENDING = 'pending', 'Pending'
+    APPROVED = 'approved', 'Approved'
+    REVISE = 'revise', 'Needs Revision'
+    REJECTED = 'rejected', 'Rejected'
+
+    @classmethod
+    def choices(cls):
+        return [(item.value[0], item.value[1]) for item in cls]
+
+
+class HomeworkSubmissionStatuses(models.Model):
+    value = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.display_name
+
+    @classmethod
+    def create_default_statuses(cls):
+        for status in HomeworkSubmissionTypes:
+            cls.objects.get_or_create(
+                value=status.value[0],
+                display_name=status.value[1]
+            )
+
+
 class HomeworkSubmission(models.Model):
     homework = models.ForeignKey(Homework, related_name="submissions", on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     github_link = models.URLField(max_length=200)
     submitted_at = models.DateTimeField(auto_now_add=True)
     reviewed_at = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ('pending', 'Pending'),
-            ('approved', 'Approved'),
-            ('revise', 'Needs Revision'),
-            ('rejected', 'Rejected'),
-        ],
-        default='pending',
+    comment = models.TextField()
+    status = models.ForeignKey(
+        HomeworkSubmissionStatuses,
+        on_delete=models.CASCADE,
+        related_name="submission_status",
+        verbose_name="Submission Status",
+        default=1
     )
 
     def __str__(self):
-        return f"Submission by {self.user.username} (Status: {self.status})"
+        return f"Submission by {self.user.email} (Status: {self.status})"
 
 
 class LessonLike(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, related_name='likes', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Liked by {self.user.email} on {self.lesson.title}"
 
     class Meta:
         unique_together = ('user', 'lesson')
@@ -133,12 +162,41 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Comment by {self.user} on {self.lesson.title}"
+        return f"Comment by {self.user.email} on {self.lesson.title}"
 
 
 class Bookmark(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     lesson = models.ForeignKey(Lesson, related_name='bookmarks', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"User {self.user.email} added bookmark on {self.lesson.title}"
+
+    class Meta:
+        unique_together = ('user', 'lesson')
+
+
+class Feedback(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, related_name='feedback', on_delete=models.CASCADE)
+    feedback_text = models.TextField()
+    feedback_question_id = models.IntegerField()
+    feedback_answer_id = models.IntegerField()
+
+    def __str__(self):
+        return f"Feedback by {self.user.email} on {self.lesson.title}"
+
+    class Meta:
+        unique_together = ('user', 'lesson')
+
+
+class Report(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, related_name='report', on_delete=models.CASCADE)
+    report_text = models.TextField()
+
+    def __str__(self):
+        return f"Report by {self.user.email} on {self.lesson.title}"
 
     class Meta:
         unique_together = ('user', 'lesson')

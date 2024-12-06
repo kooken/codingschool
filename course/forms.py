@@ -1,6 +1,6 @@
 from django import forms
-
-from course.models import Comment, HomeworkSubmission
+from django_select2 import forms as s2forms
+from course.models import Comment, HomeworkSubmission, HomeworkSubmissionStatuses
 
 
 class LessonTestForm(forms.Form):
@@ -24,20 +24,31 @@ class LessonTestForm(forms.Form):
         return cleaned_data
 
 
-class HomeworkSubmissionForm(forms.ModelForm):
+class HomeworkStatusSelect2Widget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        'value__icontains',
+    ]
+
+    def get_queryset(self):
+        return HomeworkSubmissionStatuses.objects.all()
+
+
+class HomeworkSubmissionFormAdmin(forms.ModelForm):
     class Meta:
         model = HomeworkSubmission
         fields = ['status', 'reviewed_at']
+        widgets = {
+            'status': HomeworkStatusSelect2Widget(
+                attrs={'class': 'django-select2'},
+            ),
+            'reviewed_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
 
-    status = forms.ChoiceField(
-        choices=HomeworkSubmission._meta.get_field('status').choices,
-        widget=forms.Select(attrs={'class': 'status-select'})
-    )
 
-    reviewed_at = forms.DateTimeField(
-        required=False,
-        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'})
-    )
+class HomeworkSubmissionFormStudent(forms.ModelForm):
+    class Meta:
+        model = HomeworkSubmission
+        fields = ['github_link']
 
 
 class CommentForm(forms.ModelForm):

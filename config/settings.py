@@ -169,5 +169,4 @@ CACHES = {
     }
 }
 
-# Tell select2 which cache configuration to use:
 SELECT2_CACHE_BACKEND = "select2"

@@ -9,7 +9,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
-from .forms import LessonTestForm, HomeworkSubmissionForm, CommentForm
+from .forms import LessonTestForm, CommentForm, HomeworkSubmissionFormStudent, \
+    HomeworkSubmissionFormAdmin
 from .models import Course, Homework, LessonTestAnswer, Lesson, LessonTestResult, HomeworkSubmission
 from urllib.parse import urlparse, parse_qs
 
@@ -141,10 +142,11 @@ def course_detail(request, id):
 
                 try:
                     homework = lesson.homework
+                    print("Homework for this lesson is:", homework)
                 except Homework.DoesNotExist:
                     return JsonResponse({"message": "No homework is associated with this lesson."}, status=400)
 
-                homework_form = HomeworkSubmissionForm(request.POST)
+                homework_form = HomeworkSubmissionFormStudent(request.POST)
 
                 if homework_form.is_valid():
                     homework_submission = homework_form.save(commit=False)
@@ -167,7 +169,7 @@ def course_detail(request, id):
         "result": test_result if 'test_result' in locals() else None,
         "reset_test": reset_test if 'reset_test' in locals() else False,
         "comment_form": CommentForm(),
-        "homework_form": HomeworkSubmissionForm(),
+        "homework_form": HomeworkSubmissionFormStudent(),
         "test_form": LessonTestForm(),
     })
 
@@ -185,7 +187,7 @@ def update_homework_status(request, submission_id):
         return JsonResponse({'error': 'Invalid status'}, status=400)
 
     submission.status = new_status
-    submission.reviewed_at = timezone.now()  # Записываем дату
+    submission.reviewed_at = timezone.now()
     submission.save()
 
     return JsonResponse({'message': 'Status updated successfully.'})
@@ -197,11 +199,10 @@ def is_admin_or_teacher(user):
 
 @user_passes_test(is_admin_or_teacher)
 def admin_dashboard(request):
-    hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user').order_by('-submitted_at')
-    status_choices = HomeworkSubmission._meta.get_field('status').choices
+    hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user', 'status').order_by('-submitted_at')
 
     if request.method == 'POST':
-        form = HomeworkSubmissionForm(request.POST)
+        form = HomeworkSubmissionFormAdmin(request.POST)
         if form.is_valid():
             submission_id = request.POST.get('submission_id')
             hw_submission = HomeworkSubmission.objects.get(id=submission_id)
@@ -215,8 +216,13 @@ def admin_dashboard(request):
         else:
             messages.error(request, 'Failed to update submission.')
 
-    return render(request, 'course/admin_dashboard.html',
-                  {'hw_submissions': hw_submissions, 'status_choices': status_choices, })
+    else:
+        form = HomeworkSubmissionFormAdmin()
+
+    return render(request, 'course/admin_dashboard.html', {
+        'hw_submissions': hw_submissions,
+        'form': form,  # передаем форму для статуса
+    })
 
 
 # class NextLessonUnlockView(APIView):

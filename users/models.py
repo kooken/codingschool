@@ -21,6 +21,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True, verbose_name='Email')
     country = models.ForeignKey('Country', related_name="users", null=True, blank=True, on_delete=models.SET_NULL)
     token = models.CharField(max_length=100, verbose_name='Token', null=True, blank=True)
+    display_name = models.CharField(max_length=100, verbose_name='Display Name', null=True, blank=True)
 
     username = None
 

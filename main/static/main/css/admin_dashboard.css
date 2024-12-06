@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600&family=Rubik+Doodle+Shadow&display=swap');
+
+.header {
+    text-align: center;
+    background-color: white;
+    font-family: 'Raleway', sans-serif;
+    color: #b07afe;
+    padding: 20px 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.submission-cards-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+.submission-cards-container h2{
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: black;
+    align-items: center;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.submission-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    align-items: center;
+    font-family: 'Raleway', sans-serif;
+    border-left: 5px solid #b07afe;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    overflow: hidden;
+}
+
+/* Когда карточка скрыта */
+.submission-card[style="display: none;"] {
+    max-height: 0;
+    padding: 0;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.card-header h3 {
+    font-size: 18px;
+    color: #333;
+}
+
+.card-header .status-pending {
+    background-color: #f0ad4e;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.card-header .status-approved {
+    background-color: #5bc0de;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.card-header .status-revise {
+    background-color: #d9534f;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.card-header .status-rejected {
+    background-color: #d9534f;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.card-body {
+    margin-top: 10px;
+}
+
+.card-item {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.card-item strong {
+    font-weight: bold;
+}
+
+.card-item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card-item a:hover {
+    text-decoration: underline;
+}
+
+.django-select2 {
+    width: 50%;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.django-select2-dropdown {
+    max-height: 250px;
+    overflow-y: auto;
+    font-size: 14px;
+    font-family: 'Raleway', sans-serif;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    border-color: #b07afe;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+.select2-container--default .select2-selection--single:hover {
+    border-color: #b07afe;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+.select2-container--default .select2-selection--single:focus {
+    border-color: #b07afe;
+    box-shadow: 0 0 8px rgba(176, 122, 254, 0.5);
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    display: none;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field::placeholder {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: red;
+}
+
+.select2-container--default .select2-results__options {
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    color: black;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #b07afe;
+    color: black;
+    font-weight: bold;
+}
+
+.status-label {
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.review-label {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.select2-container--default .select2-selection__rendered {
+    color: #b07afe;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    margin-bottom: 10px;
+}
+
+.time-button {
+    background-color: #b07afe;
+    font-family: 'Raleway', sans-serif;
+    color: black;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.time-button:hover {
+    background-color: black;
+    color: #b07afe;
+}
+
+.update-button {
+    background-color: #b07afe;
+    font-family: 'Raleway', sans-serif;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.update-button:hover {
+    background-color: black;
+    color: #b07afe;
+}
+
+.card-footer {
+    text-align: center;
+}
+
+input[type="datetime-local"] {
+    padding: 2px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    font-family: 'Raleway', sans-serif;
+    color: #333;
+    margin-top: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input[type="datetime-local"]:focus {
+    border-color: #b07afe;
+    box-shadow: 0 0 5px rgba(176, 122, 254, 0.5);
+}
+
+input[type="datetime-local"]::-webkit-clear-button {
+    display: none;
+}
+
+.toggle-column {
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    font-size: 28px;
+    color: black;
+    cursor: pointer;
+}
+
+.toggle-column:hover {
+    color: #b07afe;
+    cursor: pointer;
+}
