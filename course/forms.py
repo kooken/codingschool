@@ -36,12 +36,13 @@ class HomeworkStatusSelect2Widget(s2forms.ModelSelect2Widget):
 class HomeworkSubmissionFormAdmin(forms.ModelForm):
     class Meta:
         model = HomeworkSubmission
-        fields = ['status', 'reviewed_at']
+        fields = ['status', 'reviewed_at', 'comment']
         widgets = {
             'status': HomeworkStatusSelect2Widget(
                 attrs={'class': 'django-select2'},
             ),
             'reviewed_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'comment': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter your comment...'}),
         }
 
 

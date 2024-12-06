@@ -30,7 +30,7 @@
                 </li>
                 {% if request.user.is_superuser or is_teacher %}
                 <li>
-                    <a href="{% url 'course:admin_dashboard' %}"
+                    <a href="{% url 'course:admin_main' %}"
                        class="{% if request.path == '/admin-dashboard/' %}active{% endif %}">admin</a>
                 </li>
                 {% endif %}

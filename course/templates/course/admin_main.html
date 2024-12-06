@@ -1,0 +1,52 @@
+{% extends 'course/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="{% static 'main/css/admin_main.css' %}" media="screen">
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">Admin Dashboard</div>
+    <div class="container">
+        <p class="admin-text">Homeworks to review: {{ hw_count }}</p>
+        <a href="{% url 'course:admin_dashboard' %}" class="admin-link">Go to all homeworks</a>
+        <div class="admin-header">Users with Subscription Plans</div>
+        <table>
+            <thead>
+            <tr>
+                <th>Email</th>
+                <th>Subscription Plan</th>
+                <th>Programming Languages</th>
+                <th>Bonus Modules</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.email }}</td>
+                <td>{{ user.subscription_plan.name }}</td>
+                <td>
+                    {% for lang in user.subscription_plan.programming_languages.all %}
+                    <span>{{ lang.display_name }}</span>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for module in user.subscription_plan.bonus_modules.all %}
+                    <span>{{ module.display_name }}</span>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No users or subscription plans found.</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

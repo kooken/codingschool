@@ -9,9 +9,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
+
+from users.models import User
 from .forms import LessonTestForm, CommentForm, HomeworkSubmissionFormStudent, \
     HomeworkSubmissionFormAdmin
-from .models import Course, Homework, LessonTestAnswer, Lesson, LessonTestResult, HomeworkSubmission
+from .models import Course, Homework, LessonTestAnswer, Lesson, LessonTestResult, HomeworkSubmission, \
+    HomeworkSubmissionStatuses
 from urllib.parse import urlparse, parse_qs
 
 
@@ -174,23 +177,23 @@ def course_detail(request, id):
     })
 
 
-@login_required
-@require_POST
-def update_homework_status(request, submission_id):
-    submission = get_object_or_404(HomeworkSubmission, id=submission_id)
-
-    if not (request.user.is_superuser or request.user.groups.filter(name='Moderators').exists()):
-        return HttpResponseForbidden("You do not have permission to perform this action.")
-
-    new_status = request.POST.get('status')
-    if new_status not in dict(HomeworkSubmission._meta.get_field('status').choices):
-        return JsonResponse({'error': 'Invalid status'}, status=400)
-
-    submission.status = new_status
-    submission.reviewed_at = timezone.now()
-    submission.save()
-
-    return JsonResponse({'message': 'Status updated successfully.'})
+# @login_required
+# @require_POST
+# def update_homework_status(request, submission_id):
+#     submission = get_object_or_404(HomeworkSubmission, id=submission_id)
+#
+#     if not (request.user.is_superuser or request.user.groups.filter(name='Moderators').exists()):
+#         return HttpResponseForbidden("You do not have permission to perform this action.")
+#
+#     new_status = request.POST.get('status')
+#     if new_status not in dict(HomeworkSubmission._meta.get_field('status').choices):
+#         return JsonResponse({'error': 'Invalid status'}, status=400)
+#
+#     submission.status = new_status
+#     submission.reviewed_at = timezone.now()
+#     submission.save()
+#
+#     return JsonResponse({'message': 'Status updated successfully.'})
 
 
 def is_admin_or_teacher(user):
@@ -206,12 +209,11 @@ def admin_dashboard(request):
         if form.is_valid():
             submission_id = request.POST.get('submission_id')
             hw_submission = HomeworkSubmission.objects.get(id=submission_id)
-
             hw_submission.status = form.cleaned_data['status']
+            hw_submission.comment = form.cleaned_data['comment']
             hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
             hw_submission.save()
 
-            messages.success(request, f'Successfully updated submission by {hw_submission.user.username}')
             return redirect('course:admin_dashboard')
         else:
             messages.error(request, 'Failed to update submission.')
@@ -221,7 +223,22 @@ def admin_dashboard(request):
 
     return render(request, 'course/admin_dashboard.html', {
         'hw_submissions': hw_submissions,
-        'form': form,  # передаем форму для статуса
+        'form': form,
+    })
+
+
+@user_passes_test(is_admin_or_teacher)
+def admin_main(request):
+    pending_status = HomeworkSubmissionStatuses.objects.get(value='pending')
+    pending_count = HomeworkSubmission.objects.filter(status=pending_status).count()
+    users = User.objects.select_related('subscription_plan').prefetch_related(
+        'subscription_plan__programming_languages',
+        'subscription_plan__bonus_modules'
+    )
+
+    return render(request, 'course/admin_main.html', {
+        'hw_count': pending_count,
+        'users': users,
     })
 
 
