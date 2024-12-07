@@ -203,27 +203,32 @@ def is_admin_or_teacher(user):
 @user_passes_test(is_admin_or_teacher)
 def admin_dashboard(request):
     hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user', 'status').order_by('-submitted_at')
-
-    if request.method == 'POST':
-        form = HomeworkSubmissionFormAdmin(request.POST)
-        if form.is_valid():
-            submission_id = request.POST.get('submission_id')
-            hw_submission = HomeworkSubmission.objects.get(id=submission_id)
-            hw_submission.status = form.cleaned_data['status']
-            hw_submission.comment = form.cleaned_data['comment']
-            hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
-            hw_submission.save()
-
-            return redirect('course:admin_dashboard')
-        else:
-            messages.error(request, 'Failed to update submission.')
-
-    else:
-        form = HomeworkSubmissionFormAdmin()
+    # users = User.objects.select_related('subscription_plan').prefetch_related(
+    #     'subscription_plan__programming_languages',
+    #     'subscription_plan__bonus_modules'
+    # )
+    #
+    # if request.method == 'POST':
+    #     form = HomeworkSubmissionFormAdmin(request.POST)
+    #     if form.is_valid():
+    #         submission_id = request.POST.get('submission_id')
+    #         hw_submission = HomeworkSubmission.objects.get(id=submission_id)
+    #         hw_submission.status = form.cleaned_data['status']
+    #         hw_submission.comment = form.cleaned_data['comment']
+    #         hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
+    #         hw_submission.save()
+    #
+    #         return redirect('course:admin_dashboard')
+    #     else:
+    #         messages.error(request, 'Failed to update submission.')
+    #
+    # else:
+    #     form = HomeworkSubmissionFormAdmin()
 
     return render(request, 'course/admin_dashboard.html', {
         'hw_submissions': hw_submissions,
-        'form': form,
+        # 'form': form,
+        # 'users': users,
     })
 
 
@@ -238,6 +243,54 @@ def admin_main(request):
 
     return render(request, 'course/admin_main.html', {
         'hw_count': pending_count,
+        'users': users,
+    })
+
+
+@user_passes_test(is_admin_or_teacher)
+def admin_homework_detail(request, id):
+    print(f"Accessing admin_homework_detail view with ID: {id}")
+
+    # Получение домашних заданий
+    hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user', 'status') \
+        .filter(id=id) \
+        .order_by('-submitted_at')
+    print(f"Homework submissions fetched: {list(hw_submissions)}")
+
+    # Получение пользователей
+    users = User.objects.select_related('subscription_plan').prefetch_related(
+        'subscription_plan__programming_languages',
+        'subscription_plan__bonus_modules'
+    )
+    print(f"Users fetched: {users.count()}")
+
+    if request.method == 'POST':
+        print("POST request received.")
+        form = HomeworkSubmissionFormAdmin(request.POST)
+        if form.is_valid():
+            print(f"Form is valid. Data: {form.cleaned_data}")
+
+            # Обновление статуса и времени проверки
+            hw_submission = hw_submissions.first()  # Предполагается, что ID уникален
+            if hw_submission:
+                hw_submission.status = form.cleaned_data['status']
+                hw_submission.comment = form.cleaned_data['comment']
+                hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
+                hw_submission.save()
+                print(f"Updated homework submission: {hw_submission}")
+            else:
+                print("No homework submission found to update.")
+
+        else:
+            print(f"Form is invalid. Errors: {form.errors}")
+            messages.error(request, 'Failed to update submission.')
+    else:
+        print("GET request received.")
+        form = HomeworkSubmissionFormAdmin()
+
+    return render(request, 'course/admin_homework_detail.html', {
+        'hw_submissions': hw_submissions,
+        'form': form,
         'users': users,
     })
 

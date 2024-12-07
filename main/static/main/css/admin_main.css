@@ -8,7 +8,7 @@
     padding: 20px 0px;
     font-size: 24px;
     font-weight: bold;
-    margin-bottom: 0; /* Убирает отступ снизу */
+    margin-bottom: 0;
 }
 
 .container {
@@ -53,6 +53,7 @@ table {
     margin: 20px auto;
     font-size: 18px;
     text-align: center;
+    box-shadow: 0 0 5px rgba(176, 122, 254, 0.5);
 }
 
 th, td {
@@ -66,4 +67,18 @@ th {
 
 tr:hover {
     background-color: #d6bfff;
+}
+
+.filter-container {
+    margin-bottom: 20px;
+    display: flex;
+    text-align: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.filter-container label {
+    font-weight: normal;
+    font-family: 'Raleway', sans-serif;
+    display: inline-block;
 }

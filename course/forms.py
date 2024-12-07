@@ -45,6 +45,8 @@ class HomeworkSubmissionFormAdmin(forms.ModelForm):
             'comment': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter your comment...'}),
         }
 
+    comment = forms.CharField(required=False)
+
 
 class HomeworkSubmissionFormStudent(forms.ModelForm):
     class Meta:

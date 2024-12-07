@@ -5,21 +5,32 @@ function setReviewedAt(submissionId) {
     reviewedAtField.value = currentDateTime;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const columnHeaders = document.querySelectorAll('.toggle-column');
+document.addEventListener("DOMContentLoaded", function () {
 
-    columnHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const columnId = header.getAttribute('data-target');
-            const columnCards = document.querySelectorAll(`#${columnId} .submission-card`);
+    function filterTable() {
+        var approvedCheckbox = document.getElementById('approved');
+        var pendingCheckbox = document.getElementById('pending');
+        var needsRevisionCheckbox = document.getElementById('needs_revision');
+        var table = document.getElementById('homeworkTable');
+        var rows = table.getElementsByTagName('tr');
 
-            columnCards.forEach(card => {
-                if (card.style.display === 'none') {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
+        for (var i = 1; i < rows.length; i++) {
+            var row = rows[i];
+            var status = row.getAttribute('data-status');
+
+
+            if ((approvedCheckbox.checked && status === 'approved') ||
+                (pendingCheckbox.checked && status === 'pending') ||
+                (needsRevisionCheckbox.checked && status === 'needs_revision')) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    }
+
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', filterTable);
     });
 });

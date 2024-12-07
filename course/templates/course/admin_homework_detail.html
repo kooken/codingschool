@@ -1,0 +1,87 @@
+{% extends 'course/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="{% static 'main/css/admin_homework_detail.css' %}" media="screen">
+{% endblock %}
+{% block content %}
+<div class="admin-page">
+    <div class="admin-header">Admin Dashboard</div>
+    <div class="container">
+        {% for homework in hw_submissions %}
+        <div class="submission-card">
+            <div class="card-header">
+                <h3>Homework from {{ homework.homework.lesson.course.title }} | Lesson {{ homework.homework.lesson.title }}</h3>
+            </div>
+            <div class="card-body">
+                <div class="card-left">
+                    <div class="card-item"><strong>Student:</strong> {{ homework.user.email }}</div>
+                    <div class="card-item"><strong>Submitted At:</strong> {{ homework.submitted_at }}</div>
+                    <div class="card-item"><strong>Reviewed At:</strong>
+                        {% if homework.reviewed_at %}
+                        {{ homework.reviewed_at }}
+                        {% else %}
+                        Not reviewed
+                        {% endif %}
+                    </div>
+                    <div class="card-item"><strong>GitHub Link:</strong>
+                        <a href="{{ homework.github_link }}" target="_blank">View Code</a>
+                    </div>
+                    <div class="card-item">
+                        <strong>Comment:</strong>
+                        <p>{{ homework.comment|default:"No comment" }}</p>
+                    </div>
+                </div>
+                <div class="card-right">
+                    <div class="card-item">
+                        <form method="POST" action="{% url 'course:admin_homework_detail' homework.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="submission_id" value="{{ homework.id }}">
+                            <div class="form-group">
+                                <label for="status_{{ homework.id }}" class="status-label">Status</label>
+                                <select name="status" id="status_{{ homework.id }}" class="django-select2">
+                                    {% for status in form.fields.status.queryset %}
+                                    <option value="{{ status.id }}" {% if homework.status == status %}selected{% endif %}>
+                                        {{ status.display_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reviewed_at_{{ homework.id }}" class="review-label">Set Review Time</label>
+                                <input type="datetime-local" name="reviewed_at" id="reviewed_at_{{ homework.id }}"
+                                       value="{{ homework.reviewed_at|date:'Y-m-d\\TH:i' }}">
+                                <button type="button" onclick="setReviewedAt({{ homework.id }})" class="time-button">Set
+                                    to Now
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label for="comment" class="comment-label">Comment</label>
+                                <textarea name="comment" id="comment" rows="4" placeholder="Enter your comment...">{{ form.comment.value|default:"" }}</textarea>
+                            </div>
+                            <button type="submit" class="update-button">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No homework submissions found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'main/js/admin-dashboard.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{ form.media.js }}
+<script>
+    console.log("Debug: Initializing select2");
+    $(document).ready(function () {
+        console.log("Debug: Applying select2 to elements with class .django-select2");
+        $('.django-select2').djangoSelect2();
+    });
+</script>
+{% endblock %}

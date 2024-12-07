@@ -81,7 +81,8 @@ body::-webkit-scrollbar-thumb:hover {
 
 .video-container {
     margin-bottom: 20px;
-    width: 100%;
+    width: 60%;
+    justify-content: center;
 }
 
 .header-container {

@@ -100,12 +100,13 @@ class CountryWidget(s2forms.ModelSelect2Widget):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['avatar', 'phone', 'country', 'email']
+        fields = ['avatar', 'phone', 'country', 'email', 'display_name']
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'register-form-control'}),
             'phone': forms.TextInput(attrs={'class': 'register-form-control'}),
             'country': CountryWidget(attrs={'class': 'django-select2'}),
             'avatar': forms.FileInput(attrs={'class': 'register-form-control'}),
+            'display_name': forms.TextInput(attrs={'class': 'register-form-control'}),
         }
 
 

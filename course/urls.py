@@ -11,4 +11,5 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-main/', views.admin_main, name='admin_main'),
     path("select2/", include("django_select2.urls")),
+    path('homework/<int:id>/', views.admin_homework_detail, name='admin_homework_detail'),
 ]
