@@ -11,7 +11,7 @@
             <ul>
                 {% for data in lesson_data %}
                 <li>
-                    {% if data.is_completed %}
+                    {% if data.is_open %}
                     <a href="#lesson{{ data.lesson.order }}" onclick="showLesson('lesson{{ data.lesson.order }}')">
                         Lesson {{ data.lesson.order }}: {{ data.lesson.title }}
                     </a>
