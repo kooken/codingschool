@@ -9,11 +9,17 @@
         <div class="lesson-list">
             <h3>{{ course.title }}</h3>
             <ul>
-                {% for lesson in course.lessons.all %}
+                {% for data in lesson_data %}
                 <li>
-                    <a href="#lesson{{ lesson.order }}" onclick="showLesson('lesson{{ lesson.order }}')">
-                        Lesson {{ lesson.order }}: {{ lesson.title }}
+                    {% if data.is_completed %}
+                    <a href="#lesson{{ data.lesson.order }}" onclick="showLesson('lesson{{ data.lesson.order }}')">
+                        Lesson {{ data.lesson.order }}: {{ data.lesson.title }}
                     </a>
+                    {% else %}
+                    <span class="disabled-link">
+                        Lesson {{ data.lesson.order }}: {{ data.lesson.title }}
+                    </span>
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -32,13 +38,17 @@
                     <button class="toggle-panel-button" onclick="toggleLeftPanel()">Hide Lessons</button>
                 </div>
                 {% if data.embed_url %}
-                <iframe width="560" height="315"
-                        src="{{ data.embed_url }}"
-                        title="YouTube video player" frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen class="video-frame" id="video{{ data.lesson.order }}">
-                </iframe>
+                <div class="video-embed-container">
+                    <iframe
+                            src="{{ data.embed_url }}"
+                            title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                            allowfullscreen
+                            class="video-frame" id="video{{ data.lesson.order }}">
+                    </iframe>
+                </div>
                 {% else %}
                 <p>No video available for this lesson.</p>
                 {% endif %}
@@ -53,7 +63,10 @@
                         onclick="toggleSection('homework{{ data.lesson.order }}', this, 'homework-section', 'toggle-button')">
                     View Homework
                 </button>
-                <a href="{{ data.lesson.pdf_notes.url }}" class="pdf-link">Download notes (PDF)</a>
+                <button class="toggle-button notes-link"
+                        onclick="toggleSection('notes{{ data.lesson.order }}', this, 'notes-section', 'toggle-button')">
+                    Open Notes
+                </button>
                 <button class="toggle-button comments-link"
                         onclick="toggleSection('comments{{ data.lesson.order }}', this, 'comments-section', 'toggle-button')">
                     Open Comments
@@ -139,7 +152,7 @@
                 <div class="existing-comments">
                     {% for comment in data.lesson.comments.all %}
                     <div class="comment">
-                        <p><strong>{{ comment.user.email }}:</strong> {{ comment.text }}</p>
+                        <p><strong>{{ comment.user.display_name }}:</strong> {{ comment.text }}</p>
                         <p><small>{{ comment.created_at }}</small></p>
                     </div>
                     {% endfor %}
@@ -151,6 +164,26 @@
                     <textarea name="text" rows="4" placeholder="Add a comment" required></textarea><br>
                     <button type="submit" name="submit_comment">Submit Comment</button>
                 </form>
+            </div>
+
+            <div class="notes-section section" id="notes{{ data.lesson.order }}">
+                <h4>Notes for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
+                {% if data.notes_data %}
+                <div class="lesson-notes">
+                    {% for block in data.notes_data.blocks %}
+                    {% if block.type == "text" %}
+                    <div class="note-text">{{ block.content }}</div>
+                    {% elif block.type == "image" %}
+                    <div class="note-image">
+                        <img src="{% static block.src %}" alt="{{ block.alt }}">
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>No notes available for this lesson.</p>
+                {% endif %}
+                <a href="{{ data.lesson.pdf_notes.url }}" class="pdf-link">Download notes (PDF)</a>
             </div>
         </div>
         {% endfor %}

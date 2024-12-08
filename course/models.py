@@ -21,6 +21,7 @@ class Lesson(models.Model):
     description = models.TextField()
     video_url = models.URLField(max_length=200, null=True, blank=True)
     pdf_notes = models.FileField(upload_to='lesson_notes/', null=True, blank=True)
+    notes = models.FileField(upload_to='lesson_json_notes/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     course = models.ForeignKey('Course', related_name='lessons', on_delete=models.CASCADE)
@@ -31,19 +32,24 @@ class Lesson(models.Model):
 
     def is_completed(self, user):
         test_result = LessonTestResult.objects.filter(user=user, test=self.test).order_by('-date_taken').first()
+        print("Test result is", test_result)
+
         homework_status = HomeworkSubmission.objects.filter(homework=self.homework, user=user).order_by(
             '-submitted_at').first()
+        print("Homework status is", homework_status)
 
         test_passed = test_result and test_result.is_passed()
-        homework_done = homework_status and homework_status.status == 'approved'
+        print("Test passed?", test_passed)
+
+        homework_done = homework_status and homework_status.status.id == 2
+        print("Homework done?", homework_done)
 
         return test_passed and homework_done
 
-    def unlock_next_lesson(user, current_lesson):
-        if current_lesson.is_completed(user):
-            next_lesson = Lesson.objects.filter(course=current_lesson.course, order__gt=current_lesson.order).first()
-            if next_lesson:
-                return next_lesson
+    def unlock_next_lesson(self, user):
+        if self.is_completed(user):
+            next_lesson = Lesson.objects.filter(course=self.course, order__gt=self.order).first()
+            return next_lesson
         return None
 
     class Meta:
@@ -102,7 +108,6 @@ class HomeworkSubmissionTypes(Enum):
     PENDING = 'pending', 'Pending'
     APPROVED = 'approved', 'Approved'
     REVISE = 'revise', 'Needs Revision'
-    REJECTED = 'rejected', 'Rejected'
 
     @classmethod
     def choices(cls):

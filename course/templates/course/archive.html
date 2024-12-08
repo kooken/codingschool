@@ -1,0 +1,275 @@
+{% extends 'course/base.html' %}
+{% load static %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="{% static 'main/css/admin_dashboard.css' %}" media="screen">
+{% endblock %}
+{% block content %}
+<div class="header">Admin Dashboard</div>
+<div class="submission-cards-container">
+    <div class="column pending" id="pending-column" title="Click to expand/collapse cards">
+        <h2 class="toggle-column" data-target="pending-column">Pending</h2>
+        {% for hw_submission in hw_submissions %}
+        {% if hw_submission.status.value == "pending" %}
+        <div class="submission-card">
+            <div class="card-header">
+                <h3>{{ hw_submission.homework.lesson.title }}</h3>
+                <span class="status-{{ hw_submission.status }}">{{ hw_submission.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-item">
+                    <strong>Student:</strong> {{ hw_submission.user.email }}
+                </div>
+                <div class="card-item">
+                    <strong>GitHub Link:</strong> <a href="{{ hw_submission.github_link }}" target="_blank">View
+                    Code</a>
+                </div>
+                <div class="card-item">
+                    <strong>Submitted At:</strong> {{ hw_submission.submitted_at }}
+                </div>
+                <div class="card-item">
+                    <strong>Reviewed At:</strong>
+                    {% if hw_submission.reviewed_at %}
+                    {{ hw_submission.reviewed_at }}
+                    {% else %}
+                    Not reviewed
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <form method="POST" action="{% url 'course:admin_dashboard' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="submission_id" value="{{ hw_submission.id }}">
+                    <div class="form-group">
+                        <label for="status_{{ hw_submission.id }}" class="status-label">Status</label>
+                        <select name="status" id="status_{{ hw_submission.id }}" class="django-select2">
+                            {% for status in form.fields.status.queryset %}
+                            <option value="{{ status.id }}" {% if hw_submission.status == status %}selected{% endif %}>
+                                {{ status.display_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewed_at_{{ hw_submission.id }}" class="review-label">Set review time at</label>
+                        <input type="datetime-local" name="reviewed_at" id="reviewed_at_{{ hw_submission.id }}"
+                               value="{{ hw_submission.reviewed_at|date:'Y-m-d\TH:i' }}">
+                        <button type="button" onclick="setReviewedAt({{ hw_submission.id }})" class="time-button">Set to
+                            Now
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <form method="post" action="{% url 'course:admin_dashboard' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="submission_id" value="{{ hw_submission.id }}">
+                            <textarea name="text" rows="4" placeholder="Add a comment" required></textarea><br>
+                        </form>
+                    </div>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="column approved" id="approved-column" title="Click to expand/collapse cards">
+        <h2 class="toggle-column" data-target="approved-column">Approved</h2>
+        {% for hw_submission in hw_submissions %}
+        {% if hw_submission.status.value == "approved" %}
+        <div class="submission-card">
+            <div class="card-header">
+                <h3>{{ hw_submission.homework.lesson.title }}</h3>
+                <span class="status-{{ hw_submission.status }}">{{ hw_submission.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-item">
+                    <strong>Student:</strong> {{ hw_submission.user.email }}
+                </div>
+                <div class="card-item">
+                    <strong>GitHub Link:</strong> <a href="{{ hw_submission.github_link }}" target="_blank">View
+                    Code</a>
+                </div>
+                <div class="card-item">
+                    <strong>Submitted At:</strong> {{ hw_submission.submitted_at }}
+                </div>
+                <div class="card-item">
+                    <strong>Reviewed At:</strong>
+                    {% if hw_submission.reviewed_at %}
+                    {{ hw_submission.reviewed_at }}
+                    {% else %}
+                    Not reviewed
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <form method="POST" action="{% url 'course:admin_dashboard' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="submission_id" value="{{ hw_submission.id }}">
+                    <div class="form-group">
+                        <label for="status_{{ hw_submission.id }}" class="status-label">Status</label>
+                        <select name="status" id="status_{{ hw_submission.id }}" class="django-select2">
+                            {% for status in form.fields.status.queryset %}
+                            <option value="{{ status.id }}" {% if hw_submission.status == status %}selected{% endif %}>
+                                {{ status.display_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewed_at_{{ hw_submission.id }}" class="review-label">Set review time at</label>
+                        <input type="datetime-local" name="reviewed_at" id="reviewed_at_{{ hw_submission.id }}"
+                               value="{{ hw_submission.reviewed_at|date:'Y-m-d\TH:i' }}">
+                        <button type="button" onclick="setReviewedAt({{ hw_submission.id }})" class="time-button">Set to
+                            Now
+                        </button>
+                    </div>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="column revise" id="revise-column" title="Click to expand/collapse cards">
+        <h2 class="toggle-column" data-target="revise-column">Needs Revision</h2>
+        {% for hw_submission in hw_submissions %}
+        {% if hw_submission.status.value == "revise" %}
+        <div class="submission-card">
+            <div class="card-header">
+                <h3>{{ hw_submission.homework.lesson.title }}</h3>
+                <span class="status-{{ hw_submission.status }}">{{ hw_submission.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-item">
+                    <strong>Student:</strong> {{ hw_submission.user.email }}
+                </div>
+                <div class="card-item">
+                    <strong>GitHub Link:</strong> <a href="{{ hw_submission.github_link }}" target="_blank">View
+                    Code</a>
+                </div>
+                <div class="card-item">
+                    <strong>Submitted At:</strong> {{ hw_submission.submitted_at }}
+                </div>
+                <div class="card-item">
+                    <strong>Reviewed At:</strong>
+                    {% if hw_submission.reviewed_at %}
+                    {{ hw_submission.reviewed_at }}
+                    {% else %}
+                    Not reviewed
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <form method="POST" action="{% url 'course:admin_dashboard' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="submission_id" value="{{ hw_submission.id }}">
+                    <div class="form-group">
+                        <label for="status_{{ hw_submission.id }}" class="status-label">Status</label>
+                        <select name="status" id="status_{{ hw_submission.id }}" class="django-select2">
+                            {% for status in form.fields.status.queryset %}
+                            <option value="{{ status.id }}" {% if hw_submission.status == status %}selected{% endif %}>
+                                {{ status.display_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewed_at_{{ hw_submission.id }}" class="review-label">Set review time at</label>
+                        <input type="datetime-local" name="reviewed_at" id="reviewed_at_{{ hw_submission.id }}"
+                               value="{{ hw_submission.reviewed_at|date:'Y-m-d\TH:i' }}">
+                        <button type="button" onclick="setReviewedAt({{ hw_submission.id }})" class="time-button">Set to
+                            Now
+                        </button>
+                    </div>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div class="column rejected" id="rejected-column" title="Click to expand/collapse cards">
+        <h2 class="toggle-column" data-target="rejected-column">Rejected</h2>
+        {% for hw_submission in hw_submissions %}
+        {% if hw_submission.status.value == "rejected" %}
+        <div class="submission-card">
+            <div class="card-header">
+                <h3>{{ hw_submission.homework.lesson.title }}</h3>
+                <span class="status-{{ hw_submission.status }}">{{ hw_submission.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <div class="card-item">
+                    <strong>Student:</strong> {{ hw_submission.user.email }}
+                </div>
+                <div class="card-item">
+                    <strong>GitHub Link:</strong> <a href="{{ hw_submission.github_link }}" target="_blank">View
+                    Code</a>
+                </div>
+                <div class="card-item">
+                    <strong>Submitted At:</strong> {{ hw_submission.submitted_at }}
+                </div>
+                <div class="card-item">
+                    <strong>Reviewed At:</strong>
+                    {% if hw_submission.reviewed_at %}
+                    {{ hw_submission.reviewed_at }}
+                    {% else %}
+                    Not reviewed
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <form method="POST" action="{% url 'course:admin_dashboard' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="submission_id" value="{{ hw_submission.id }}">
+                    <div class="form-group">
+                        <label for="status_{{ hw_submission.id }}" class="status-label">Status</label>
+                        <select name="status" id="status_{{ hw_submission.id }}" class="django-select2">
+                            {% for status in form.fields.status.queryset %}
+                            <option value="{{ status.id }}" {% if hw_submission.status == status %}selected{% endif %}>
+                                {{ status.display_name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewed_at_{{ hw_submission.id }}" class="review-label">Set review time at</label>
+                        <input type="datetime-local" name="reviewed_at" id="reviewed_at_{{ hw_submission.id }}"
+                               value="{{ hw_submission.reviewed_at|date:'Y-m-d\TH:i' }}">
+                        <button type="button" onclick="setReviewedAt({{ hw_submission.id }})" class="time-button">Set to
+                            Now
+                        </button>
+                    </div>
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'main/js/admin-dashboard.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{ form.media.js }}
+<script>
+    console.log("Debug: Initializing select2");
+    $(document).ready(function () {
+        console.log("Debug: Applying select2 to elements with class .django-select2");
+        $('.django-select2').djangoSelect2();
+    });
+</script>
+{% endblock %}

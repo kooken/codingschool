@@ -9,7 +9,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import ListView
-
 from users.models import User
 from .forms import LessonTestForm, CommentForm, HomeworkSubmissionFormStudent, \
     HomeworkSubmissionFormAdmin
@@ -23,8 +22,10 @@ def course_detail(request, id):
     print("Course fetched:", course)
     course_name = course.title.lower().replace("course", "").strip()
     print("Course stripped name:", course_name)
-    lessons = course.lessons.all().order_by('order')  # Sorting lessons by order if necessary
+    lessons = course.lessons.all().order_by('order')
     print("Lessons from course:", lessons)
+    user = request.user
+    print("Current user is:", user)
 
     lesson_data = []
     test_data = []
@@ -39,6 +40,14 @@ def course_detail(request, id):
             with open(test_path, 'r', encoding='utf-8') as file:
                 test_data = json.load(file)
 
+        notes_path = os.path.join(settings.MEDIA_ROOT,
+                                  f'course/static/course/lesson_json_notes/{course_name}/{lesson.order}_lesson.json')
+        print("Searching for notes file in:", notes_path)
+
+        if os.path.exists(notes_path):
+            with open(notes_path) as file:
+                notes_data = json.load(file)
+
         if video_url:
             parsed_url = urlparse(video_url)
             query_params = parse_qs(parsed_url.query)
@@ -50,10 +59,12 @@ def course_detail(request, id):
         test_result = LessonTestResult.objects.filter(user=request.user, test__lesson=lesson).first()
         total_questions = len(test_data) if test_data else 0
         homework_data = HomeworkSubmission.objects.filter(user=request.user, homework__lesson=lesson).first()
+        is_completed = lesson.is_completed(user) if lesson.order != 1 else True
+        print(f'Lesson {lesson.title} is completed? {is_completed}')
 
         lesson_data.append({'lesson': lesson, 'embed_url': embed_url, 'test_data': test_data,
                             'test_result': test_result, 'total_questions': total_questions,
-                            'homework_data': homework_data})
+                            'homework_data': homework_data, 'notes_data': notes_data, 'is_completed': is_completed})
 
     lesson_order = request.POST.get("lesson_order")
     if lesson_order:
@@ -177,25 +188,6 @@ def course_detail(request, id):
     })
 
 
-# @login_required
-# @require_POST
-# def update_homework_status(request, submission_id):
-#     submission = get_object_or_404(HomeworkSubmission, id=submission_id)
-#
-#     if not (request.user.is_superuser or request.user.groups.filter(name='Moderators').exists()):
-#         return HttpResponseForbidden("You do not have permission to perform this action.")
-#
-#     new_status = request.POST.get('status')
-#     if new_status not in dict(HomeworkSubmission._meta.get_field('status').choices):
-#         return JsonResponse({'error': 'Invalid status'}, status=400)
-#
-#     submission.status = new_status
-#     submission.reviewed_at = timezone.now()
-#     submission.save()
-#
-#     return JsonResponse({'message': 'Status updated successfully.'})
-
-
 def is_admin_or_teacher(user):
     return user.is_superuser or user.groups.filter(name='teachers').exists()
 
@@ -203,32 +195,8 @@ def is_admin_or_teacher(user):
 @user_passes_test(is_admin_or_teacher)
 def admin_dashboard(request):
     hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user', 'status').order_by('-submitted_at')
-    # users = User.objects.select_related('subscription_plan').prefetch_related(
-    #     'subscription_plan__programming_languages',
-    #     'subscription_plan__bonus_modules'
-    # )
-    #
-    # if request.method == 'POST':
-    #     form = HomeworkSubmissionFormAdmin(request.POST)
-    #     if form.is_valid():
-    #         submission_id = request.POST.get('submission_id')
-    #         hw_submission = HomeworkSubmission.objects.get(id=submission_id)
-    #         hw_submission.status = form.cleaned_data['status']
-    #         hw_submission.comment = form.cleaned_data['comment']
-    #         hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
-    #         hw_submission.save()
-    #
-    #         return redirect('course:admin_dashboard')
-    #     else:
-    #         messages.error(request, 'Failed to update submission.')
-    #
-    # else:
-    #     form = HomeworkSubmissionFormAdmin()
-
     return render(request, 'course/admin_dashboard.html', {
         'hw_submissions': hw_submissions,
-        # 'form': form,
-        # 'users': users,
     })
 
 
@@ -251,13 +219,11 @@ def admin_main(request):
 def admin_homework_detail(request, id):
     print(f"Accessing admin_homework_detail view with ID: {id}")
 
-    # Получение домашних заданий
     hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user', 'status') \
         .filter(id=id) \
         .order_by('-submitted_at')
     print(f"Homework submissions fetched: {list(hw_submissions)}")
 
-    # Получение пользователей
     users = User.objects.select_related('subscription_plan').prefetch_related(
         'subscription_plan__programming_languages',
         'subscription_plan__bonus_modules'
@@ -270,8 +236,7 @@ def admin_homework_detail(request, id):
         if form.is_valid():
             print(f"Form is valid. Data: {form.cleaned_data}")
 
-            # Обновление статуса и времени проверки
-            hw_submission = hw_submissions.first()  # Предполагается, что ID уникален
+            hw_submission = hw_submissions.first()
             if hw_submission:
                 hw_submission.status = form.cleaned_data['status']
                 hw_submission.comment = form.cleaned_data['comment']
@@ -294,25 +259,6 @@ def admin_homework_detail(request, id):
         'users': users,
     })
 
-
-# class NextLessonUnlockView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def get(self, request, lesson_id):
-#         lesson = get_object_or_404(Lesson, id=lesson_id)
-#
-#         if not lesson.is_completed(request.user):
-#             return Response(
-#                 {"message": "Complete the current lesson to unlock the next one."},
-#                 status=status.HTTP_400_BAD_REQUEST,
-#             )
-#
-#         next_lesson = Lesson.objects.filter(course=lesson.course, order__gt=lesson.order).first()
-#         if next_lesson:
-#             serializer = LessonSerializer(next_lesson)
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#         return Response({"message": "No more lessons in this course."}, status=status.HTTP_404_NOT_FOUND)
 
 class AvailableCourseView(LoginRequiredMixin, ListView):
     template_name = 'course/available_course.html'
