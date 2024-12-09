@@ -101,31 +101,3 @@ document.querySelectorAll('input[type="radio"]').forEach(radio => {
         if (selectedLabel) selectedLabel.style.color = '#b07afe';
     });
 });
-
-document.getElementById('test-form').addEventListener('submit', function (e) {
-e.preventDefault();
-
-const formData = new FormData(this);
-
-fetch(this.action, {
-    method: 'POST',
-    headers: {
-        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-    },
-    body: formData,
-})
-    .then(response => response.json())
-    .then(data => {
-        if (data.message === "Test submitted successfully.") {
-            document.getElementById('attempts-count').textContent = `Attempts: ${data.attempts}`;
-            document.getElementById('score-percentage').textContent = `Max Score: ${data.percentage}%`;
-
-            document.getElementById('test-form').style.display = 'none';
-
-            alert('Test submitted successfully!');
-        } else {
-            alert('Submission failed. Please try again.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});

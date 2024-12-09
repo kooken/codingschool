@@ -32,17 +32,17 @@ class Lesson(models.Model):
 
     def is_completed(self, user):
         test_result = LessonTestResult.objects.filter(user=user, test=self.test).order_by('-date_taken').first()
-        print("Test result is", test_result)
+        # print("Test result is", test_result)
 
         homework_status = HomeworkSubmission.objects.filter(homework=self.homework, user=user).order_by(
             '-submitted_at').first()
-        print("Homework status is", homework_status)
+        # print("Homework status is", homework_status)
 
         test_passed = test_result and test_result.is_passed()
-        print("Test passed?", test_passed)
+        # print("Test passed?", test_passed)
 
         homework_done = homework_status and homework_status.status.id == 2
-        print("Homework done?", homework_done)
+        # print("Homework done?", homework_done)
 
         return test_passed and homework_done
 

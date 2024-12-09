@@ -139,6 +139,11 @@
                     <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
                     <label for="github_link">GitHub Link:</label>
                     <input type="url" id="github_link" name="github_link" required>
+
+                    {% if homework_form.errors.github_link %}
+                    <p class="error">{{ homework_form.errors.github_link.0 }}</p>
+                    {% endif %}
+
                     <button type="submit" name="submit_homework">Submit Homework</button>
                 </form>
                 {% else %}

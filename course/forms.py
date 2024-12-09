@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django_select2 import forms as s2forms
 from course.models import Comment, HomeworkSubmission, HomeworkSubmissionStatuses
 
@@ -52,6 +53,17 @@ class HomeworkSubmissionFormStudent(forms.ModelForm):
     class Meta:
         model = HomeworkSubmission
         fields = ['github_link']
+
+    def clean_github_link(self):
+        github_link = self.cleaned_data.get('github_link')
+
+        if not github_link.startswith("https://github.com/"):
+            raise ValidationError("The link must be a valid GitHub URL, starting with 'https://github.com/'.")
+
+        if len(github_link.split('/')) < 5:
+            raise ValidationError("The GitHub link must include a username and repository name.")
+
+        return github_link
 
 
 class CommentForm(forms.ModelForm):

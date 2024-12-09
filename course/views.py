@@ -3,9 +3,15 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.shortcuts import render, get_object_or_404
+from django.core.mail import EmailMultiAlternatives
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.views.generic import ListView
+
+from config.settings import EMAIL_HOST_USER
 from users.models import User
 from .forms import LessonTestForm, CommentForm, HomeworkSubmissionFormStudent, \
     HomeworkSubmissionFormAdmin
@@ -60,6 +66,10 @@ def get_lesson_data(lesson, user, course_name):
 
 
 def handle_post_request(request, course, lesson_data):
+    current_url = request.get_full_path()
+    fragment = request.POST.get("fragment", "").strip() or "lesson1"
+    print("Current url is:", current_url)
+    print("Current fragment is:", fragment)
     if "submit_comment" in request.POST:
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -69,6 +79,7 @@ def handle_post_request(request, course, lesson_data):
             comment.lesson = lesson
             comment.user = request.user
             comment.save()
+            return redirect(f"{request.path}#{fragment}")
 
     elif "submit_test" in request.POST:
         lesson_order = request.POST.get("lesson_order")
@@ -83,12 +94,41 @@ def handle_post_request(request, course, lesson_data):
         if test_form.is_valid():
             process_test_submission(request.user, lesson, test_form, current_test_data)
 
+    # elif "submit_homework" in request.POST:
+    #     lesson_order = request.POST.get("lesson_order")
+    #     lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
+    #     homework_form = HomeworkSubmissionFormStudent(request.POST)
+    #     if homework_form.is_valid():
+    #         print("Homework form is valid")
+    #         process_homework_submission(request.user, lesson, homework_form)
+    #         print("Homework submission processed")
+    #     else:
+    #         print("Homework form is invalid:", homework_form.errors)
+    #
+    #     send_homework_email()
+    #     print("Homework email sent")
+
     elif "submit_homework" in request.POST:
         lesson_order = request.POST.get("lesson_order")
         lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
         homework_form = HomeworkSubmissionFormStudent(request.POST)
         if homework_form.is_valid():
             process_homework_submission(request.user, lesson, homework_form)
+            return redirect(f"{request.path}#{fragment}")  # Возвращаем на якорь
+        else:
+            print("Homework form is invalid:", homework_form.errors)
+            # Добавляем ошибки формы в контекст
+
+    return render(request, "course/course_detail.html", {
+        "course": course,
+        "lesson": lesson,
+        "lesson_data": lesson_data,
+        "comment_form": CommentForm(),
+        "homework_form": HomeworkSubmissionFormStudent(),
+        "test_form": LessonTestForm(),
+        "current_url": current_url,
+        "fragment": fragment,
+    })
 
 
 def process_test_submission(user, lesson, test_form, current_test_data):
@@ -230,3 +270,29 @@ class AvailableCourseView(LoginRequiredMixin, ListView):
             return courses
         else:
             return Course.objects.none()
+
+
+def send_homework_email():
+    pending_homeworks = HomeworkSubmission.objects.filter(status_id=1)
+    staff_users = User.objects.filter(is_staff=True)
+
+    for homework in pending_homeworks:
+        homework_url = f"http://127.0.0.1:8000/course/homework/{homework.id}/"
+
+        html_message = render_to_string('emails/homework_submission.html', {
+            'homework_url': homework_url,
+        })
+        text_message = (
+            f'Hello! You got a new homework to check!\n'
+            f'Check it here: {homework_url}'
+        )
+
+        for user in staff_users:
+            email = EmailMultiAlternatives(
+                subject='New homework to check',
+                body=text_message,
+                from_email=settings.EMAIL_HOST_USER,
+                to=[user.email],
+            )
+            email.attach_alternative(html_message, "text/html")
+            email.send()
