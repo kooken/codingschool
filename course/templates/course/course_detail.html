@@ -71,7 +71,10 @@
                         onclick="toggleSection('comments{{ data.lesson.order }}', this, 'comments-section', 'toggle-button')">
                     Open Comments
                 </button>
-                <button class="report-button">Report problem</button>
+                <button class="toggle-button reports-link"
+                        onclick="toggleSection('reports{{ data.lesson.order }}', this, 'reports-section', 'toggle-button')">
+                    Report problem
+                </button>
             </div>
 
 
@@ -168,6 +171,17 @@
                     <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
                     <textarea name="text" rows="4" placeholder="Add a comment" required></textarea><br>
                     <button type="submit" name="submit_comment">Submit Comment</button>
+                </form>
+            </div>
+
+            <div class="reports-section section" id="reports{{ data.lesson.order }}">
+                <h4>Report for Lesson {{ data.lesson.order }}: {{ data.lesson.title }}</h4>
+                <form method="post" id="report-form{{ data.lesson.order }}"
+                      action="{% url 'course:course_detail' course.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="lesson_order" value="{{ data.lesson.order }}">
+                    <textarea name="report_text" rows="4" placeholder="Add a report" required></textarea><br>
+                    <button type="submit" name="submit_report">Submit Report</button>
                 </form>
             </div>
 

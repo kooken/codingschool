@@ -44,6 +44,29 @@
             {% endfor %}
             </tbody>
         </table>
+        <div class="admin-header">User reports</div>
+         <table>
+            <thead>
+            <tr>
+                <th>Report message</th>
+                <th>Course</th>
+                <th>Lesson</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>{{ report.report_text }}</td>
+                <td>{{ report.lesson.course.title }}</td>
+                <td>{{ report.lesson.title }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No reports found :(</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

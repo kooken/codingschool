@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django_select2 import forms as s2forms
-from course.models import Comment, HomeworkSubmission, HomeworkSubmissionStatuses
+from course.models import Comment, HomeworkSubmission, HomeworkSubmissionStatuses, Report
 
 
 class LessonTestForm(forms.Form):
@@ -72,4 +72,13 @@ class CommentForm(forms.ModelForm):
         fields = ['text']
         widgets = {
             'text': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Enter your comment...'}),
+        }
+
+
+class ReportForm(forms.ModelForm):
+    class Meta:
+        model = Report
+        fields = ['report_text']
+        widgets = {
+            'report_text': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Explain please what happened!'}),
         }

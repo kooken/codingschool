@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var approvedCheckbox = document.getElementById('approved');
         var pendingCheckbox = document.getElementById('pending');
         var needsRevisionCheckbox = document.getElementById('needs_revision');
+        var allCheckbox = document.getElementById('all');
         var table = document.getElementById('homeworkTable');
         var rows = table.getElementsByTagName('tr');
 

@@ -9,9 +9,10 @@
     <div class="container">
         <div class="admin-header">All homeworks</div>
         <div class="filter-container">
-            <label><input type="checkbox" id="approved" onchange="filterTable()"> Approved</label>
-            <label><input type="checkbox" id="pending" onchange="filterTable()"> Pending</label>
-            <label><input type="checkbox" id="needs_revision" onchange="filterTable()"> Needs Revision</label>
+            <label><input type="checkbox" id="approved" onchange="filterTable()">Approved</label>
+            <label><input type="checkbox" id="pending" onchange="filterTable()">Pending</label>
+            <label><input type="checkbox" id="needs_revision" onchange="filterTable()">Needs Revision</label>
+            <label><input type="checkbox" id="all" onchange="filterTable()">All</label>
         </div>
         <table id="homeworkTable">
             <thead>
@@ -38,7 +39,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="6">No users or subscription plans found.</td>
+                <td colspan="7">No homeworks found :(</td>
             </tr>
             {% endfor %}
             </tbody>

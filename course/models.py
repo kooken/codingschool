@@ -202,6 +202,3 @@ class Report(models.Model):
 
     def __str__(self):
         return f"Report by {self.user.email} on {self.lesson.title}"
-
-    class Meta:
-        unique_together = ('user', 'lesson')

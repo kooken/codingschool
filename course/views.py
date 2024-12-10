@@ -10,13 +10,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.views.generic import ListView
-
 from config.settings import EMAIL_HOST_USER
 from users.models import User
 from .forms import LessonTestForm, CommentForm, HomeworkSubmissionFormStudent, \
-    HomeworkSubmissionFormAdmin
+    HomeworkSubmissionFormAdmin, ReportForm
 from .models import Course, Lesson, LessonTestResult, HomeworkSubmission, \
-    HomeworkSubmissionStatuses
+    HomeworkSubmissionStatuses, Report
 from urllib.parse import urlparse, parse_qs
 
 
@@ -68,8 +67,11 @@ def get_lesson_data(lesson, user, course_name):
 def handle_post_request(request, course, lesson_data):
     current_url = request.get_full_path()
     fragment = request.POST.get("fragment", "").strip() or "lesson1"
+    lesson_order = request.POST.get("lesson_order")
+    lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
     print("Current url is:", current_url)
     print("Current fragment is:", fragment)
+    print("Current lesson is:", lesson)
     if "submit_comment" in request.POST:
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
@@ -80,6 +82,20 @@ def handle_post_request(request, course, lesson_data):
             comment.user = request.user
             comment.save()
             return redirect(f"{request.path}#{fragment}")
+
+    if "submit_report" in request.POST:
+        report_form = ReportForm(request.POST)
+        if report_form.is_valid():
+            lesson_order = request.POST.get("lesson_order")
+            lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
+            report = report_form.save(commit=False)
+            report.lesson = lesson
+            report.user = request.user
+            report.save()
+            print("Redirect to:", redirect(f"{request.path}#{fragment}"))
+            return redirect(f"{request.path}#{fragment}")
+        else:
+            print("Error during form render", report_form.errors)
 
     elif "submit_test" in request.POST:
         lesson_order = request.POST.get("lesson_order")
@@ -94,30 +110,15 @@ def handle_post_request(request, course, lesson_data):
         if test_form.is_valid():
             process_test_submission(request.user, lesson, test_form, current_test_data)
 
-    # elif "submit_homework" in request.POST:
-    #     lesson_order = request.POST.get("lesson_order")
-    #     lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
-    #     homework_form = HomeworkSubmissionFormStudent(request.POST)
-    #     if homework_form.is_valid():
-    #         print("Homework form is valid")
-    #         process_homework_submission(request.user, lesson, homework_form)
-    #         print("Homework submission processed")
-    #     else:
-    #         print("Homework form is invalid:", homework_form.errors)
-    #
-    #     send_homework_email()
-    #     print("Homework email sent")
-
     elif "submit_homework" in request.POST:
         lesson_order = request.POST.get("lesson_order")
         lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
         homework_form = HomeworkSubmissionFormStudent(request.POST)
         if homework_form.is_valid():
             process_homework_submission(request.user, lesson, homework_form)
-            return redirect(f"{request.path}#{fragment}")  # Возвращаем на якорь
+            return redirect(f"{request.path}#{fragment}")
         else:
             print("Homework form is invalid:", homework_form.errors)
-            # Добавляем ошибки формы в контекст
 
     return render(request, "course/course_detail.html", {
         "course": course,
@@ -198,10 +199,12 @@ def admin_main(request):
         'subscription_plan__programming_languages',
         'subscription_plan__bonus_modules'
     )
+    reports = Report.objects.all()
 
     return render(request, 'course/admin_main.html', {
         'hw_count': pending_count,
         'users': users,
+        'reports': reports,
     })
 
 
@@ -291,7 +294,7 @@ def send_homework_email():
             email = EmailMultiAlternatives(
                 subject='New homework to check',
                 body=text_message,
-                from_email=settings.EMAIL_HOST_USER,
+                from_email=EMAIL_HOST_USER,
                 to=[user.email],
             )
             email.attach_alternative(html_message, "text/html")
