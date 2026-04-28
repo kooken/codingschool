@@ -3,7 +3,7 @@ from enum import Enum
 from dateutil.relativedelta import relativedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from config import settings
+from django.conf import settings
 from users.managers import CustomUserManager
 
 
@@ -69,17 +69,7 @@ class SubscriptionDurationTypes(models.Model):
 
     @property
     def duration_in_months(self):
-        if self.value == 1:
-            return 1
-        elif self.value == 3:
-            return 3
-        elif self.value == 6:
-            return 6
-        elif self.value == 12:
-            return 12
-        elif self.value == 0:
-            return None
-        return None
+        return self.value if self.value != 0 else None
 
     @classmethod
     def create_default_duration(cls):
@@ -210,19 +200,11 @@ class SubscriptionPlan(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        now = timezone.now()
-
-        if self.duration.duration_in_months == 0:
+        months = self.duration.duration_in_months
+        if months is None:
             self.end_date = None
         elif not self.end_date:
-            if self.duration.duration_in_months == 1:
-                self.end_date = now + relativedelta(months=1)
-            elif self.duration.duration_in_months == 3:
-                self.end_date = now + relativedelta(months=3)
-            elif self.duration.duration_in_months == 6:
-                self.end_date = now + relativedelta(months=6)
-            elif self.duration.duration_in_months == 12:
-                self.end_date = now + relativedelta(years=1)
+            self.end_date = timezone.now() + relativedelta(months=months)
 
         if self.end_date is not None and timezone.is_naive(self.end_date):
             self.end_date = timezone.make_aware(self.end_date)

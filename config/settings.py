@@ -117,7 +117,7 @@ AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Helsinki'
 
 USE_I18N = True
 
@@ -151,9 +151,6 @@ AUTH_USER_MODEL = 'users.User'
 LOGIN_REDIRECT_URL = 'main:user_dashboard'
 LOGOUT_REDIRECT_URL = 'main:index'
 LOGIN_URL = 'users:login'
-
-USE_TZ = True
-TIME_ZONE = 'Europe/Helsinki'
 
 CACHES = {
     "default": {

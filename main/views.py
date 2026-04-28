@@ -26,47 +26,25 @@ def activate_promo_code(request, promo_code_str):
             messages.error(request, "Promo code is not valid or has already been used.")
             return False
 
-        print(f"Promo code details: {promo_code_instance}")
-        print(f"Subscription Plan: {promo_code_instance.plan}")
-        print(f"Duration: {promo_code_instance.plan.duration.display_name}")
-        print(f"User: {request.user}")
-        print(f"Programming Languages: {promo_code_instance.programming_languages.all()}")
-        print(f"Bonus Modules: {promo_code_instance.bonus_modules.all()}")
-
         now = timezone.now()
-
         duration_months = promo_code_instance.plan.duration.duration_in_months
 
-        if duration_months is None:
-            end_date = None
-        else:
+        end_date = None
+        if duration_months is not None:
             end_date = now + relativedelta(months=duration_months)
-
-        if end_date is not None:
             if timezone.is_naive(end_date):
                 end_date = timezone.make_aware(end_date)
             else:
                 end_date = timezone.localtime(end_date)
 
-        print(f"End date calculated: {end_date}")
-
-        try:
-            subscription = promo_code_instance.plan
-            subscription.is_active = True
-            subscription.start_date = now
-            subscription.end_date = end_date
-            subscription.save()
-
-            print(f"Subscription updated: {subscription}")
-
-        except SubscriptionPlan.DoesNotExist:
-            print("Error: Subscription plan not found.")
-        except Exception as e:
-            print(f"Error activating subscription: {str(e)}")
+        subscription = promo_code_instance.plan
+        subscription.is_active = True
+        subscription.start_date = now
+        subscription.end_date = end_date
+        subscription.save()
 
         promo_code_instance.is_active = False
         promo_code_instance.save()
-        print(f"Is promocode activated? If true - not activated, if false - activated: {promo_code_instance.is_active}")
 
         messages.success(request, f"Promo code activated! Subscription starts on {subscription.start_date}")
         return True
@@ -96,9 +74,6 @@ def promo_code_page(request):
                 programming_languages = form.cleaned_data['programming_languages']
                 bonus_modules = form.cleaned_data['bonus_modules']
 
-                print("Programming Languages from form:", programming_languages)
-                print("Bonus Modules from form:", bonus_modules)
-
                 try:
                     price_plan = {
                         'newbie': {
@@ -122,10 +97,12 @@ def promo_code_page(request):
                     if total_price is None:
                         raise ValueError(f"Price not found for plan: {plan.value}, duration: {duration.value}")
 
-                    description = f"Includes {len(programming_languages)} programming language(s): " + \
-                                  ", ".join(lang.display_name for lang in programming_languages) + \
-                                  f" and {len(bonus_modules)} bonus module(s): " + \
-                                  ", ".join(module.display_name for module in bonus_modules)
+                    description = (
+                        f"Includes {len(programming_languages)} programming language(s): "
+                        + ", ".join(lang.display_name for lang in programming_languages)
+                        + f" and {len(bonus_modules)} bonus module(s): "
+                        + ", ".join(module.display_name for module in bonus_modules)
+                    )
 
                     subscription_plan = SubscriptionPlan.objects.create(
                         user=request.user,
@@ -136,23 +113,11 @@ def promo_code_page(request):
                         is_active=False,
                     )
 
-                    print("Created Subscription Plan:", subscription_plan)
-
                     subscription_plan.programming_languages.set(programming_languages)
                     subscription_plan.bonus_modules.set(bonus_modules)
 
-                    print("Associated Programming Languages:", subscription_plan.programming_languages.all())
-                    print("Associated Bonus Modules:", subscription_plan.bonus_modules.all())
-
-                    print(f"Subscription updated: {subscription_plan}")
-
                     request.user.subscription_plan = subscription_plan
                     request.user.save()
-
-                    if request.user.subscription_plan:
-                        print(f"Subscription is related to user: {request.user.subscription_plan.name}")
-                    else:
-                        print("User has no subscription plan.")
 
                     promo_code_str = generate_promo_code(length=8)
 
@@ -165,11 +130,9 @@ def promo_code_page(request):
                     promo_code.programming_languages.set(programming_languages)
                     promo_code.bonus_modules.set(bonus_modules)
 
-                    print(f"Promo code generated: {promo_code_str}")
                     messages.success(request, f"Promo code generated: {promo_code_str}")
 
                 except Exception as e:
-                    print(f"Error occurred: {str(e)}")
                     messages.error(request, f"Error: {str(e)}")
 
         elif 'activate' in request.POST:
@@ -189,17 +152,9 @@ def promo_code_page(request):
 
 @login_required
 def user_dashboard(request):
-    try:
-        current_subscription = SubscriptionPlan.objects.filter(
-            Q(user=request.user) & (Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True))
-        ).first()
-
-        if current_subscription:
-            print(f"Active subscription found: {current_subscription}")
-        else:
-            print("No active subscription found.")
-    except SubscriptionPlan.DoesNotExist:
-        print("No active subscription found.")
+    current_subscription = SubscriptionPlan.objects.filter(
+        Q(user=request.user) & (Q(end_date__gte=timezone.now()) | Q(end_date__isnull=True))
+    ).first()
 
     return render(request, 'main/user_dashboard.html', {'current_subscription': current_subscription})
 
@@ -213,32 +168,32 @@ def courses(request):
         {
             'name': 'Go',
             'image': 'main/css/images/golang-course.png',
-            'description': 'Go, also known as Golang, is a statically typed, compiled programming'
-                           'language designed at Google. It\'s known for its simplicity, concurrency support,'
+            'description': 'Go, also known as Golang, is a statically typed, compiled programming '
+                           'language designed at Google. It\'s known for its simplicity, concurrency support, '
                            'and performance.'
         },
         {
             'name': 'Python',
             'image': 'main/css/images/python-course.png',
-            'description': 'Python is an interpreted, high-level, general-purpose programming language.'
+            'description': 'Python is an interpreted, high-level, general-purpose programming language. '
                            'It emphasizes code readability and has a vast ecosystem of libraries.'
         },
         {
             'name': 'C',
             'image': 'main/css/images/c-course.png',
-            'description': 'C is a powerful general-purpose programming language.'
+            'description': 'C is a powerful general-purpose programming language. '
                            'It is widely used in systems programming, game development, and embedded systems.'
         },
         {
             'name': 'JavaScript',
             'image': 'main/css/images/javascript-course.png',
-            'description': 'JavaScript is a versatile, high-level language commonly used in web development'
+            'description': 'JavaScript is a versatile, high-level language commonly used in web development '
                            'to add interactivity to web pages.'
         },
         {
             'name': 'SQL',
             'image': 'main/css/images/sql-course.png',
-            'description': 'SQL, or Structured Query Language, is a standardized language for managing and'
+            'description': 'SQL, or Structured Query Language, is a standardized language for managing and '
                            'querying relational databases.'
         }
     ]

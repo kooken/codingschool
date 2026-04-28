@@ -10,7 +10,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.views.generic import ListView
-from config.settings import EMAIL_HOST_USER
 from users.models import User
 from .forms import LessonTestForm, CommentForm, HomeworkSubmissionFormStudent, \
     HomeworkSubmissionFormAdmin, ReportForm
@@ -69,14 +68,10 @@ def handle_post_request(request, course, lesson_data):
     fragment = request.POST.get("fragment", "").strip() or "lesson1"
     lesson_order = request.POST.get("lesson_order")
     lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
-    print("Current url is:", current_url)
-    print("Current fragment is:", fragment)
-    print("Current lesson is:", lesson)
+
     if "submit_comment" in request.POST:
         comment_form = CommentForm(request.POST)
         if comment_form.is_valid():
-            lesson_order = request.POST.get("lesson_order")
-            lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
             comment = comment_form.save(commit=False)
             comment.lesson = lesson
             comment.user = request.user
@@ -86,39 +81,25 @@ def handle_post_request(request, course, lesson_data):
     if "submit_report" in request.POST:
         report_form = ReportForm(request.POST)
         if report_form.is_valid():
-            lesson_order = request.POST.get("lesson_order")
-            lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
             report = report_form.save(commit=False)
             report.lesson = lesson
             report.user = request.user
             report.save()
-            print("Redirect to:", redirect(f"{request.path}#{fragment}"))
             return redirect(f"{request.path}#{fragment}")
-        else:
-            print("Error during form render", report_form.errors)
 
     elif "submit_test" in request.POST:
-        lesson_order = request.POST.get("lesson_order")
-        lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
         lesson_data_item = next((item for item in lesson_data if item['lesson'] == lesson), None)
         if lesson_data_item:
             current_test_data = lesson_data_item['test_data']
-        else:
-            return None
-
-        test_form = LessonTestForm(questions=current_test_data, data=request.POST)
-        if test_form.is_valid():
-            process_test_submission(request.user, lesson, test_form, current_test_data)
+            test_form = LessonTestForm(questions=current_test_data, data=request.POST)
+            if test_form.is_valid():
+                process_test_submission(request.user, lesson, test_form, current_test_data)
 
     elif "submit_homework" in request.POST:
-        lesson_order = request.POST.get("lesson_order")
-        lesson = get_object_or_404(Lesson, course=course, order=lesson_order)
         homework_form = HomeworkSubmissionFormStudent(request.POST)
         if homework_form.is_valid():
             process_homework_submission(request.user, lesson, homework_form)
             return redirect(f"{request.path}#{fragment}")
-        else:
-            print("Homework form is invalid:", homework_form.errors)
 
     return render(request, "course/course_detail.html", {
         "course": course,
@@ -137,7 +118,7 @@ def process_test_submission(user, lesson, test_form, current_test_data):
         test_form.cleaned_data[f'question_{i + 1}'] for i in range(len(current_test_data))
     ]
     correct_answers = [q['correct_answer'] for q in current_test_data]
-    score = sum(1 for user, correct in zip(user_answers, correct_answers) if user == correct)
+    score = sum(1 for given, correct in zip(user_answers, correct_answers) if given == correct)
     percentage = (score / len(correct_answers)) * 100 if correct_answers else 0
 
     test_result, created = LessonTestResult.objects.get_or_create(
@@ -167,7 +148,7 @@ def course_detail(request, id):
     lesson = get_object_or_404(Lesson, course=course, order=lesson_order) if lesson_order else lessons.first()
 
     if request.method == "POST":
-        handle_post_request(request, course, lesson_data)
+        return handle_post_request(request, course, lesson_data)
 
     return render(request, "course/course_detail.html", {
         "course": course,
@@ -210,40 +191,27 @@ def admin_main(request):
 
 @user_passes_test(is_admin_or_teacher)
 def admin_homework_detail(request, id):
-    print(f"Accessing admin_homework_detail view with ID: {id}")
-
     hw_submissions = HomeworkSubmission.objects.select_related('homework', 'user', 'status') \
         .filter(id=id) \
         .order_by('-submitted_at')
-    print(f"Homework submissions fetched: {list(hw_submissions)}")
 
     users = User.objects.select_related('subscription_plan').prefetch_related(
         'subscription_plan__programming_languages',
         'subscription_plan__bonus_modules'
     )
-    print(f"Users fetched: {users.count()}")
 
     if request.method == 'POST':
-        print("POST request received.")
         form = HomeworkSubmissionFormAdmin(request.POST)
         if form.is_valid():
-            print(f"Form is valid. Data: {form.cleaned_data}")
-
             hw_submission = hw_submissions.first()
             if hw_submission:
                 hw_submission.status = form.cleaned_data['status']
                 hw_submission.comment = form.cleaned_data['comment']
                 hw_submission.reviewed_at = form.cleaned_data.get('reviewed_at', None)
                 hw_submission.save()
-                print(f"Updated homework submission: {hw_submission}")
-            else:
-                print("No homework submission found to update.")
-
         else:
-            print(f"Form is invalid. Errors: {form.errors}")
             messages.error(request, 'Failed to update submission.')
     else:
-        print("GET request received.")
         form = HomeworkSubmissionFormAdmin()
 
     return render(request, 'course/admin_homework_detail.html', {
@@ -267,20 +235,17 @@ class AvailableCourseView(LoginRequiredMixin, ListView):
             courses_by_languages = Course.objects.filter(programming_languages__in=programming_languages)
             courses_by_modules = Course.objects.filter(bonus_modules__in=bonus_modules)
 
-            courses = courses_by_languages | courses_by_modules
-            courses = courses.distinct()
+            return (courses_by_languages | courses_by_modules).distinct()
 
-            return courses
-        else:
-            return Course.objects.none()
+        return Course.objects.none()
 
 
-def send_homework_email():
+def send_homework_email(request):
     pending_homeworks = HomeworkSubmission.objects.filter(status_id=1)
     staff_users = User.objects.filter(is_staff=True)
 
     for homework in pending_homeworks:
-        homework_url = f"http://127.0.0.1:8000/course/homework/{homework.id}/"
+        homework_url = request.build_absolute_uri(f'/course/homework/{homework.id}/')
 
         html_message = render_to_string('emails/homework_submission.html', {
             'homework_url': homework_url,
@@ -290,12 +255,12 @@ def send_homework_email():
             f'Check it here: {homework_url}'
         )
 
-        for user in staff_users:
+        for staff_user in staff_users:
             email = EmailMultiAlternatives(
                 subject='New homework to check',
                 body=text_message,
-                from_email=EMAIL_HOST_USER,
-                to=[user.email],
+                from_email=settings.EMAIL_HOST_USER,
+                to=[staff_user.email],
             )
             email.attach_alternative(html_message, "text/html")
             email.send()
